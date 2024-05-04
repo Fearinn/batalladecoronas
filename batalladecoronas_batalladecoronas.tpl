@@ -10,15 +10,19 @@
 -------
 -->
 
-<div id="boc_game_area" class="boc_column_container boc_game_area">
-  <div id="boc_dices" class="boc_row_container boc_dices">
-    <div id="boc_dice:1" class="boc_dice boc_dice_1"></div>
-    <div id="boc_dice:2" class="boc_dice boc_dice_2"></div>
-  </div>
-  <div id="boc_supply" class="boc_supply">
-    <div id="boc_crown" class="boc_crown"></div>
-    <div id="boc_cross" class="boc_cross"></div>
-    <div id="boc_blacksmith" class="boc_blacksmith"></div>
+<div id="boc_game_area" class="boc_game_area">
+  <div id="boc_supply-dices" class="boc_row_container boc_supply-dices">
+    <div id="boc_dices" class="boc_row_container boc_dices">
+      <div id="boc_dice:1" class="boc_dice boc_dice_1"></div>
+      <div id="boc_dice:2" class="boc_dice boc_dice_2"></div>
+    </div>
+    <div
+      id="boc_supply_wrap"
+      class="whiteblock boc_column_container boc_supply_wrap"
+    >
+      <h3>{SUPPLY}</h3>
+      <div id="boc_supply" class="boc_supply"></div>
+    </div>
   </div>
   <div id="boc_castles" class="boc_castles">
     <!-- BEGIN mycastleblock -->
@@ -53,7 +57,7 @@
         class="boc_castle_title"
         style="color: #{PLAYER_COLOR}"
       >
-        {PLAYER_NAME}&apos;s castle
+        {PLAYER_NAME}
       </h3>
       <div id="boc_castle" class="boc_castle"></div>
       <div id="boc_council:{PLAYER_ID}" class="boc_council"></div>

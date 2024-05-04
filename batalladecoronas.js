@@ -20,18 +20,66 @@ define([
   "dojo/_base/declare",
   "ebg/core/gamegui",
   "ebg/counter",
+  "ebg/stock",
 ], function (dojo, declare) {
   return declare("bgagame.batalladecoronas", ebg.core.gamegui, {
     constructor: function () {
       console.log("batalladecoronas constructor");
+
+      this.supply = {};
     },
 
     setup: function (gamedatas) {
       console.log("Starting game setup");
 
-      // Setting up player boards
-      for (var player_id in gamedatas.players) {
-        var player = gamedatas.players[player_id];
+      this.supply = gamedatas.supply;
+
+      //Setting up player boards
+      for (const player_id in gamedatas.players) {
+        const player = gamedatas.players[player_id];
+        const castleTitle = $(`boc_castle_title:${player_id}`);
+
+        if (player_id != this.player_id) {
+          castleTitle.textContent = this.format_string_recursive(
+            _("${player_name}'s castle"),
+            { player_name: player.name }
+          );
+        }
+      }
+
+      //supply
+      const supplyStock = `supplyStock`;
+      this[supplyStock] = new ebg.stock();
+      this[supplyStock].create(this, $(`boc_supply`), 90, 90);
+      this[supplyStock].image_items_per_row = 6;
+      this[supplyStock].autowidth = true;
+      this[supplyStock].setSelectionMode(0);
+
+      this[supplyStock].addItemType(
+        "crown",
+        0,
+        g_gamethemeurl + "img/elements.png",
+        0
+      );
+
+      this[supplyStock].addItemType(
+        "cross",
+        1,
+        g_gamethemeurl + "img/elements.png",
+        1
+      );
+
+      this[supplyStock].addItemType(
+        "blacksmith",
+        2,
+        g_gamethemeurl + "img/elements.png",
+        2
+      );
+
+      for (const item in this.supply) {
+        if (this.supply[item]) {
+          this[supplyStock].addToStockWithId(item, item);
+        }
       }
 
       for (const dice in gamedatas.dices) {

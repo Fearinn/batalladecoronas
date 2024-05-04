@@ -61,15 +61,10 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue('dice_1', 0);
         $this->setGameStateInitialValue('dice_2', 0);
 
-        // Init game statistics
-        // (note: statistics used in this file must be defined in your stats.inc.php file)
-        //$this->initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
-        //$this->initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
+        // Init game statistic
 
         // TODO: setup the initial game situation here
 
-
-        // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
 
         /************ End of the game initialization *****/
@@ -84,6 +79,7 @@ class BatallaDeCoronas extends Table
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result["players"] = $this->getCollectionFromDb($sql);
         $result["dices"] = $this->getDices();
+        $result["supply"] = $this->getSupply();
 
         return $result;
     }
@@ -106,6 +102,17 @@ class BatallaDeCoronas extends Table
             1 => $this->getGameStateValue("dice_1"),
             2 => $this->getGameStateValue("dice_2")
         );
+    }
+
+    function getSupply()
+    {
+        // return array(
+        //     "crown" => $this->crown->countCardsInLocation("supply") > 0,
+        //     "cross" => $this->cross->countCardsInLocation("supply") > 0,
+        //     "blacksmith" => $this->blacksmith->countCardsInLocation("supply") > 0
+        // );
+
+        return array("crown" => true, "cross" => true, "blacksmith" => true);
     }
 
     //////////////////////////////////////////////////////////////////////////////
