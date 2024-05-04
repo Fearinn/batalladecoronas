@@ -8,37 +8,66 @@
 -- This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
 -- See http://en.boardgamearena.com/#!doc/Studio for more information.
 -------
-
-    batalladecoronas_batalladecoronas.tpl
-    
-    This is the HTML template of your game.
-    
-    Everything you are writing in this file will be displayed in the HTML page of your game user interface,
-    in the "main game zone" of the screen.
-    
-    You can use in this template:
-    _ variables, with the format {MY_VARIABLE_ELEMENT}.
-    _ HTML block, with the BEGIN/END format
-    
-    See your "view" PHP file to check how to set variables and control blocks
-    
-    Please REMOVE this comment before publishing your game on BGA
 -->
 
+<div id="boc_game_area" class="boc_column_container boc_game_area">
+  <div id="boc_dices" class="boc_row_container boc_dices">
+    <div id="boc_dice:1" class="boc_dice boc_dice_1"></div>
+    <div id="boc_dice:2" class="boc_dice boc_dice_2"></div>
+  </div>
+  <div id="boc_supply" class="boc_supply">
+    <div id="boc_crown" class="boc_crown"></div>
+    <div id="boc_cross" class="boc_cross"></div>
+    <div id="boc_blacksmith" class="boc_blacksmith"></div>
+  </div>
+  <div id="boc_castles" class="boc_castles">
+    <!-- BEGIN mycastleblock -->
+    <div
+      id="boc_castle_wrap:{MY_ID}"
+      class="column_container whiteblock boc_castle_wrap"
+    >
+      <h3
+        id="boc_castle_title:{MY_ID}"
+        class="boc_castle_title"
+        style="color: #{MY_COLOR}"
+      >
+        {YOUR CASTLE}
+      </h3>
+      <div id="boc_castle" class="boc_castle"></div>
+      <div id="boc_council:{MY_ID}" class="boc_council"></div>
+      <div id="boc_defense:{MY_ID}" class="boc_defense"></div>
+      <div id="boc_power:{MY_ID}" class="boc_power"></div>
+      <div id="boc_attack:{MY_ID}" class="boc_attack"></div>
+      <div id="boc_church:{MY_ID}" class="boc_church"></div>
+      <div id="boc_gold:{MY_ID}" class="boc_gold"></div>
+      <div id="boc_dragon:{MY_ID}" class="boc_dragon"></div>
+    </div>
+    <!-- END mycastleblock -->
+    <!-- BEGIN othercastleblock -->
+    <div
+      id="boc_castle_wrap:{PLAYER_ID}"
+      class="column_container whiteblock boc_castle_wrap"
+    >
+      <h3
+        id="boc_castle_title:{PLAYER_ID}"
+        class="boc_castle_title"
+        style="color: #{PLAYER_COLOR}"
+      >
+        {PLAYER_NAME}&apos;s castle
+      </h3>
+      <div id="boc_castle" class="boc_castle"></div>
+      <div id="boc_council:{PLAYER_ID}" class="boc_council"></div>
+      <div id="boc_defense:{PLAYER_ID}" class="boc_defense"></div>
+      <div id="boc_power:{PLAYER_ID}" class="boc_power"></div>
+      <div id="boc_attack:{PLAYER_ID}" class="boc_attack"></div>
+      <div id="boc_church:{PLAYER_ID}" class="boc_church"></div>
+      <div id="boc_gold:{PLAYER_ID}" class="boc_gold"></div>
+      <div id="boc_dragon:{PLAYER_ID}" class="boc_dragon"></div>
+    </div>
+    <!-- END othercastleblock -->
+  </div>
+</div>
 
-This is your game interface. You can edit this HTML in your ".tpl" file.
-
-
-<script type="text/javascript">
-
-// Javascript HTML templates
-
-/*
-// Example:
-var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${MY_ITEM_ID}"></div>';
-
-*/
-
-</script>  
+<script type="text/javascript"></script>
 
 {OVERALL_GAME_FOOTER}

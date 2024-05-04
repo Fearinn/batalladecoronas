@@ -13,60 +13,82 @@
  *
  */
 
-/*
-    This is the CSS stylesheet of your game User Interface.
-    
-    Styles defined on this file will be applied to the HTML elements you define in your
-    HTML template (batalladecoronas_batalladecoronas.tpl), and to HTML elements you create dynamically
-    (in batalladecoronas.js).
-    
-    Usually, you are using CSS to:
-    
-    1°) define the overall layout of your game
-        (ex: place the board on the top left, place player's hand beside, place the deck on the right, ...).
+.boc_game_area *:not(.stockitem) {
+  box-sizing: border-box;
+}
 
-    2°) create your CSS-sprites:
-        All images of your games should be gathered into a small number of image files. Then, using
-        background-image and background-position CSS properties, you create HTML blocks that can 
-        display these images correctly (see example below).
-    
-    3°) ... anything else:
-        It is really easy to add and remove CSS classes dynamically from your Javascript with
-        dojo.addClass and dojo.removeClass. It is also easy to check if an element has a class
-        (dojo.hasClass) or to get all elements with a specific class (dojo.query). This is why,
-        very often, using CSS classes for the logic of your user interface allow you to do complex
-        thing easily.
-        
-        
-     Note: on the production platform, this file will be compressed and comments will be removed.
-           Consequently, don't hesitate to put as many comments as necessary.
-*/
+.boc_column_container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
+.boc_row_container {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+}
 
-/* Note: you must not use any @import directive */
+.boc_dices {
+  margin: 0 auto;
+  gap: 8px;
+}
 
+.boc_dice {
+  background-image: url("img/dices.png");
+  height: 60px;
+  width: 60px;
+}
 
-/********* You can start writing your CSS below this line: **********/
+.boc_dice_rolled {
+  animation: diceRoll ease 1s;
+}
 
+.boc_face_1 {
+  background-position: 0 0;
+}
+.boc_face_2 {
+  background-position: -100% 0;
+}
+.boc_face_3 {
+  background-position: -200% 0;
+}
+.boc_face_4 {
+  background-position: -300% 0;
+}
+.boc_face_5 {
+  background-position: -400% 0;
+}
+.boc_face_6 {
+  background-position: -500% 0;
+}
 
-/*
-    Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
+.boc_castles {
+  display: grid;
+  justify-content: center;
+  grid-template-columns: repeat(auto-fit, 612px);
+  gap: 8px;
+}
 
-    .white_token {
-        background-image: url('img/tokens.png');
-        background-position: 0px 0px;
-    }
-    .black_token {
-        background-image: url('img/tokens.png');
-        background-position: -20px 0px;
-    }
-    .token {
-        width: 20px;
-        height: 20px;
-        background-repeat: none;
-    }
-*/
+.boc_castle {
+  background-image: url("img/castle.jpg");
+  background-position: bottom;
+  background-repeat: no-repeat;
+  margin: 0 auto;
+  height: 772px;
+  width: 592px;
+}
 
+/* animations */
 
-
-
+@keyframes diceRoll {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

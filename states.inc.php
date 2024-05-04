@@ -27,12 +27,12 @@ $machinestates = array(
     ),
 
     2 => array(
-        "name" => "diceRoll",
-        "description" => "",
-        "descriptionmyturn" => "",
-        "type" => "game",
-        "action" => "stDiceRoll",
-        "transitions" => array("decision" => 3)
+        "name" => "dicesRoll",
+        "description" => clienttranslate('${actplayer} must roll the dices to start a new turn'),
+        "descriptionmyturn" => clienttranslate('${actplayer} must roll the dices to start a new turn'),
+        "type" => "activeplayer",
+        "possibleactions" => array("rollDices"),
+        "transitions" => array("decisionPhase" => 3)
     ),
 
     3 =>  array(
@@ -95,7 +95,7 @@ $machinestates = array(
         "descriptionmyturn" => "",
         "type" => "game",
         "action" => "stBattle",
-        "transitions" => array("destroyShields" => 52, "diceRoll" => 2),
+        "transitions" => array("destroyShields" => 52, "dicesRoll" => 2),
     ),
 
     52 => array(
@@ -104,7 +104,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may pick how many swords shall be used in the attack'),
         "type" => "activeplayer",
         "possibleactions" => array("destroyShields", "skip"),
-        "transitions" => array("diceRoll" => 2, "skip" => 2),
+        "transitions" => array("dicesRoll" => 2, "skip" => 2),
     ),
 
     // Final state.
