@@ -27,12 +27,14 @@ define([
       console.log("batalladecoronas constructor");
 
       this.supply = {};
+      this.gems = {};
     },
 
     setup: function (gamedatas) {
       console.log("Starting game setup");
 
       this.supply = gamedatas.supply;
+      this.gems = gamedatas.gems;
 
       //Setting up player boards
       for (const player_id in gamedatas.players) {
@@ -87,6 +89,41 @@ define([
         const diceElement = $(`boc_dice:${dice}`);
 
         dojo.addClass(diceElement, `boc_face_${value}`);
+      }
+
+      for (const player_id in gamedatas.players) {
+        const powerStock = `powerStock:${player_id}`;
+        const powerElement = $(`boc_power:${player_id}`);
+
+        this[powerStock] = new ebg.stock();
+        this[powerStock].create(this, powerElement, 60, 60);
+        this[powerStock].image_items_per_row = 2;
+        this[powerStock].centerItems = true;
+        this[powerStock].extraClasses = `boc_gem`;
+        this[powerStock].setSelectionMode(0);
+
+        this[powerStock].addItemType(
+          "purple",
+          0,
+          g_gamethemeurl + "img/gems.png",
+          4
+        );
+        this[powerStock].addItemType(
+          "blue",
+          1,
+          g_gamethemeurl + "img/gems.png",
+          5
+        );
+
+        const power = this.gems[player_id].power;
+
+        if (power == 3) {
+          this[powerStock].addToStockWithId("purple", 1);
+        }
+
+        for (let i = 1; i <= 2 && i <= power; i++) {
+          this[powerStock].addToStockWithId("blue", 4 - i);
+        }
       }
 
       this.setupNotifications();

@@ -37,14 +37,15 @@
       >
         {YOUR CASTLE}
       </h3>
-      <div id="boc_castle" class="boc_castle"></div>
-      <div id="boc_council:{MY_ID}" class="boc_council"></div>
-      <div id="boc_defense:{MY_ID}" class="boc_defense"></div>
-      <div id="boc_power:{MY_ID}" class="boc_power"></div>
-      <div id="boc_attack:{MY_ID}" class="boc_attack"></div>
-      <div id="boc_church:{MY_ID}" class="boc_church"></div>
-      <div id="boc_gold:{MY_ID}" class="boc_gold"></div>
-      <div id="boc_dragon:{MY_ID}" class="boc_dragon"></div>
+      <div id="boc_castle" class="boc_castle">
+        <div id="boc_council:{MY_ID}" class="boc_council"></div>
+        <div id="boc_defense:{MY_ID}" class="boc_defense"></div>
+        <div id="boc_power:{MY_ID}" class="boc_power"></div>
+        <div id="boc_attack:{MY_ID}" class="boc_attack"></div>
+        <div id="boc_church:{MY_ID}" class="boc_church"></div>
+        <div id="boc_gold:{MY_ID}" class="boc_gold"></div>
+        <div id="boc_dragon:{MY_ID}" class="boc_dragon"></div>
+      </div>
     </div>
     <!-- END mycastleblock -->
     <!-- BEGIN othercastleblock -->
@@ -59,14 +60,15 @@
       >
         {PLAYER_NAME}
       </h3>
-      <div id="boc_castle" class="boc_castle"></div>
-      <div id="boc_council:{PLAYER_ID}" class="boc_council"></div>
-      <div id="boc_defense:{PLAYER_ID}" class="boc_defense"></div>
-      <div id="boc_power:{PLAYER_ID}" class="boc_power"></div>
-      <div id="boc_attack:{PLAYER_ID}" class="boc_attack"></div>
-      <div id="boc_church:{PLAYER_ID}" class="boc_church"></div>
-      <div id="boc_gold:{PLAYER_ID}" class="boc_gold"></div>
-      <div id="boc_dragon:{PLAYER_ID}" class="boc_dragon"></div>
+      <div id="boc_castle" class="boc_castle">
+        <div id="boc_council:{PLAYER_ID}" class="boc_council"></div>
+        <div id="boc_defense:{PLAYER_ID}" class="boc_defense"></div>
+        <div id="boc_power:{PLAYER_ID}" class="boc_power"></div>
+        <div id="boc_attack:{PLAYER_ID}" class="boc_attack"></div>
+        <div id="boc_church:{PLAYER_ID}" class="boc_church"></div>
+        <div id="boc_gold:{PLAYER_ID}" class="boc_gold"></div>
+        <div id="boc_dragon:{PLAYER_ID}" class="boc_dragon"></div>
+      </div>
     </div>
     <!-- END othercastleblock -->
   </div>

@@ -41,6 +41,9 @@ class BatallaDeCoronas extends Table
 
         $this->blacksmith = $this->getNew("module.common.deck");
         $this->blacksmith->init("blacksmith");
+
+        $this->gems = $this->getNew("module.common.deck");
+        $this->gems->init("gem");
     }
 
     protected function getGameName()
@@ -82,6 +85,12 @@ class BatallaDeCoronas extends Table
             array("type" => "blacksmith", "type_arg" => 3, "nbr" => 1)
         ), "supply");
 
+        $this->gems->createCards(array(array("type" => "gem", "type_arg" => 0, "nbr" => 6)), "box");
+
+        foreach ($players as $player_id => $player) {
+            $this->gems->pickCardsForLocation(3, "box", "power", $player_id);
+        }
+
         $this->activeNextPlayer();
 
         /************ End of the game initialization *****/
@@ -97,6 +106,7 @@ class BatallaDeCoronas extends Table
         $result["players"] = $this->getCollectionFromDb($sql);
         $result["dices"] = $this->getDices();
         $result["supply"] = $this->getSupply();
+        $result["gems"] = $this->getGemsByLocation();
 
         return $result;
     }
@@ -128,6 +138,18 @@ class BatallaDeCoronas extends Table
             "cross" => $this->cross->countCardsInLocation("supply") > 0,
             "blacksmith" => $this->blacksmith->countCardsInLocation("supply") > 0
         );
+    }
+
+    function getGemsByLocation()
+    {
+        $gem_nbr = array();
+        $players = $this->loadPlayersBasicInfos();
+        foreach ($players as $player_id => $player) {
+            $gem_nbr[$player_id]["power"] = $this->gems->countCardsInLocation("power", $player_id);
+            $gem_nbr[$player_id]["treasure"] = $this->gems->countCardsInLocation("treasure", $player_id);
+        }
+
+        return $gem_nbr;
     }
 
     //////////////////////////////////////////////////////////////////////////////

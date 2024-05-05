@@ -80,17 +80,35 @@
 .boc_castles {
   display: grid;
   justify-content: center;
-  grid-template-columns: repeat(auto-fit, 612px);
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, 740px);
+  gap: 4px;
 }
 
 .boc_castle {
-  background-image: url("img/castle.jpg");
+  position: relative;
+  background-image: url("img/castle.png");
   background-position: bottom;
+  background-size: cover;
   background-repeat: no-repeat;
   margin: 0 auto;
-  height: 772px;
-  width: 592px;
+  height: 962px;
+  width: 720px;
+}
+
+.boc_power {
+  position: absolute !important;
+  top: 340px;
+  left: 305px;
+  width: 130px;
+}
+
+.boc_gem:nth-child(2) {
+  margin-left: -16px;
+}
+
+.boc_gem:nth-child(3) {
+  margin-left: -8px;
+  margin-top: -16px;
 }
 
 /* animations */
