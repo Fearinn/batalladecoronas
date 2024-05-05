@@ -33,18 +33,18 @@
   gap: 4px;
 }
 
-.boc_dices {
+.boc_dice {
   gap: 8px;
 }
 
-.boc_dice {
-  background-image: url("img/dices.png");
+.boc_die {
+  background-image: url("img/dice.png");
   background-position: -500% 0;
   height: 60px;
   width: 60px;
 }
 
-.boc_dice_rolled {
+.boc_die_rolled {
   animation: diceRoll ease 1s;
 }
 
@@ -67,7 +67,7 @@
   background-position: -500% 0;
 }
 
-.boc_supply-dices {
+.boc_supply-dice {
   gap: 32px;
 }
 

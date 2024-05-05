@@ -29,8 +29,8 @@ class BatallaDeCoronas extends Table
         parent::__construct();
 
         $this->initGameStateLabels(array(
-            "dice_1" => 10,
-            "dice_2" => 11,
+            "die_1" => 10,
+            "die_2" => 11,
         ));
 
         $this->crown = $this->getNew("module.common.deck");
@@ -73,8 +73,8 @@ class BatallaDeCoronas extends Table
 
         /************ Start the game initialization *****/
 
-        $this->setGameStateInitialValue('dice_1', 0);
-        $this->setGameStateInitialValue('dice_2', 0);
+        $this->setGameStateInitialValue('die_1', 0);
+        $this->setGameStateInitialValue('die_2', 0);
 
         $this->crown->createCards(array(
             array("type" => "crown", "type_arg" => 0, "nbr" => 1)
@@ -110,7 +110,7 @@ class BatallaDeCoronas extends Table
 
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result["players"] = $this->getCollectionFromDb($sql);
-        $result["dices"] = $this->getDices();
+        $result["dice"] = $this->getDice();
         $result["supply"] = $this->getSupply();
         $result["gems"] = $this->getGemsByLocation();
         $result["treasure"] = $this->getTreasure();
@@ -130,11 +130,11 @@ class BatallaDeCoronas extends Table
     //////////// Utility functions
     //////////// 
 
-    function getDices()
+    function getDice()
     {
         return array(
-            1 => $this->getGameStateValue("dice_1"),
-            2 => $this->getGameStateValue("dice_2")
+            1 => $this->getGameStateValue("die_1"),
+            2 => $this->getGameStateValue("die_2")
         );
     }
 
@@ -183,35 +183,35 @@ class BatallaDeCoronas extends Table
     ////////////
 
 
-    function rollDices()
+    function rollDice()
     {
-        $this->checkAction("rollDices");
+        $this->checkAction("rollDice");
 
-        $dice_1 = bga_rand(1, 6);
-        $dice_2 = bga_rand(1, 6);
+        $die_1 = bga_rand(1, 6);
+        $die_2 = bga_rand(1, 6);
 
-        $this->setGameStateValue("dice_1", $dice_1);
-        $this->setGameStateValue("dice_2", $dice_2);
+        $this->setGameStateValue("die_1", $die_1);
+        $this->setGameStateValue("die_2", $die_2);
 
         $player_name = $this->getActivePlayerName();
 
         $this->notifyAllPlayers(
-            "dicesRoll",
-            clienttranslate('${player_name} rolls the first dice. The result is ${result}'),
+            "dieRoll",
+            clienttranslate('${player_name} rolls the first die. The result is ${result}'),
             array(
                 "player_name" => $player_name,
-                "dice" => 1,
-                "result" => $dice_1
+                "die" => 1,
+                "result" => $die_1
             )
         );
 
         $this->notifyAllPlayers(
-            "dicesRoll",
-            clienttranslate('${player_name} rolls the second dice. The result is ${result}'),
+            "dieRoll",
+            clienttranslate('${player_name} rolls the second die. The result is ${result}'),
             array(
                 "player_name" => $player_name,
-                "dice" => 2,
-                "result" => $dice_2,
+                "die" => 2,
+                "result" => $die_2,
             )
         );
 

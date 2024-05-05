@@ -27,18 +27,18 @@ $machinestates = array(
     ),
 
     2 => array(
-        "name" => "dicesRoll",
-        "description" => clienttranslate('${actplayer} must roll the dices to start a new turn'),
-        "descriptionmyturn" => clienttranslate('${you} must roll the dices to start a new turn'),
+        "name" => "diceRoll",
+        "description" => clienttranslate('${actplayer} must roll the die to start a new turn'),
+        "descriptionmyturn" => clienttranslate('${you} must roll the die to start a new turn'),
         "type" => "activeplayer",
-        "possibleactions" => array("rollDices"),
+        "possibleactions" => array("rollDice"),
         "transitions" => array("decisionPhase" => 3)
     ),
 
     3 =>  array(
         "name" => "decisionPhase",
-        "description" => clienttranslate('${actplayer} must pick a dice to activate a counselor. The other dice shall generate gold'),
-        "descriptionmyturn" => clienttranslate('${you} must pick a dice to activate a counselor. The other dice shall generate gold'),
+        "description" => clienttranslate('${actplayer} must pick a die to activate a counselor. The other die shall generate gold'),
+        "descriptionmyturn" => clienttranslate('${you} must pick a die to activate a counselor. The other die shall generate gold'),
         "type" => "activeplayer",
         "possibleactions" => array("decideDice"),
         "transitions" => array("chairPicking" => 31, "couselorActivaction" => 32)
@@ -95,7 +95,7 @@ $machinestates = array(
         "descriptionmyturn" => "",
         "type" => "game",
         "action" => "stBattle",
-        "transitions" => array("destroyShields" => 52, "dicesRoll" => 2),
+        "transitions" => array("destroyShields" => 52, "diceRoll" => 2),
     ),
 
     52 => array(
@@ -104,7 +104,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may pick how many swords shall be used in the attack'),
         "type" => "activeplayer",
         "possibleactions" => array("destroyShields", "skip"),
-        "transitions" => array("dicesRoll" => 2, "skip" => 2),
+        "transitions" => array("diceRoll" => 2, "skip" => 2),
     ),
 
     // Final state.

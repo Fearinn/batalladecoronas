@@ -11,10 +11,10 @@
 -->
 
 <div id="boc_game_area" class="boc_game_area">
-  <div id="boc_supply-dices" class="boc_row_container boc_supply-dices">
-    <div id="boc_dices" class="boc_row_container boc_dices">
-      <div id="boc_dice:1" class="boc_dice boc_dice_1"></div>
-      <div id="boc_dice:2" class="boc_dice boc_dice_2"></div>
+  <div id="boc_supply-dice" class="boc_row_container boc_supply-dice">
+    <div id="boc_dice" class="boc_row_container boc_dice">
+      <div id="boc_die:1" class="boc_die boc_die_1"></div>
+      <div id="boc_die:2" class="boc_die boc_die_2"></div>
     </div>
     <div id="boc_supply" class="boc_supply"></div>
   </div>

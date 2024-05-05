@@ -86,11 +86,11 @@ define([
         }
       }
 
-      for (const dice in gamedatas.dices) {
-        const value = gamedatas.dices[dice];
-        const diceElement = $(`boc_dice:${dice}`);
+      for (const die in gamedatas.dice) {
+        const value = gamedatas.dice[die];
+        const dieElement = $(`boc_die:${die}`);
 
-        dojo.addClass(diceElement, `boc_face_${value}`);
+        dojo.addClass(dieElement, `boc_face_${value}`);
       }
 
       for (const player_id in gamedatas.players) {
@@ -139,7 +139,12 @@ define([
           this[treasureStock].extraClasses = `boc_gold`;
           this[treasureStock].setSelectionMode(0);
 
-          this[treasureStock].addItemType("gold", 0, g_gamethemeurl + "img/tokens.png", 6);
+          this[treasureStock].addItemType(
+            "gold",
+            0,
+            g_gamethemeurl + "img/tokens.png",
+            6
+          );
         }
 
         const goldNbr = this.treasure[player_id];
@@ -156,8 +161,10 @@ define([
     onEnteringState: function (stateName, args) {
       console.log("Entering state: " + stateName);
 
-      if (stateName === "dicesRoll") {
-        this.addActionButton("boc_rollDices", _("Roll dices"), "onRollDices");
+      if (stateName === "diceRoll") {
+        if (this.isCurrentPlayerActive()) {
+          this.addActionButton("boc_rollDice", _("Roll dice"), "onRollDice");
+        }
       }
     },
 
@@ -202,8 +209,8 @@ define([
     ///////////////////////////////////////////////////
     //// Player's actions
 
-    onRollDices: function () {
-      const action = "rollDices";
+    onRollDice: function () {
+      const action = "rollDice";
       this.sendAjaxCall(action);
     },
 
@@ -213,22 +220,22 @@ define([
     setupNotifications: function () {
       console.log("notifications subscriptions setup");
 
-      dojo.subscribe("dicesRoll", this, "notif_dicesRoll");
+      dojo.subscribe("dieRoll", this, "notif_dieRoll");
     },
 
-    notif_dicesRoll: function (notif) {
-      const dice = notif.args.dice;
+    notif_dieRoll: function (notif) {
+      const die = notif.args.die;
       const result = notif.args.result;
-      const diceElement = $(`boc_dice:${dice}`);
+      const dieElement = $(`boc_die:${die}`);
 
-      dojo.addClass(diceElement, "boc_dice_rolled");
+      dojo.addClass(dieElement, "boc_die_rolled");
 
       setTimeout(() => {
-        dojo.addClass(diceElement, `boc_face_${result}`);
+        dojo.addClass(dieElement, `boc_face_${result}`);
       }, 500);
 
       setTimeout(() => {
-        dojo.removeClass(diceElement, "boc_dice_rolled");
+        dojo.removeClass(dieElement, "boc_die_rolled");
       }, 1000);
     },
   });

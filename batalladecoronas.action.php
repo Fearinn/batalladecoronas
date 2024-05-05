@@ -37,10 +37,10 @@ class action_batalladecoronas extends APP_GameAction
     }
   }
 
-  public function rollDices()
+  public function rollDice()
   {
     $this->setAjaxMode();
-    $this->game->rollDices();
+    $this->game->rollDice();
     $this->ajaxResponse();
   }
 }
