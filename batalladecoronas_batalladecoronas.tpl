@@ -16,13 +16,7 @@
       <div id="boc_dice:1" class="boc_dice boc_dice_1"></div>
       <div id="boc_dice:2" class="boc_dice boc_dice_2"></div>
     </div>
-    <div
-      id="boc_supply_wrap"
-      class="whiteblock boc_column_container boc_supply_wrap"
-    >
-      <h3>{SUPPLY}</h3>
-      <div id="boc_supply" class="boc_supply"></div>
-    </div>
+    <div id="boc_supply" class="boc_supply"></div>
   </div>
   <div id="boc_castles" class="boc_castles">
     <!-- BEGIN mycastleblock -->

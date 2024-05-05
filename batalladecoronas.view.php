@@ -64,7 +64,6 @@ class view_batalladecoronas_batalladecoronas extends game_view
         }
 
         $this->tpl["YOUR CASTLE"] = $this->_("Your castle");
-        $this->tpl["SUPPLY"] = $this->_("Supply");
 
         /*********** Do not change anything below this line  ************/
     }

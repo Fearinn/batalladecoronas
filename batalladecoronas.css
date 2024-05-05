@@ -71,12 +71,6 @@
   gap: 32px;
 }
 
-.boc_supply_wrap {
-  align-items: center;
-  padding: 0;
-  width: 275px;
-}
-
 .boc_castles {
   display: grid;
   justify-content: center;
