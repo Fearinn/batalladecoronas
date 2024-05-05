@@ -17,6 +17,7 @@
  *
  */
 
+use function PHPSTORM_META\type;
 
 require_once(APP_GAMEMODULE_PATH . 'module/table/table.game.php');
 
@@ -31,6 +32,15 @@ class BatallaDeCoronas extends Table
             "dice_1" => 10,
             "dice_2" => 11,
         ));
+
+        $this->crown = $this->getNew("module.common.deck");
+        $this->crown->init("crown");
+
+        $this->cross = $this->getNew("module.common.deck");
+        $this->cross->init("sacredcross");
+
+        $this->blacksmith = $this->getNew("module.common.deck");
+        $this->blacksmith->init("blacksmith");
     }
 
     protected function getGameName()
@@ -57,13 +67,20 @@ class BatallaDeCoronas extends Table
 
         /************ Start the game initialization *****/
 
-        // Init global values with their initial values
         $this->setGameStateInitialValue('dice_1', 0);
         $this->setGameStateInitialValue('dice_2', 0);
 
-        // Init game statistic
+        $this->crown->createCards(array(
+            array("type" => "crown", "type_arg" => 1, "nbr" => 1)
+        ), "supply");
 
-        // TODO: setup the initial game situation here
+        $this->cross->createCards(array(
+            array("type" => "cross", "type_arg" => 2, "nbr" => 1)
+        ), "supply");
+
+        $this->blacksmith->createCards(array(
+            array("type" => "blacksmith", "type_arg" => 3, "nbr" => 1)
+        ), "supply");
 
         $this->activeNextPlayer();
 
@@ -106,13 +123,11 @@ class BatallaDeCoronas extends Table
 
     function getSupply()
     {
-        // return array(
-        //     "crown" => $this->crown->countCardsInLocation("supply") > 0,
-        //     "cross" => $this->cross->countCardsInLocation("supply") > 0,
-        //     "blacksmith" => $this->blacksmith->countCardsInLocation("supply") > 0
-        // );
-
-        return array("crown" => true, "cross" => true, "blacksmith" => true);
+        return array(
+            "crown" => $this->crown->countCardsInLocation("supply") > 0,
+            "cross" => $this->cross->countCardsInLocation("supply") > 0,
+            "blacksmith" => $this->blacksmith->countCardsInLocation("supply") > 0
+        );
     }
 
     //////////////////////////////////////////////////////////////////////////////
