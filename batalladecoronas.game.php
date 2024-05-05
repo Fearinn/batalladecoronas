@@ -44,6 +44,9 @@ class BatallaDeCoronas extends Table
 
         $this->gems = $this->getNew("module.common.deck");
         $this->gems->init("gem");
+
+        $this->gold = $this->getNew("module.common.deck");
+        $this->gold->init("gold");
     }
 
     protected function getGameName()
@@ -74,21 +77,24 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue('dice_2', 0);
 
         $this->crown->createCards(array(
-            array("type" => "crown", "type_arg" => 1, "nbr" => 1)
+            array("type" => "crown", "type_arg" => 0, "nbr" => 1)
         ), "supply");
 
         $this->cross->createCards(array(
-            array("type" => "cross", "type_arg" => 2, "nbr" => 1)
+            array("type" => "cross", "type_arg" => 0, "nbr" => 1)
         ), "supply");
 
         $this->blacksmith->createCards(array(
-            array("type" => "blacksmith", "type_arg" => 3, "nbr" => 1)
+            array("type" => "blacksmith", "type_arg" => 0, "nbr" => 1)
         ), "supply");
 
         $this->gems->createCards(array(array("type" => "gem", "type_arg" => 0, "nbr" => 6)), "box");
 
+        $this->gold->createCards(array(array("type" => "gold", "type_arg" => 0, "nbr" => 14)), "box");
+
         foreach ($players as $player_id => $player) {
             $this->gems->pickCardsForLocation(3, "box", "power", $player_id);
+            $this->gold->pickCardsForLocation(7, "box", "vault", $player_id);
         }
 
         $this->activeNextPlayer();
@@ -107,6 +113,7 @@ class BatallaDeCoronas extends Table
         $result["dices"] = $this->getDices();
         $result["supply"] = $this->getSupply();
         $result["gems"] = $this->getGemsByLocation();
+        $result["treasure"] = $this->getTreasure();
 
         return $result;
     }
@@ -150,6 +157,17 @@ class BatallaDeCoronas extends Table
         }
 
         return $gem_nbr;
+    }
+
+    function getTreasure()
+    {
+        $treasure = array();
+        $players = $this->loadPlayersBasicInfos();
+        foreach ($players as $player_id => $player) {
+            $treasure[$player_id] = $this->gold->countCardsInLocation("treasure", $player_id);
+        }
+
+        return $treasure;
     }
 
     //////////////////////////////////////////////////////////////////////////////

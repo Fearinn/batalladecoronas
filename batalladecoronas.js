@@ -28,6 +28,7 @@ define([
 
       this.supply = {};
       this.gems = {};
+      this.treasure = {};
     },
 
     setup: function (gamedatas) {
@@ -35,6 +36,7 @@ define([
 
       this.supply = gamedatas.supply;
       this.gems = gamedatas.gems;
+      this.treasure = gamedatas.treasure;
 
       //Setting up player boards
       for (const player_id in gamedatas.players) {
@@ -92,6 +94,7 @@ define([
       }
 
       for (const player_id in gamedatas.players) {
+        //power
         const powerStock = `powerStock:${player_id}`;
         const powerElement = $(`boc_power:${player_id}`);
 
@@ -124,6 +127,25 @@ define([
         for (let i = 1; i <= 2 && i <= power; i++) {
           this[powerStock].addToStockWithId("blue", 4 - i);
         }
+
+        //treasure
+        for (count = -1; count <= 7; count++) {
+          const treasureStock = `treasureStock$${player_id}:${count}`;
+          const treasureElement = $(`boc_treasure$${player_id}:${count}`);
+
+          this[treasureStock] = new ebg.stock();
+          this[treasureStock].create(this, treasureElement, 60, 60);
+          this[treasureStock].image_items_per_row = 10;
+          this[treasureStock].extraClasses = `boc_gold`;
+          this[treasureStock].setSelectionMode(0);
+
+          this[treasureStock].addItemType("gold", 0, g_gamethemeurl + "img/tokens.png", 6);
+        }
+
+        const goldNbr = this.treasure[player_id];
+        const stock = `treasureStock$${player_id}:${goldNbr}`;
+        const originElement = $(`boc_treasure$${player_id}:0`);
+        this[stock].addToStock("gold", originElement);
       }
 
       this.setupNotifications();

@@ -37,7 +37,17 @@
         <div id="boc_power:{MY_ID}" class="boc_power"></div>
         <div id="boc_attack:{MY_ID}" class="boc_attack"></div>
         <div id="boc_church:{MY_ID}" class="boc_church"></div>
-        <div id="boc_gold:{MY_ID}" class="boc_gold"></div>
+        <div id="boc_treasure:{MY_ID}" class="boc_treasure">
+          <div id="boc_treasure${MY_ID}:-1" class="boc_treasure_-1"></div>
+          <div id="boc_treasure${MY_ID}:0" class="boc_treasure_0"></div>
+          <div id="boc_treasure${MY_ID}:1" class="boc_treasure_1"></div>
+          <div id="boc_treasure${MY_ID}:2" class="boc_treasure_2"></div>
+          <div id="boc_treasure${MY_ID}:3" class="boc_treasure_3"></div>
+          <div id="boc_treasure${MY_ID}:4" class="boc_treasure_4"></div>
+          <div id="boc_treasure${MY_ID}:5" class="boc_treasure_5"></div>
+          <div id="boc_treasure${MY_ID}:6" class="boc_treasure_6"></div>
+          <div id="boc_treasure${MY_ID}:7" class="boc_treasure_7"></div>
+        </div>
         <div id="boc_dragon:{MY_ID}" class="boc_dragon"></div>
       </div>
     </div>
@@ -60,7 +70,17 @@
         <div id="boc_power:{PLAYER_ID}" class="boc_power"></div>
         <div id="boc_attack:{PLAYER_ID}" class="boc_attack"></div>
         <div id="boc_church:{PLAYER_ID}" class="boc_church"></div>
-        <div id="boc_gold:{PLAYER_ID}" class="boc_gold"></div>
+        <div id="boc_treasure:{PLAYER_ID}" class="boc_treasure">
+          <div id="boc_treasure${PLAYER_ID}:-1" class="boc_treasure_-1"></div>
+          <div id="boc_treasure${PLAYER_ID}:0" class="boc_treasure_0"></div>
+          <div id="boc_treasure${PLAYER_ID}:1" class="boc_treasure_1"></div>
+          <div id="boc_treasure${PLAYER_ID}:2" class="boc_treasure_2"></div>
+          <div id="boc_treasure${PLAYER_ID}:3" class="boc_treasure_3"></div>
+          <div id="boc_treasure${PLAYER_ID}:4" class="boc_treasure_4"></div>
+          <div id="boc_treasure${PLAYER_ID}:5" class="boc_treasure_5"></div>
+          <div id="boc_treasure${PLAYER_ID}:6" class="boc_treasure_6"></div>
+          <div id="boc_treasure${PLAYER_ID}:7" class="boc_treasure_7"></div>
+        </div>
         <div id="boc_dragon:{PLAYER_ID}" class="boc_dragon"></div>
       </div>
     </div>
