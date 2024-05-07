@@ -175,6 +175,27 @@
   left: 160px;
 }
 
+.boc_church {
+  position: absolute;
+  top: 475px;
+  left: 178px;
+}
+
+.boc_church > * {
+  position: absolute !important;
+  width: var(--tokenSize);
+}
+
+.boc_clergy_GOLDEN {
+  left: 78px;
+}
+.boc_clergy_BLUE {
+  left: 150px;
+}
+.boc_clergy_RED {
+  left: 225px;
+}
+
 .boc_treasure {
   position: absolute;
   top: 580px;

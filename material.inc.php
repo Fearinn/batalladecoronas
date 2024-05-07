@@ -1,4 +1,5 @@
 <?php
+
 /**
  *------
  * BGA framework: Gregory Isabelli & Emmanuel Colin & BoardGameArena
@@ -19,19 +20,9 @@
  *
  */
 
-
-/*
-
-Example:
-
-$this->card_types = array(
-    1 => array( "card_name" => ...,
-                ...
-              )
+$this->church_houses = array(
+  "DOOR" => array(),
+  "GOLDEN" => array(),
+  "BLUE" => array(),
+  "RED" => array()
 );
-
-*/
-
-
-
-

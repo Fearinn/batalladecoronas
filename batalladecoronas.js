@@ -32,6 +32,9 @@ define([
 
       this.supply = {};
       this.gems = {};
+      this.attack = {};
+      this.defense = {};
+      this.church = {};
       this.treasure = {};
     },
 
@@ -40,12 +43,10 @@ define([
 
       this.supply = gamedatas.supply;
       this.gems = gamedatas.gems;
-      this.treasure = gamedatas.treasure;
       this.attack = gamedatas.attack;
       this.defense = gamedatas.defense;
-
-      console.log(this.attack, this.defense, "attack and defense");
-      console.log(this.treasure, "treasure");
+      this.church = gamedatas.church;
+      this.treasure = gamedatas.treasure;
 
       //Setting up player boards
       for (const player_id in gamedatas.players) {
@@ -143,8 +144,41 @@ define([
           this[powerStock].addToStockWithId("purple", 4 - i);
         }
 
+        //church
+        const church = ["DOOR", "GOLDEN", "BLUE", "RED"];
+
+        church.forEach((house) => {
+          const clergyStock = `clergyStock$${player_id}:${house}`;
+          const clergy = $(`boc_clergy$${player_id}:${house}`);
+
+          this[clergyStock] = new ebg.stock();
+          this[clergyStock].create(
+            this,
+            clergy,
+            this.tokenSize,
+            this.tokenSize
+          );
+
+          this[clergyStock].image_items_per_row = 3;
+          this[clergyStock].extraClasses = `boc_clergy`;
+          this[clergyStock].setSelectionMode(0);
+
+          this[clergyStock].addItemType(
+            "clergy",
+            0,
+            g_gamethemeurl + "img/tokens.png",
+            1
+          );
+        });
+
+        const activeHouse = this.church[player_id];
+        console.log(this.church);
+        const activeClergyStock = `clergyStock$${player_id}:${activeHouse}`;
+        const initialClergy = $(`boc_clergy$${player_id}:DOOR`);
+        this[activeClergyStock].addToStock("clergy", initialClergy);
+
         //treasure
-        for (gold = -1; gold <= 7; gold++) {
+        for (let gold = -1; gold <= 7; gold++) {
           const treasureStock = `treasureStock$${player_id}:${gold}`;
           const treasureElement = $(`boc_treasure$${player_id}:${gold}`);
 
@@ -155,7 +189,7 @@ define([
             this.tokenSize,
             this.tokenSize
           );
-          this[treasureStock].image_items_per_row = 10;
+          this[treasureStock].image_items_per_row = 3;
           this[treasureStock].extraClasses = `boc_gold`;
           this[treasureStock].setSelectionMode(0);
 

@@ -45,14 +45,17 @@ class BatallaDeCoronas extends Table
         $this->gems = $this->getNew("module.common.deck");
         $this->gems->init("gem");
 
-        $this->gold = $this->getNew("module.common.deck");
-        $this->gold->init("gold");
-
         $this->attack = $this->getNew("module.common.deck");
         $this->attack->init("attack");
 
         $this->defense = $this->getNew("module.common.deck");
         $this->defense->init("defense");
+
+        $this->clergy = $this->getNew("module.common.deck");
+        $this->clergy->init("clergy");
+
+        $this->gold = $this->getNew("module.common.deck");
+        $this->gold->init("gold");
     }
 
     protected function getGameName()
@@ -99,17 +102,11 @@ class BatallaDeCoronas extends Table
         $this->gold->createCards(array(array("type" => "gold", "type_arg" => 0, "nbr" => 14)), "box");
 
         $this->attack->createCards(array(array("type" => "attack", "type_arg" => 0, "nbr" => 10)), "box");
-
         $this->defense->createCards(array(array("type" => "defense", "type_arg" => 0, "nbr" => 10)), "box");
 
+        $this->clergy->createCards(array(array("type" => "clergy", "type_arg" => 0, "nbr" => 2)), "box");
+
         foreach ($players as $player_id => $player) {
-            // $this->gems->pickCardsForLocation(3, "box", "power", $player_id);
-
-            // $this->gold->pickCardsForLocation(7, "box", "unclaimed", $player_id);
-
-            // $this->attack->(2, "unclaimed", "attack", $player_id);
-            // $this->defense->(2, "unclaimed", "defense", $player_id);
-
             $this->moveCardsToLocation($this->gems, 3, "box", "power", null, $player_id);
 
             $this->moveCardsToLocation($this->gold, 7, "box", "unclaimed", null, $player_id);
@@ -119,6 +116,8 @@ class BatallaDeCoronas extends Table
 
             $this->moveCardsToLocation($this->defense, 5, "box", "unclaimed", null, $player_id);
             $this->moveCardsToLocation($this->defense, 2, "unclaimed", "defense", null, $player_id);
+
+            $this->moveCardsToLocation($this->clergy, 1, "box", "DOOR", null, $player_id);
         }
 
         $this->activeNextPlayer();
@@ -137,9 +136,10 @@ class BatallaDeCoronas extends Table
         $result["dice"] = $this->getDice();
         $result["supply"] = $this->getSupply();
         $result["gems"] = $this->getGemsByLocation();
-        $result["treasure"] = $this->getTreasure();
         $result["attack"] = $this->getAttack();
         $result["defense"] = $this->getDefense();
+        $result["church"] = $this->getChurch();
+        $result["treasure"] = $this->getTreasure();
 
         return $result;
     }
@@ -221,10 +221,33 @@ class BatallaDeCoronas extends Table
         return $defense;
     }
 
+    function getChurch()
+    {
+        $church = array();
+        $players = $this->loadPlayersBasicInfos();
+
+        foreach ($players as $player_id => $player) {
+            foreach ($this->church_houses as $house_label => $house) {
+                $this->warn($house_label);
+                $house_cards = $this->clergy->getCardsInLocation($house_label, $player_id);
+                $this->warn(json_encode($house_cards));
+                $card = array_shift($house_cards);
+
+                if ($card !== null) {
+                    $church[$player_id] = $house_label;
+                    break;
+                }
+            }
+        }
+
+        return $church;
+    }
+
     function getTreasure()
     {
         $treasure = array();
         $players = $this->loadPlayersBasicInfos();
+
         foreach ($players as $player_id => $player) {
             $treasure[$player_id] = $this->gold->countCardInLocation("treasure", $player_id);
         }
