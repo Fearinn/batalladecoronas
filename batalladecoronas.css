@@ -17,6 +17,10 @@
   box-sizing: border-box;
 }
 
+.boc_bg_contain {
+  background-size: contain;
+}
+
 .boc_column_container {
   display: flex;
   flex-direction: column;
@@ -91,18 +95,18 @@
 
 .boc_power {
   position: absolute !important;
-  top: 340px;
-  left: 305px;
-  width: 130px;
+  top: 325px;
+  left: 255px;
+  width: 250px;
 }
 
 .boc_gem:nth-child(2) {
-  margin-left: -16px;
+  margin-left: -32px;
 }
 
 .boc_gem:nth-child(3) {
-  margin-left: -8px;
-  margin-top: -16px;
+  margin-left: -16px;
+  margin-top: -32px;
 }
 
 .boc_attack {

@@ -26,6 +26,8 @@ define([
     constructor: function () {
       console.log("batalladecoronas constructor");
 
+      this.supplyItemSize = 70;
+      this.gemSize = 80;
       this.tokenSize = 50;
 
       this.supply = {};
@@ -61,7 +63,12 @@ define([
       //supply
       const supplyStock = `supplyStock`;
       this[supplyStock] = new ebg.stock();
-      this[supplyStock].create(this, $(`boc_supply`), 90, 90);
+      this[supplyStock].create(
+        this,
+        $(`boc_supply`),
+        this.supplyItemSize,
+        this.supplyItemSize
+      );
       this[supplyStock].image_items_per_row = 6;
       this[supplyStock].autowidth = true;
       this[supplyStock].setSelectionMode(0);
@@ -69,21 +76,21 @@ define([
       this[supplyStock].addItemType(
         "crown",
         0,
-        g_gamethemeurl + "img/elements.png",
+        g_gamethemeurl + "img/supply.png",
         0
       );
 
       this[supplyStock].addItemType(
         "cross",
         1,
-        g_gamethemeurl + "img/elements.png",
+        g_gamethemeurl + "img/supply.png",
         1
       );
 
       this[supplyStock].addItemType(
         "blacksmith",
         2,
-        g_gamethemeurl + "img/elements.png",
+        g_gamethemeurl + "img/supply.png",
         2
       );
 
@@ -106,33 +113,34 @@ define([
         const powerElement = $(`boc_power:${player_id}`);
 
         this[powerStock] = new ebg.stock();
-        this[powerStock].create(this, powerElement, 60, 60);
+        this[powerStock].create(this, powerElement, this.gemSize, this.gemSize);
         this[powerStock].image_items_per_row = 2;
         this[powerStock].centerItems = true;
         this[powerStock].extraClasses = `boc_gem`;
         this[powerStock].setSelectionMode(0);
 
         this[powerStock].addItemType(
-          "purple",
+          "blue",
           0,
           g_gamethemeurl + "img/gems.png",
-          4
+          1
         );
+
         this[powerStock].addItemType(
-          "blue",
+          "purple",
           1,
           g_gamethemeurl + "img/gems.png",
-          5
+          0
         );
 
         const power = this.gems[player_id].power;
 
         if (power == 3) {
-          this[powerStock].addToStockWithId("purple", 1);
+          this[powerStock].addToStockWithId("blue", 1);
         }
 
         for (let i = 1; i <= 2 && i <= power; i++) {
-          this[powerStock].addToStockWithId("blue", 4 - i);
+          this[powerStock].addToStockWithId("purple", 4 - i);
         }
 
         //treasure
@@ -141,7 +149,12 @@ define([
           const treasureElement = $(`boc_treasure$${player_id}:${gold}`);
 
           this[treasureStock] = new ebg.stock();
-          this[treasureStock].create(this, treasureElement, this.tokenSize, this.tokenSize);
+          this[treasureStock].create(
+            this,
+            treasureElement,
+            this.tokenSize,
+            this.tokenSize
+          );
           this[treasureStock].image_items_per_row = 10;
           this[treasureStock].extraClasses = `boc_gold`;
           this[treasureStock].setSelectionMode(0);
@@ -165,7 +178,12 @@ define([
           const swordElement = $(`boc_sword$${player_id}:${sword}`);
 
           this[swordStock] = new ebg.stock();
-          this[swordStock].create(this, swordElement, this.tokenSize, this.tokenSize);
+          this[swordStock].create(
+            this,
+            swordElement,
+            this.tokenSize,
+            this.tokenSize
+          );
           this[swordStock].image_items_per_row = 10;
           this[swordStock].extraClasses = `boc_sword`;
           this[swordStock].setSelectionMode(0);
@@ -189,7 +207,12 @@ define([
           const shieldElement = $(`boc_shield$${player_id}:${shield}`);
 
           this[shieldStock] = new ebg.stock();
-          this[shieldStock].create(this, shieldElement, this.tokenSize, this.tokenSize);
+          this[shieldStock].create(
+            this,
+            shieldElement,
+            this.tokenSize,
+            this.tokenSize
+          );
           this[shieldStock].image_items_per_row = 10;
           this[shieldStock].extraClasses = `boc_shield`;
           this[shieldStock].setSelectionMode(0);
