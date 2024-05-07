@@ -14,7 +14,7 @@
  */
 
 .boc_game_area {
-  --tokenSize: 60px;
+  --tokenSize: 80px;
 }
 
 .boc_game_area *:not(.stockitem) {
@@ -98,7 +98,7 @@
 }
 
 .boc_power {
-  position: absolute !important;
+  position: absolute;
   top: 325px;
   left: 255px;
   width: 250px;
@@ -115,14 +115,14 @@
 
 .boc_attack {
   position: absolute;
-  top: 296px;
-  left: 60px;
+  top: 280px;
+  left: 50px;
   height: 150px;
   width: 215px;
 }
 
 .boc_attack > * {
-  position: absolute !important;
+  position: absolute;
   width: var(--tokenSize);
 }
 
@@ -146,14 +146,14 @@
 
 .boc_defense {
   position: absolute;
-  top: 296px;
-  right: 68px;
+  top: 280px;
+  right: 80px;
   height: 150px;
   width: 215px;
 }
 
 .boc_defense > * {
-  position: absolute !important;
+  position: absolute;
   width: var(--tokenSize);
 }
 
@@ -177,12 +177,12 @@
 
 .boc_church {
   position: absolute;
-  top: 475px;
-  left: 178px;
+  top: 465px;
+  left: 170px;
 }
 
 .boc_church > * {
-  position: absolute !important;
+  position: absolute;
   width: var(--tokenSize);
 }
 
@@ -198,12 +198,11 @@
 
 .boc_treasure {
   position: absolute;
-  top: 580px;
-  left: 68px;
+  top: 565px;
+  left: 56px;
 }
 
 .boc_treasure > * {
-  border-radius: 100%;
   width: var(--tokenSize);
 }
 

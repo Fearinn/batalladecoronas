@@ -28,7 +28,7 @@ define([
 
       this.supplyItemSize = 70;
       this.gemSize = 80;
-      this.tokenSize = 60;
+      this.tokenSize = 80;
 
       this.supply = {};
       this.gems = {};
