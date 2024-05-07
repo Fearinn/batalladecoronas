@@ -28,7 +28,7 @@ define([
 
       this.supplyItemSize = 70;
       this.gemSize = 80;
-      this.tokenSize = 50;
+      this.tokenSize = 60;
 
       this.supply = {};
       this.gems = {};
@@ -163,7 +163,7 @@ define([
             "gold",
             0,
             g_gamethemeurl + "img/tokens.png",
-            7
+            2
           );
         }
 

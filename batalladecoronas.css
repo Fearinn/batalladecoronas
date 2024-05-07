@@ -13,6 +13,10 @@
  *
  */
 
+.boc_game_area {
+  --tokenSize: 60px;
+}
+
 .boc_game_area *:not(.stockitem) {
   box-sizing: border-box;
 }
@@ -111,15 +115,15 @@
 
 .boc_attack {
   position: absolute;
-  top: 300px;
-  left: 64px;
+  top: 296px;
+  left: 60px;
   height: 150px;
   width: 215px;
 }
 
 .boc_attack > * {
   position: absolute !important;
-  width: 50px;
+  width: var(--tokenSize);
 }
 
 .boc_sword_1 {
@@ -142,15 +146,15 @@
 
 .boc_defense {
   position: absolute;
-  top: 300px;
-  right: 64px;
+  top: 296px;
+  right: 68px;
   height: 150px;
   width: 215px;
 }
 
 .boc_defense > * {
   position: absolute !important;
-  width: 50px;
+  width: var(--tokenSize);
 }
 
 .boc_shield_1 {
@@ -173,13 +177,13 @@
 
 .boc_treasure {
   position: absolute;
-  top: 585px;
-  left: 72px;
+  top: 580px;
+  left: 68px;
 }
 
 .boc_treasure > * {
   border-radius: 100%;
-  width: 50px;
+  width: var(--tokenSize);
 }
 
 .boc_treasure_-1 {
