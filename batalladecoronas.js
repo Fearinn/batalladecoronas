@@ -29,6 +29,7 @@ define([
       this.supplyItemSize = 70;
       this.gemSize = 80;
       this.tokenSize = 80;
+      this.dragonSize = 80;
 
       this.supply = {};
       this.gems = {};
@@ -36,6 +37,7 @@ define([
       this.defense = {};
       this.church = {};
       this.treasure = {};
+      this.dragon = {};
     },
 
     setup: function (gamedatas) {
@@ -47,6 +49,7 @@ define([
       this.defense = gamedatas.defense;
       this.church = gamedatas.church;
       this.treasure = gamedatas.treasure;
+      this.dragon = gamedatas.dragon;
 
       //Setting up player boards
       for (const player_id in gamedatas.players) {
@@ -177,35 +180,6 @@ define([
         const initialClergy = $(`boc_clergy$${player_id}:DOOR`);
         this[activeClergyStock].addToStock("clergy", initialClergy);
 
-        //treasure
-        for (let gold = -1; gold <= 7; gold++) {
-          const treasureStock = `treasureStock$${player_id}:${gold}`;
-          const treasureElement = $(`boc_treasure$${player_id}:${gold}`);
-
-          this[treasureStock] = new ebg.stock();
-          this[treasureStock].create(
-            this,
-            treasureElement,
-            this.tokenSize,
-            this.tokenSize
-          );
-          this[treasureStock].image_items_per_row = 3;
-          this[treasureStock].extraClasses = `boc_gold`;
-          this[treasureStock].setSelectionMode(0);
-
-          this[treasureStock].addItemType(
-            "gold",
-            0,
-            g_gamethemeurl + "img/tokens.png",
-            2
-          );
-        }
-
-        const goldNbr = this.treasure[player_id];
-        const treasureStock = `treasureStock$${player_id}:${goldNbr}`;
-        const treasureInitial = $(`boc_treasure$${player_id}:0`);
-        this[treasureStock].addToStock("gold", treasureInitial);
-
         //attack
         for (let sword = 0; sword <= 5; sword++) {
           const swordStock = `swordStock$${player_id}:${sword}`;
@@ -263,6 +237,64 @@ define([
         const shieldStock = `shieldStock$${player_id}:${shieldNbr}`;
         const shieldInitial = $(`boc_shield$${player_id}:2`);
         this[shieldStock].addToStock("shield", shieldInitial);
+
+        //treasure
+        for (let gold = -1; gold <= 7; gold++) {
+          const treasureStock = `treasureStock$${player_id}:${gold}`;
+          const treasureElement = $(`boc_treasure$${player_id}:${gold}`);
+
+          this[treasureStock] = new ebg.stock();
+          this[treasureStock].create(
+            this,
+            treasureElement,
+            this.tokenSize,
+            this.tokenSize
+          );
+          this[treasureStock].image_items_per_row = 3;
+          this[treasureStock].extraClasses = `boc_gold`;
+          this[treasureStock].setSelectionMode(0);
+
+          this[treasureStock].addItemType(
+            "gold",
+            0,
+            g_gamethemeurl + "img/tokens.png",
+            2
+          );
+        }
+
+        const goldNbr = this.treasure[player_id];
+        const treasureStock = `treasureStock$${player_id}:${goldNbr}`;
+        const treasureInitial = $(`boc_treasure$${player_id}:0`);
+        this[treasureStock].addToStock("gold", treasureInitial);
+
+        //dragon
+        for (let dragonLevel = 0; dragonLevel <= 5; dragonLevel++) {
+          const dragonStock = `dragonStock$${player_id}:${dragonLevel}`;
+          const dragonElement = $(`boc_dragon$${player_id}:${dragonLevel}`);
+
+          this[dragonStock] = new ebg.stock();
+          this[dragonStock].create(
+            this,
+            dragonElement,
+            this.dragonSize,
+            this.dragonSize
+          );
+          this[dragonStock].image_items_per_row = 1;
+          this[dragonStock].extraClasses = `boc_bg_contain boc_dragon_level`;
+          this[dragonStock].setSelectionMode(0);
+
+          this[dragonStock].addItemType(
+            "dragon",
+            0,
+            g_gamethemeurl + "img/dragon.png",
+            0
+          );
+        }
+
+        const currentDragon = this.dragon[player_id];
+        const currentDragonStock = `dragonStock$${player_id}:${currentDragon}`;
+        const initialDragon = $(`boc_dragon$${player_id}:0`);
+        this[currentDragonStock].addToStock("dragon", initialDragon);
       }
 
       this.setupNotifications();

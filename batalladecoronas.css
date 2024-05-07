@@ -203,50 +203,69 @@
 }
 
 .boc_treasure > * {
+  position: absolute;
   width: var(--tokenSize);
 }
 
 .boc_treasure_-1 {
-  position: absolute;
   top: 16px;
 }
 .boc_treasure_0 {
-  position: absolute;
   top: 8px;
   left: 64px;
 }
 .boc_treasure_1 {
-  position: absolute;
   top: 4px;
   left: calc((64px + 0.5px * 1) * 2);
 }
 .boc_treasure_2 {
-  position: absolute;
   top: 4px;
   left: calc((64px + 0.5px * 2) * 3);
 }
 .boc_treasure_3 {
-  position: absolute;
   left: calc((64px + 0.5px * 3) * 4);
 }
 .boc_treasure_4 {
-  position: absolute;
   left: calc((64px + 0.5px * 4) * 5);
 }
 .boc_treasure_5 {
-  position: absolute;
   top: 4px;
   left: calc((64px + 0.5px * 5) * 6);
 }
 .boc_treasure_6 {
-  position: absolute;
   top: 4px;
   left: calc((64px + 0.5px * 6) * 7 - 4px);
 }
 .boc_treasure_7 {
-  position: absolute;
   top: 16px;
   left: calc((64px + 0.5px * 6) * 8 - 8px);
+}
+
+.boc_dragon {
+  position: absolute;
+  top: 720px;
+  left: 90px;
+}
+
+.boc_dragon > * {
+  position: absolute !important;
+  width: 80px;
+}
+
+.boc_dragon_1 {
+  left: 85px;
+}
+.boc_dragon_2 {
+  left: 170px;
+}
+.boc_dragon_3 {
+  left: 252px;
+}
+.boc_dragon_4 {
+  left: 335px;
+}
+.boc_dragon_5 {
+  left: 430px;
 }
 
 /* animations */

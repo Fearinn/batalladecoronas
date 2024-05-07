@@ -69,7 +69,14 @@
           <div id="boc_treasure${MY_ID}:6" class="boc_treasure_6"></div>
           <div id="boc_treasure${MY_ID}:7" class="boc_treasure_7"></div>
         </div>
-        <div id="boc_dragon:{MY_ID}" class="boc_dragon"></div>
+        <div id="boc_dragon:{MY_ID}" class="boc_dragon">
+          <div id="boc_dragon${MY_ID}:0" class="boc_dragon_0"></div>
+          <div id="boc_dragon${MY_ID}:1" class="boc_dragon_1"></div>
+          <div id="boc_dragon${MY_ID}:2" class="boc_dragon_2"></div>
+          <div id="boc_dragon${MY_ID}:3" class="boc_dragon_3"></div>
+          <div id="boc_dragon${MY_ID}:4" class="boc_dragon_4"></div>
+          <div id="boc_dragon${MY_ID}:5" class="boc_dragon_5"></div>
+        </div>
       </div>
     </div>
     <!-- END mycastleblock -->
@@ -126,7 +133,14 @@
           <div id="boc_treasure${PLAYER_ID}:6" class="boc_treasure_6"></div>
           <div id="boc_treasure${PLAYER_ID}:7" class="boc_treasure_7"></div>
         </div>
-        <div id="boc_dragon:{PLAYER_ID}" class="boc_dragon"></div>
+        <div id="boc_dragon:{PLAYER_ID}" class="boc_dragon">
+          <div id="boc_dragon${PLAYER_ID}:0" class="boc_dragon_0"></div>
+          <div id="boc_dragon${PLAYER_ID}:1" class="boc_dragon_1"></div>
+          <div id="boc_dragon${PLAYER_ID}:2" class="boc_dragon_2"></div>
+          <div id="boc_dragon${PLAYER_ID}:3" class="boc_dragon_3"></div>
+          <div id="boc_dragon${PLAYER_ID}:4" class="boc_dragon_4"></div>
+          <div id="boc_dragon${PLAYER_ID}:5" class="boc_dragon_5"></div>
+        </div>
       </div>
     </div>
     <!-- END othercastleblock -->

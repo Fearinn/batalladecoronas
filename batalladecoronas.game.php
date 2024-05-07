@@ -56,6 +56,9 @@ class BatallaDeCoronas extends Table
 
         $this->gold = $this->getNew("module.common.deck");
         $this->gold->init("gold");
+
+        $this->dragon = $this->getNew("module.common.deck");
+        $this->dragon->init("dragon");
     }
 
     protected function getGameName()
@@ -106,6 +109,8 @@ class BatallaDeCoronas extends Table
 
         $this->clergy->createCards(array(array("type" => "clergy", "type_arg" => 0, "nbr" => 2)), "box");
 
+        $this->dragon->createCards(array(array("type" => "dragon", "type_arg" => 0, "nbr" => 10)), "box");
+
         foreach ($players as $player_id => $player) {
             $this->moveCardsToLocation($this->gems, 3, "box", "power", null, $player_id);
 
@@ -118,6 +123,8 @@ class BatallaDeCoronas extends Table
             $this->moveCardsToLocation($this->defense, 2, "unclaimed", "defense", null, $player_id);
 
             $this->moveCardsToLocation($this->clergy, 1, "box", "DOOR", null, $player_id);
+
+            $this->moveCardsToLocation($this->dragon, 5, "box", "unclaimed", null, $player_id);
         }
 
         $this->activeNextPlayer();
@@ -140,6 +147,7 @@ class BatallaDeCoronas extends Table
         $result["defense"] = $this->getDefense();
         $result["church"] = $this->getChurch();
         $result["treasure"] = $this->getTreasure();
+        $result["dragon"] = $this->getDragon();
 
         return $result;
     }
@@ -156,8 +164,14 @@ class BatallaDeCoronas extends Table
     //////////// Utility functions
     //////////// 
 
-    function moveCardsToLocation($deck, $moved_nbr, $from_location, $to_location, $from_location_arg = null, $to_location_arg = null)
-    {
+    function moveCardsToLocation(
+        $deck,
+        $moved_nbr,
+        $from_location,
+        $to_location,
+        $from_location_arg = null,
+        $to_location_arg = null
+    ) {
         $location_cards = $deck->getCardsInLocation($from_location, $from_location_arg);
 
         $moved_cards = array_slice($location_cards, 0, $moved_nbr, true);
@@ -253,6 +267,18 @@ class BatallaDeCoronas extends Table
         }
 
         return $treasure;
+    }
+
+    function getDragon()
+    {
+        $dragon = array();
+        $players = $this->loadPlayersBasicInfos();
+
+        foreach ($players as $player_id => $player_id) {
+            $dragon[$player_id] = $this->dragon->countCardInLocation("dragon", $player_id);
+        }
+
+        return $dragon;
     }
 
     //////////////////////////////////////////////////////////////////////////////
