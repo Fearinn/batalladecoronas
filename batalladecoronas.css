@@ -105,15 +105,77 @@
   margin-top: -16px;
 }
 
+.boc_attack {
+  position: absolute;
+  top: 300px;
+  left: 64px;
+  height: 150px;
+  width: 215px;
+}
+
+.boc_attack > * {
+  position: absolute !important;
+  width: 50px;
+}
+
+.boc_sword_1 {
+  left: 80px;
+}
+.boc_sword_2 {
+  left: 160px;
+}
+.boc_sword_3 {
+  top: 70px;
+}
+.boc_sword_4 {
+  top: 70px;
+  left: 80px;
+}
+.boc_sword_5 {
+  top: 70px;
+  left: 160px;
+}
+
+.boc_defense {
+  position: absolute;
+  top: 300px;
+  right: 64px;
+  height: 150px;
+  width: 215px;
+}
+
+.boc_defense > * {
+  position: absolute !important;
+  width: 50px;
+}
+
+.boc_shield_1 {
+  left: 80px;
+}
+.boc_shield_2 {
+  left: 160px;
+}
+.boc_shield_3 {
+  top: 70px;
+}
+.boc_shield_4 {
+  top: 70px;
+  left: 80px;
+}
+.boc_shield_5 {
+  top: 70px;
+  left: 160px;
+}
+
 .boc_treasure {
   position: absolute;
-  top: 580px;
-  left: 66px;
+  top: 585px;
+  left: 72px;
 }
 
 .boc_treasure > * {
   border-radius: 100%;
-  width: 60px;
+  width: 50px;
 }
 
 .boc_treasure_-1 {

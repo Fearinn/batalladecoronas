@@ -33,9 +33,25 @@
       </h3>
       <div id="boc_castle" class="boc_castle">
         <div id="boc_council:{MY_ID}" class="boc_council"></div>
-        <div id="boc_defense:{MY_ID}" class="boc_defense"></div>
+        <div id="boc_defense:{MY_ID}" class="boc_defense">
+          <div id="boc_shield${MY_ID}:0" class="boc_shield_0"></div>
+          <div id="boc_shield${MY_ID}:1" class="boc_shield_1"></div>
+          <div id="boc_shield${MY_ID}:2" class="boc_shield_2"></div>
+          <div id="boc_shield${MY_ID}:3" class="boc_shield_3"></div>
+          <div id="boc_shield${MY_ID}:4" class="boc_shield_4"></div>
+          <div id="boc_shield${MY_ID}:5" class="boc_shield_5"></div>
+          <div id="boc_shield${MY_ID}:" class="boc_shield_6"></div>
+        </div>
         <div id="boc_power:{MY_ID}" class="boc_power"></div>
-        <div id="boc_attack:{MY_ID}" class="boc_attack"></div>
+        <div id="boc_attack:{MY_ID}" class="boc_attack">
+          <div id="boc_sword${MY_ID}:0" class="boc_sword_0"></div>
+          <div id="boc_sword${MY_ID}:1" class="boc_sword_1"></div>
+          <div id="boc_sword${MY_ID}:2" class="boc_sword_2"></div>
+          <div id="boc_sword${MY_ID}:3" class="boc_sword_3"></div>
+          <div id="boc_sword${MY_ID}:4" class="boc_sword_4"></div>
+          <div id="boc_sword${MY_ID}:5" class="boc_sword_5"></div>
+          <div id="boc_sword${MY_ID}:6" class="boc_sword_6"></div>
+        </div>
         <div id="boc_church:{MY_ID}" class="boc_church"></div>
         <div id="boc_treasure:{MY_ID}" class="boc_treasure">
           <div id="boc_treasure${MY_ID}:-1" class="boc_treasure_-1"></div>
@@ -66,9 +82,25 @@
       </h3>
       <div id="boc_castle" class="boc_castle">
         <div id="boc_council:{PLAYER_ID}" class="boc_council"></div>
-        <div id="boc_defense:{PLAYER_ID}" class="boc_defense"></div>
+        <div id="boc_defense:{PLAYER_ID}" class="boc_defense">
+          <div id="boc_shield${PLAYER_ID}:0" class="boc_shield_0"></div>
+          <div id="boc_shield${PLAYER_ID}:1" class="boc_shield_1"></div>
+          <div id="boc_shield${PLAYER_ID}:2" class="boc_shield_2"></div>
+          <div id="boc_shield${PLAYER_ID}:3" class="boc_shield_3"></div>
+          <div id="boc_shield${PLAYER_ID}:4" class="boc_shield_4"></div>
+          <div id="boc_shield${PLAYER_ID}:5" class="boc_shield_5"></div>
+          <div id="boc_shield${PLAYER_ID}:" class="boc_shield_6"></div>
+        </div>
         <div id="boc_power:{PLAYER_ID}" class="boc_power"></div>
-        <div id="boc_attack:{PLAYER_ID}" class="boc_attack"></div>
+        <div id="boc_attack:{PLAYER_ID}" class="boc_attack">
+          <div id="boc_sword${PLAYER_ID}:0" class="boc_sword_0"></div>
+          <div id="boc_sword${PLAYER_ID}:1" class="boc_sword_1"></div>
+          <div id="boc_sword${PLAYER_ID}:2" class="boc_sword_2"></div>
+          <div id="boc_sword${PLAYER_ID}:3" class="boc_sword_3"></div>
+          <div id="boc_sword${PLAYER_ID}:4" class="boc_sword_4"></div>
+          <div id="boc_sword${PLAYER_ID}:5" class="boc_sword_5"></div>
+          <div id="boc_sword${PLAYER_ID}:" class="boc_sword_6"></div>
+        </div>
         <div id="boc_church:{PLAYER_ID}" class="boc_church"></div>
         <div id="boc_treasure:{PLAYER_ID}" class="boc_treasure">
           <div id="boc_treasure${PLAYER_ID}:-1" class="boc_treasure_-1"></div>

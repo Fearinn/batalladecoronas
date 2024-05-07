@@ -26,6 +26,8 @@ define([
     constructor: function () {
       console.log("batalladecoronas constructor");
 
+      this.tokenSize = 50;
+
       this.supply = {};
       this.gems = {};
       this.treasure = {};
@@ -37,6 +39,11 @@ define([
       this.supply = gamedatas.supply;
       this.gems = gamedatas.gems;
       this.treasure = gamedatas.treasure;
+      this.attack = gamedatas.attack;
+      this.defense = gamedatas.defense;
+
+      console.log(this.attack, this.defense, "attack and defense");
+      console.log(this.treasure, "treasure");
 
       //Setting up player boards
       for (const player_id in gamedatas.players) {
@@ -129,12 +136,12 @@ define([
         }
 
         //treasure
-        for (count = -1; count <= 7; count++) {
-          const treasureStock = `treasureStock$${player_id}:${count}`;
-          const treasureElement = $(`boc_treasure$${player_id}:${count}`);
+        for (gold = -1; gold <= 7; gold++) {
+          const treasureStock = `treasureStock$${player_id}:${gold}`;
+          const treasureElement = $(`boc_treasure$${player_id}:${gold}`);
 
           this[treasureStock] = new ebg.stock();
-          this[treasureStock].create(this, treasureElement, 60, 60);
+          this[treasureStock].create(this, treasureElement, this.tokenSize, this.tokenSize);
           this[treasureStock].image_items_per_row = 10;
           this[treasureStock].extraClasses = `boc_gold`;
           this[treasureStock].setSelectionMode(0);
@@ -143,14 +150,62 @@ define([
             "gold",
             0,
             g_gamethemeurl + "img/tokens.png",
-            6
+            7
           );
         }
 
         const goldNbr = this.treasure[player_id];
-        const stock = `treasureStock$${player_id}:${goldNbr}`;
-        const originElement = $(`boc_treasure$${player_id}:0`);
-        this[stock].addToStock("gold", originElement);
+        const treasureStock = `treasureStock$${player_id}:${goldNbr}`;
+        const treasureInitial = $(`boc_treasure$${player_id}:0`);
+        this[treasureStock].addToStock("gold", treasureInitial);
+
+        //attack
+        for (let sword = 0; sword <= 5; sword++) {
+          const swordStock = `swordStock$${player_id}:${sword}`;
+          const swordElement = $(`boc_sword$${player_id}:${sword}`);
+
+          this[swordStock] = new ebg.stock();
+          this[swordStock].create(this, swordElement, this.tokenSize, this.tokenSize);
+          this[swordStock].image_items_per_row = 10;
+          this[swordStock].extraClasses = `boc_sword`;
+          this[swordStock].setSelectionMode(0);
+
+          this[swordStock].addItemType(
+            "sword",
+            0,
+            g_gamethemeurl + "img/tokens.png",
+            0
+          );
+        }
+
+        const swordNbr = this.attack[player_id];
+        const swordStock = `swordStock$${player_id}:${swordNbr}`;
+        const swordInitial = $(`boc_sword$${player_id}:2`);
+        this[swordStock].addToStock("sword", swordInitial);
+
+        //defense
+        for (let shield = 0; shield <= 5; shield++) {
+          const shieldStock = `shieldStock$${player_id}:${shield}`;
+          const shieldElement = $(`boc_shield$${player_id}:${shield}`);
+
+          this[shieldStock] = new ebg.stock();
+          this[shieldStock].create(this, shieldElement, this.tokenSize, this.tokenSize);
+          this[shieldStock].image_items_per_row = 10;
+          this[shieldStock].extraClasses = `boc_shield`;
+          this[shieldStock].setSelectionMode(0);
+
+          this[shieldStock].addItemType(
+            "shield",
+            0,
+            g_gamethemeurl + "img/tokens.png",
+            0
+          );
+        }
+
+        const shieldNbr = this.defense[player_id];
+        const shieldStock = `shieldStock$${player_id}:${shieldNbr}`;
+        const shieldInitial = $(`boc_shield$${player_id}:2`);
+        this[shieldStock].addToStock("shield", shieldInitial);
       }
 
       this.setupNotifications();

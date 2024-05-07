@@ -47,6 +47,12 @@ class BatallaDeCoronas extends Table
 
         $this->gold = $this->getNew("module.common.deck");
         $this->gold->init("gold");
+
+        $this->attack = $this->getNew("module.common.deck");
+        $this->attack->init("attack");
+
+        $this->defense = $this->getNew("module.common.deck");
+        $this->defense->init("defense");
     }
 
     protected function getGameName()
@@ -92,9 +98,27 @@ class BatallaDeCoronas extends Table
 
         $this->gold->createCards(array(array("type" => "gold", "type_arg" => 0, "nbr" => 14)), "box");
 
+        $this->attack->createCards(array(array("type" => "attack", "type_arg" => 0, "nbr" => 10)), "box");
+
+        $this->defense->createCards(array(array("type" => "defense", "type_arg" => 0, "nbr" => 10)), "box");
+
         foreach ($players as $player_id => $player) {
-            $this->gems->pickCardsForLocation(3, "box", "power", $player_id);
-            $this->gold->pickCardsForLocation(7, "box", "vault", $player_id);
+            // $this->gems->pickCardsForLocation(3, "box", "power", $player_id);
+
+            // $this->gold->pickCardsForLocation(7, "box", "unclaimed", $player_id);
+
+            // $this->attack->(2, "unclaimed", "attack", $player_id);
+            // $this->defense->(2, "unclaimed", "defense", $player_id);
+
+            $this->moveCardsToLocation($this->gems, 3, "box", "power", null, $player_id);
+
+            $this->moveCardsToLocation($this->gold, 7, "box", "unclaimed", null, $player_id);
+
+            $this->moveCardsToLocation($this->attack, 5, "box", "unclaimed", null, $player_id);
+            $this->moveCardsToLocation($this->attack, 2, "unclaimed", "attack", null, $player_id);
+
+            $this->moveCardsToLocation($this->defense, 5, "box", "unclaimed", null, $player_id);
+            $this->moveCardsToLocation($this->defense, 2, "unclaimed", "defense", null, $player_id);
         }
 
         $this->activeNextPlayer();
@@ -114,6 +138,8 @@ class BatallaDeCoronas extends Table
         $result["supply"] = $this->getSupply();
         $result["gems"] = $this->getGemsByLocation();
         $result["treasure"] = $this->getTreasure();
+        $result["attack"] = $this->getAttack();
+        $result["defense"] = $this->getDefense();
 
         return $result;
     }
@@ -130,6 +156,18 @@ class BatallaDeCoronas extends Table
     //////////// Utility functions
     //////////// 
 
+    function moveCardsToLocation($deck, $moved_nbr, $from_location, $to_location, $from_location_arg = null, $to_location_arg = null)
+    {
+        $location_cards = $deck->getCardsInLocation($from_location, $from_location_arg);
+
+        $moved_cards = array_slice($location_cards, 0, $moved_nbr, true);
+        $moved_ids = array_keys($moved_cards);
+
+        $deck->moveCards($moved_ids, $to_location, $to_location_arg);
+
+        return $moved_cards;
+    }
+
     function getDice()
     {
         return array(
@@ -141,9 +179,9 @@ class BatallaDeCoronas extends Table
     function getSupply()
     {
         return array(
-            "crown" => $this->crown->countCardsInLocation("supply") > 0,
-            "cross" => $this->cross->countCardsInLocation("supply") > 0,
-            "blacksmith" => $this->blacksmith->countCardsInLocation("supply") > 0
+            "crown" => $this->crown->countCardInLocation("supply") > 0,
+            "cross" => $this->cross->countCardInLocation("supply") > 0,
+            "blacksmith" => $this->blacksmith->countCardInLocation("supply") > 0
         );
     }
 
@@ -152,11 +190,35 @@ class BatallaDeCoronas extends Table
         $gem_nbr = array();
         $players = $this->loadPlayersBasicInfos();
         foreach ($players as $player_id => $player) {
-            $gem_nbr[$player_id]["power"] = $this->gems->countCardsInLocation("power", $player_id);
-            $gem_nbr[$player_id]["treasure"] = $this->gems->countCardsInLocation("treasure", $player_id);
+            $gem_nbr[$player_id]["power"] = $this->gems->countCardInLocation("power", $player_id);
+            $gem_nbr[$player_id]["treasure"] = $this->gems->countCardInLocation("treasure", $player_id);
         }
 
         return $gem_nbr;
+    }
+
+    function getAttack()
+    {
+        $attack = array();
+        $players = $this->loadPlayersBasicInfos();
+
+        foreach ($players as $player_id => $player) {
+            $attack[$player_id] = $this->attack->countCardInLocation("attack", $player_id);
+        }
+
+        return $attack;
+    }
+
+    function getDefense()
+    {
+        $defense = array();
+        $players = $this->loadPlayersBasicInfos();
+
+        foreach ($players as $player_id => $player) {
+            $defense[$player_id] = $this->defense->countCardInLocation("defense", $player_id);
+        }
+
+        return $defense;
     }
 
     function getTreasure()
@@ -164,7 +226,7 @@ class BatallaDeCoronas extends Table
         $treasure = array();
         $players = $this->loadPlayersBasicInfos();
         foreach ($players as $player_id => $player) {
-            $treasure[$player_id] = $this->gold->countCardsInLocation("treasure", $player_id);
+            $treasure[$player_id] = $this->gold->countCardInLocation("treasure", $player_id);
         }
 
         return $treasure;
