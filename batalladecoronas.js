@@ -27,11 +27,13 @@ define([
       console.log("batalladecoronas constructor");
 
       this.supplyItemSize = 70;
+      this.counselorSize = 80;
       this.gemSize = 80;
       this.tokenSize = 80;
       this.dragonSize = 80;
 
       this.supply = {};
+      this.counselorsInfo = {};
       this.gems = {};
       this.attack = {};
       this.defense = {};
@@ -44,6 +46,7 @@ define([
       console.log("Starting game setup");
 
       this.supply = gamedatas.supply;
+      this.counselorsInfo = gamedatas.counselorsInfo;
       this.gems = gamedatas.gems;
       this.attack = gamedatas.attack;
       this.defense = gamedatas.defense;
@@ -109,6 +112,39 @@ define([
         const dieElement = $(`boc_die:${die}`);
 
         dojo.addClass(dieElement, `boc_face_${value}`);
+      }
+
+      //inactive council
+      const inactiveCouncilStock = `inactiveCouncilStock`;
+      const inactiveCouncilElement = $("boc_inactiveCouncil");
+
+      this[inactiveCouncilStock] = new ebg.stock();
+      this[inactiveCouncilStock].create(
+        this,
+        inactiveCouncilElement,
+        this.counselorSize,
+        this.counselorSize
+      );
+      this[inactiveCouncilStock].image_items_per_row = 6;
+      this[inactiveCouncilStock].centerItems = true;
+      this[inactiveCouncilStock].setSelectionMode(0);
+
+      for (const counselorId in this.counselorsInfo) {
+        const counselor = this.counselorsInfo[counselorId];
+        const spritePos = counselor.spritePos;
+        const counselorName = counselor.name;
+
+        this[inactiveCouncilStock].addItemType(
+          counselorId,
+          0,
+          g_gamethemeurl + "img/counselors.png",
+          spritePos
+        );
+
+        this[inactiveCouncilStock].addToStockWithId(counselorId, counselorId);
+
+        const counselorElement = `boc_inactiveCouncil_item_${counselorId}`;
+        this.addTooltip(counselorElement, counselorName, "");
       }
 
       for (const player_id in gamedatas.players) {

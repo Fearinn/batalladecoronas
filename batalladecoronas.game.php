@@ -140,6 +140,7 @@ class BatallaDeCoronas extends Table
 
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result["players"] = $this->getCollectionFromDb($sql);
+        $result["counselorsInfo"] = $this->counselors_info;
         $result["dice"] = $this->getDice();
         $result["supply"] = $this->getSupply();
         $result["gems"] = $this->getGemsByLocation();

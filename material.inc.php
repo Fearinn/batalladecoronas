@@ -19,6 +19,38 @@
  * are available everywhere in your game logic code.
  *
  */
+$this->counselors_info = array(
+  1 => array(
+    "name" => clienttranslate("Militia Commander"),
+    "color" => "blue",
+    "spritePos" => 0
+  ),
+  2 => array(
+    "name" => clienttranslate("Master of Coin"),
+    "color" => "yellow",
+    "spritePos" => 1
+  ),
+  3 => array(
+    "name" => clienttranslate("Sorcerer"),
+    "color" => "red",
+    "spritePos" => 2
+  ),
+  4 => array(
+    "name" => clienttranslate("Noble"),
+    "color" => "purple",
+    "spritePos" => 3
+  ),
+  5 => array(
+    "name" => clienttranslate("Smith"),
+    "color" => "black",
+    "spritePos" => 4
+  ),
+  6 => array(
+    "name" => clienttranslate("Priest"),
+    "color" => "white",
+    "spritePos" => 5
+  )
+);
 
 $this->church_houses = array(
   "DOOR" => array(),

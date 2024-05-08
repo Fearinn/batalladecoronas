@@ -10,19 +10,20 @@
 -------
 -->
 
-<div id="boc_game_area" class="boc_game_area">
-  <div id="boc_supply-dice" class="boc_row_container boc_supply-dice">
-    <div id="boc_dice" class="boc_row_container boc_dice">
+<div id="boc_gameArea" class="boc_gameArea">
+  <div id="boc_supply-dice" class="boc_rowContainer boc_supply-dice">
+    <div id="boc_dice" class="boc_rowContainer boc_dice">
       <div id="boc_die:1" class="boc_die boc_die_1"></div>
       <div id="boc_die:2" class="boc_die boc_die_2"></div>
     </div>
     <div id="boc_supply" class="boc_supply"></div>
   </div>
+  <div id="boc_inactiveCouncil" class="boc_inactiveCouncil"></div>
   <div id="boc_castles" class="boc_castles">
     <!-- BEGIN mycastleblock -->
     <div
-      id="boc_castle_wrap:{MY_ID}"
-      class="column_container whiteblock boc_castle_wrap"
+      id="boc_castleWrapper:{MY_ID}"
+      class="columnContainer whiteblock boc_castleWrapper"
     >
       <h3
         id="boc_castle_title:{MY_ID}"
@@ -82,8 +83,8 @@
     <!-- END mycastleblock -->
     <!-- BEGIN othercastleblock -->
     <div
-      id="boc_castle_wrap:{PLAYER_ID}"
-      class="column_container whiteblock boc_castle_wrap"
+      id="boc_castleWrapper:{PLAYER_ID}"
+      class="columnContainer whiteblock boc_castleWrapper"
     >
       <h3
         id="boc_castle_title:{PLAYER_ID}"
