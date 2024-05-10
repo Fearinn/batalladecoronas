@@ -27,7 +27,7 @@ define([
       console.log("batalladecoronas constructor");
 
       this.supplyItemSize = 70;
-      this.counselorSize = 80;
+      this.counselorSize = 100;
       this.gemSize = 80;
       this.tokenSize = 80;
       this.dragonSize = 80;
@@ -126,6 +126,7 @@ define([
         this.counselorSize
       );
       this[inactiveCouncilStock].image_items_per_row = 6;
+      this[inactiveCouncilStock].autowidth = true;
       this[inactiveCouncilStock].centerItems = true;
       this[inactiveCouncilStock].setSelectionMode(0);
 
