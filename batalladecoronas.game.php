@@ -42,6 +42,9 @@ class BatallaDeCoronas extends Table
         $this->blacksmith = $this->getNew("module.common.deck");
         $this->blacksmith->init("blacksmith");
 
+        $this->council = $this->getNew("module.common.deck");
+        $this->council->init("counselor");
+
         $this->gems = $this->getNew("module.common.deck");
         $this->gems->init("gem");
 
@@ -112,6 +115,19 @@ class BatallaDeCoronas extends Table
         $this->dragon->createCards(array(array("type" => "dragon", "type_arg" => 0, "nbr" => 10)), "box");
 
         foreach ($players as $player_id => $player) {
+            $counselors = array();
+            foreach ($this->counselors_info as $counselor_id => $counselor) {
+                $card = array(
+                    "type" => $counselor["name"],
+                    "type_arg" => $counselor_id,
+                    "nbr" => 1
+                );
+
+                $counselors[] = $card;
+            }
+            $this->council->createCards($counselors, "box");
+            $this->council->moveAllCardsInLocation("box", "inactive", null, $player_id);
+
             $this->moveCardsToLocation($this->gems, 3, "box", "power", null, $player_id);
 
             $this->moveCardsToLocation($this->gold, 7, "box", "unclaimed", null, $player_id);
@@ -143,6 +159,7 @@ class BatallaDeCoronas extends Table
         $result["counselorsInfo"] = $this->counselors_info;
         $result["dice"] = $this->getDice();
         $result["supply"] = $this->getSupply();
+        $result["inactiveCouncil"] = $this->getInactiveCouncil();
         $result["gems"] = $this->getGemsByLocation();
         $result["attack"] = $this->getAttack();
         $result["defense"] = $this->getDefense();
@@ -200,6 +217,25 @@ class BatallaDeCoronas extends Table
         );
     }
 
+    function getInactiveCouncil()
+    {
+        $players = $this->loadPlayersBasicInfos();
+
+        $council = array();
+
+        foreach ($players as $player_id => $player) {
+            $council[$player_id] = array();
+            $location_cards = $this->council->getCardsInLocation("inactive", $player_id);
+
+            foreach ($location_cards as $card) {
+                $counselor_id = $card["type_arg"];
+                $council[$player_id][$counselor_id] = $card;
+            }
+        }
+
+        return $council;
+    }
+
     function getGemsByLocation()
     {
         $gem_nbr = array();
@@ -243,9 +279,7 @@ class BatallaDeCoronas extends Table
 
         foreach ($players as $player_id => $player) {
             foreach ($this->church_houses as $house_label => $house) {
-                $this->warn($house_label);
                 $house_cards = $this->clergy->getCardsInLocation($house_label, $player_id);
-                $this->warn(json_encode($house_cards));
                 $card = array_shift($house_cards);
 
                 if ($card !== null) {

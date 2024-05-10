@@ -34,6 +34,7 @@ define([
 
       this.supply = {};
       this.counselorsInfo = {};
+      this.inactiveCouncil = {};
       this.gems = {};
       this.attack = {};
       this.defense = {};
@@ -47,6 +48,7 @@ define([
 
       this.supply = gamedatas.supply;
       this.counselorsInfo = gamedatas.counselorsInfo;
+      this.inactiveCouncil = gamedatas.inactiveCouncil;
       this.gems = gamedatas.gems;
       this.attack = gamedatas.attack;
       this.defense = gamedatas.defense;
@@ -131,6 +133,11 @@ define([
       this[inactiveCouncilStock].setSelectionMode(0);
 
       for (const counselorId in this.counselorsInfo) {
+        const player_id = this.player_id;
+        if (!this.inactiveCouncil[player_id][counselorId]) {
+          continue;
+        }
+
         const counselor = this.counselorsInfo[counselorId];
         const spritePos = counselor.spritePos;
         const counselorName = counselor.name;
@@ -212,7 +219,6 @@ define([
         });
 
         const activeHouse = this.church[player_id];
-        console.log(this.church);
         const activeClergyStock = `clergyStock$${player_id}:${activeHouse}`;
         const initialClergy = $(`boc_clergy$${player_id}:DOOR`);
         this[activeClergyStock].addToStock("clergy", initialClergy);
