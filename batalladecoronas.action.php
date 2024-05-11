@@ -43,4 +43,20 @@ class action_batalladecoronas extends APP_GameAction
     $this->game->rollDice();
     $this->ajaxResponse();
   }
+
+  public function decideDice()
+  {
+    $this->setAjaxMode();
+    $die = $this->getArg("die", AT_enum, true, null, array(1, 2));
+    $this->game->decideDice($die);
+    $this->ajaxResponse();
+  }
+
+  // public function pickChair()
+  // {
+  //   $this->setAjaxMode();
+  //   $counselor_id = $this->getArg("counselor_id", AT_enum, true, null, range(1, 6));
+  //   $this->game->pickChair($counselor_id);
+  //   $this->ajaxResponse();
+  // }
 }

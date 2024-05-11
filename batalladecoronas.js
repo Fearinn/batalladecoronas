@@ -340,6 +340,11 @@ define([
         this[currentDragonStock].addToStock("dragon", initialDragon);
       }
 
+      //connections
+      dojo.query(".boc_die").connect("onclick", this, (event) => {
+        this.onDecideDice(event);
+      });
+
       this.setupNotifications();
 
       console.log("Ending game setup");
@@ -353,24 +358,19 @@ define([
           this.addActionButton("boc_rollDice", _("Roll dice"), "onRollDice");
         }
       }
+
+      if (stateName === "decisionPhase") {
+        if (this.isCurrentPlayerActive()) {
+          dojo.query(".boc_die").addClass("boc_selectable");
+        }
+      }
     },
 
     onLeavingState: function (stateName) {
       console.log("Leaving state: " + stateName);
 
-      switch (stateName) {
-        /* Example:
-            
-            case 'myGameState':
-            
-                // Hide the HTML block we are displaying only during this game state
-                dojo.style( 'my_html_block_id', 'display', 'none' );
-                
-                break;
-           */
-
-        case "dummmy":
-          break;
+      if (stateName === "decisionPhase") {
+        dojo.query(".boc_die").removeClass("boc_selectable");
       }
     },
 
@@ -382,7 +382,7 @@ define([
     sendAjaxCall: function (action, args = {}) {
       args.lock = true;
 
-      if (this.checkAction(action, true)) {
+      if (this.checkAction(action)) {
         this.ajaxcall(
           "/" + this.game_name + "/" + this.game_name + "/" + action + ".html",
           args,
@@ -401,6 +401,13 @@ define([
       this.sendAjaxCall(action);
     },
 
+    onDecideDice: function (event) {
+      const action = "decideDice";
+
+      const die = event.target.id.split(":")[1];
+      this.sendAjaxCall(action, { die: die });
+    },
+
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
 
@@ -408,6 +415,7 @@ define([
       console.log("notifications subscriptions setup");
 
       dojo.subscribe("dieRoll", this, "notif_dieRoll");
+      dojo.subscribe("generateGold", this, "notif_generateGold");
     },
 
     notif_dieRoll: function (notif) {
@@ -424,6 +432,19 @@ define([
       setTimeout(() => {
         dojo.removeClass(dieElement, "boc_die_rolled");
       }, 1000);
+    },
+
+    notif_generateGold: function (notif) {
+      const player_id = notif.args.player_id;
+      const prevGold = notif.args.prevGold;
+      const totalGold = notif.args.totalGold;
+
+      const originStock = `treasureStock$${player_id}:${prevGold}`;
+      const originElement = `boc_treasure$${player_id}:${prevGold}`;
+      const destinationStock = `treasureStock$${player_id}:${totalGold}`;
+
+      this[destinationStock].addToStock("gold", originElement);
+      this[originStock].removeFromStock("gold");
     },
   });
 });
