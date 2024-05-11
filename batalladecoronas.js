@@ -176,6 +176,11 @@ define([
           this[chairStock].extraClasses = "boc_counselor";
           this[chairStock].setSelectionMode(0);
 
+          this[chairStock].onItemCreate = (element, type, id) => {
+            const counselorName = this.counselorsInfo[type].name;
+            this.addTooltip(element, counselorName, "");
+          };
+
           for (const counselorId in this.counselorsInfo) {
             const counselor = this.counselorsInfo[counselorId];
 
@@ -478,6 +483,12 @@ define([
 
       dojo.subscribe("dieRoll", this, "notif_dieRoll");
       dojo.subscribe("generateGold", this, "notif_generateGold");
+      dojo.subscribe("vestCounselor", this, "notif_vestCounselor");
+      dojo.subscribe(
+        "vestCounselorPrivately",
+        this,
+        "notif_vestCounselorPrivately"
+      );
     },
 
     notif_dieRoll: function (notif) {
@@ -509,6 +520,44 @@ define([
       this[originStock].removeFromStock("gold");
     },
 
-    notif_vestCounselor: function (notif) {},
+    notif_vestCounselorPrivately: function (notif) {
+      const player_id = notif.args.player_id;
+      const chair = notif.args.chair;
+      const cardId = notif.args.cardId;
+      const counselorId = notif.args.counselorId;
+
+      const originStock = `inactiveCouncilStock`;
+      const originElement = `boc_inactiveCouncil`;
+      const destinationStock = `chairStock$${player_id}:${chair}`;
+
+      this[destinationStock].addToStockWithId(
+        counselorId,
+        cardId,
+        originElement
+      );
+
+      this[originStock].removeFromStockById(cardId);
+    },
+
+    notif_vestCounselor: function (notif) {
+      const player_id = notif.args.player_id;
+
+      if (player_id == this.player_id) {
+        return;
+      }
+
+      const chair = notif.args.chair;
+      const cardId = notif.args.cardId;
+      const counselorId = notif.args.counselorId;
+
+      const originElement = `overall_player_board_${player_id}`;
+      const destinationStock = `chairStock$${player_id}:${chair}`;
+
+      this[destinationStock].addToStockWithId(
+        counselorId,
+        cardId,
+        originElement
+      );
+    },
   });
 });

@@ -436,18 +436,38 @@ class BatallaDeCoronas extends Table
 
         $active_chair = $this->getGameStateValue("active_chair");
 
+        if ($this->council->getCard($card_id)["location"] !== "inactive") {
+            throw new BgaVisibleSystemException("This counselor is already on a chair");
+        }
+
         $this->council->moveCard($card_id, "vested:" . $player_id, $active_chair);
 
         $card = $this->council->getCard($card_id);
-        $counselor = $this->counselors_info[$card["type_arg"]];
+        $counselor_id = $card["type_arg"];
+        $counselor = $this->counselors_info[$counselor_id];
+
+        $this->notifyPlayer(
+            $player_id,
+            "vestCounselorPrivately",
+            "",
+            array(
+                "player_id" => $this->getActivePlayerId(),
+                "counselorId" => $counselor_id,
+                "cardId" => $card_id,
+                "chair" => $active_chair
+            )
+        );
 
         $this->notifyAllPlayers(
             "vestCounselor",
-            clienttranslate('${player_name} picks the ${counselor_name} to occupy the chair ${chair}'),
+            clienttranslate('${player_name} picks the ${counselorName} to occupy the chair ${chair}'),
             array(
+                "i18n" => array("counselorName"),
                 "player_id" => $this->getActivePlayerId(),
                 "player_name" => $this->getActivePlayerName(),
-                "counselor_name" => $counselor["name"],
+                "counselorName" => $counselor["name"],
+                "counselorId" => $counselor_id,
+                "cardId" => $card_id,
                 "chair" => $active_chair
             )
         );
