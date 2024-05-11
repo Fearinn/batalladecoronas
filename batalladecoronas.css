@@ -105,6 +105,38 @@
   width: 720px;
 }
 
+.boc_council {
+  position: absolute;
+  top: 100px;
+  left: 115px;
+  height: 100px;
+  width: 660px;
+}
+
+.boc_council > * {
+  position: absolute !important;
+  width: 100px;
+}
+
+.boc_chair_1 {
+  left: 0;
+}
+.boc_chair_2 {
+  left: 80px;
+}
+.boc_chair_3 {
+  left: 155px;
+}
+.boc_chair_4 {
+  left: 235px;
+}
+.boc_chair_5 {
+  left: 310px;
+}
+.boc_chair_6 {
+  left: 390px;
+}
+
 .boc_power {
   position: absolute;
   top: 310px;

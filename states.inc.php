@@ -46,9 +46,10 @@ $machinestates = array(
 
     31 => array(
         "name" => "counselorVesting",
-        "description" => clienttranslate('${actplayer} must pick a counselor to occupy this chair'),
-        "descriptionmyturn" => clienttranslate('${you} must pick a counselor to occupy this chair'),
+        "description" => clienttranslate('${actplayer} must pick a counselor to occupy the chair ${chair}'),
+        "descriptionmyturn" => clienttranslate('${you} must pick a counselor to occupy the chair ${chair}'),
         "type" => "activeplayer",
+        "args" => "argCounselorVesting",
         "possibleactions" => array("vestCounselor"),
         "transitions" => array("counselorActivation" => 32),
     ),

@@ -33,7 +33,14 @@
         {YOUR CASTLE}
       </h3>
       <div id="boc_castle" class="boc_castle">
-        <div id="boc_council:{MY_ID}" class="boc_council"></div>
+        <div id="boc_council:{MY_ID}" class="boc_council">
+          <div id="boc_chair${MY_ID}:1" class="boc_chair_1"></div>
+          <div id="boc_chair${MY_ID}:2" class="boc_chair_2"></div>
+          <div id="boc_chair${MY_ID}:3" class="boc_chair_3"></div>
+          <div id="boc_chair${MY_ID}:4" class="boc_chair_4"></div>
+          <div id="boc_chair${MY_ID}:5" class="boc_chair_5"></div>
+          <div id="boc_chair${MY_ID}:6" class="boc_chair_6"></div>
+        </div>
         <div id="boc_defense:{MY_ID}" class="boc_defense">
           <div id="boc_shield${MY_ID}:0" class="boc_shield_0"></div>
           <div id="boc_shield${MY_ID}:1" class="boc_shield_1"></div>
@@ -94,7 +101,14 @@
         {PLAYER_NAME}
       </h3>
       <div id="boc_castle" class="boc_castle">
-        <div id="boc_council:{PLAYER_ID}" class="boc_council"></div>
+        <div id="boc_council:{PLAYER_ID}" class="boc_council">
+          <div id="boc_chair${PLAYER_ID}:1" class="boc_chair_1"></div>
+          <div id="boc_chair${PLAYER_ID}:2" class="boc_chair_2"></div>
+          <div id="boc_chair${PLAYER_ID}:3" class="boc_chair_3"></div>
+          <div id="boc_chair${PLAYER_ID}:4" class="boc_chair_4"></div>
+          <div id="boc_chair${PLAYER_ID}:5" class="boc_chair_5"></div>
+          <div id="boc_chair${PLAYER_ID}:6" class="boc_chair_6"></div>
+        </div>
         <div id="boc_defense:{PLAYER_ID}" class="boc_defense">
           <div id="boc_shield${PLAYER_ID}:0" class="boc_shield_0"></div>
           <div id="boc_shield${PLAYER_ID}:1" class="boc_shield_1"></div>

@@ -35,6 +35,7 @@ define([
       this.supply = {};
       this.counselorsInfo = {};
       this.inactiveCouncil = {};
+      this.council = {};
       this.gems = {};
       this.attack = {};
       this.defense = {};
@@ -49,6 +50,7 @@ define([
       this.supply = gamedatas.supply;
       this.counselorsInfo = gamedatas.counselorsInfo;
       this.inactiveCouncil = gamedatas.inactiveCouncil;
+      this.council = gamedatas.council;
       this.gems = gamedatas.gems;
       this.attack = gamedatas.attack;
       this.defense = gamedatas.defense;
@@ -158,6 +160,44 @@ define([
       }
 
       for (const player_id in gamedatas.players) {
+        //council
+        for (let chair = 1; chair <= 6; chair++) {
+          const chairStock = `chairStock$${player_id}:${chair}`;
+          const chairElement = $(`boc_chair$${player_id}:${chair}`);
+
+          this[chairStock] = new ebg.stock();
+          this[chairStock].create(
+            this,
+            chairElement,
+            this.counselorSize,
+            this.counselorSize
+          );
+          this[chairStock].image_items_per_row = 6;
+          this[chairStock].extraClasses = "boc_counselor";
+          this[chairStock].setSelectionMode(0);
+
+          for (const counselorId in this.counselorsInfo) {
+            const counselor = this.counselorsInfo[counselorId];
+
+            const spritePos = counselor.spritePos;
+            this[chairStock].addItemType(
+              counselorId,
+              0,
+              g_gamethemeurl + "img/counselors.png",
+              spritePos
+            );
+          }
+
+          const chairCounselor = this.council[player_id][chair];
+
+          if (chairCounselor) {
+            this[chairStock].addToStockWithId(
+              chairCounselor.type_arg,
+              chairCounselor.id
+            );
+          }
+        }
+
         //power
         const powerStock = `powerStock:${player_id}`;
         const powerElement = $(`boc_power:${player_id}`);
@@ -166,7 +206,7 @@ define([
         this[powerStock].create(this, powerElement, this.gemSize, this.gemSize);
         this[powerStock].image_items_per_row = 2;
         this[powerStock].centerItems = true;
-        this[powerStock].extraClasses = `boc_gem`;
+        this[powerStock].extraClasses = "boc_gem";
         this[powerStock].setSelectionMode(0);
 
         this[powerStock].addItemType(

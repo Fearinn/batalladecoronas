@@ -164,6 +164,7 @@ class BatallaDeCoronas extends Table
         $result["dice"] = $this->getDice();
         $result["supply"] = $this->getSupply();
         $result["inactiveCouncil"] = $this->getInactiveCouncil();
+        $result["council"] = $this->getCouncil();
         $result["gems"] = $this->getGemsByLocation();
         $result["attack"] = $this->getAttack();
         $result["defense"] = $this->getDefense();
@@ -228,7 +229,25 @@ class BatallaDeCoronas extends Table
         $council = array();
 
         foreach ($players as $player_id => $player) {
-            $council[$player_id] = $this->council->getCardsInLocation("inactive", $player_id);
+            $council[$player_id] =
+                $this->council->getCardsInLocation("inactive", $player_id);
+        }
+
+        return $council;
+    }
+
+    function getCouncil()
+    {
+        $players = $this->loadPlayersBasicInfos();
+
+        $council = array();
+
+        foreach ($players as $player_id => $player) {
+            for ($chair = 1; $chair <= 6; $chair++) {
+                $location_cards = $this->council->getCardsInLocation("vested:" . $player_id, $chair);
+                $counselor = array_shift($location_cards);
+                $council[$player_id][$chair] = $counselor;
+            }
         }
 
         return $council;
@@ -439,6 +458,13 @@ class BatallaDeCoronas extends Table
     //////////////////////////////////////////////////////////////////////////////
     //////////// Game state arguments
     ////////////
+
+    function argCounselorVesting()
+    {
+        return array(
+            "chair" => $this->getGameStateValue("active_chair")
+        );
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Game state actions
