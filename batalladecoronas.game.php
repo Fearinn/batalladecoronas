@@ -333,6 +333,10 @@ class BatallaDeCoronas extends Table
         return $dragon;
     }
 
+    function checkCounselorVested()
+    {
+    }
+
     function generateGold($gold_nbr, $player_id)
     {
         if ($gold_nbr <= 0) {
@@ -342,13 +346,17 @@ class BatallaDeCoronas extends Table
         $prev_gold_nbr = $this->getTreasure()[$player_id];
         $generated_gold = $this->moveCardsToLocation($this->gold, $gold_nbr, "unclaimed", "treasure", $player_id, $player_id);
 
-        $this->notifyAllPlayers("generateGold", clienttranslate('${player_name} generates ${generatedGold} of gold. Total: ${totalGold}'), array(
-            "player_id" => $this->getActivePlayerId(),
-            "player_name" => $this->getActivePlayerName(),
-            "prevGold" => $prev_gold_nbr,
-            "generatedGold" => count($generated_gold),
-            "totalGold" => $prev_gold_nbr + count($generated_gold)
-        ));
+        $this->notifyAllPlayers(
+            "generateGold",
+            clienttranslate('${player_name} generates ${generatedGold} of gold. The total is ${totalGold}'),
+            array(
+                "player_id" => $this->getActivePlayerId(),
+                "player_name" => $this->getActivePlayerName(),
+                "prevGold" => $prev_gold_nbr,
+                "generatedGold" => count($generated_gold),
+                "totalGold" => $prev_gold_nbr + count($generated_gold)
+            )
+        );
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -358,6 +366,8 @@ class BatallaDeCoronas extends Table
     function rollDice()
     {
         $this->checkAction("rollDice");
+
+        $player_id = $this->getActivePlayerId();
 
         $die_1 = bga_rand(1, 6);
         $die_2 = bga_rand(1, 6);
@@ -387,12 +397,25 @@ class BatallaDeCoronas extends Table
             )
         );
 
+        if ($die_1 == $die_2) {
+            $this->notifyAllPlayers(
+                "skipDecision",
+                clienttranslate('The dice have the same result. Decision phase skipped'),
+                array()
+            );
+
+            $this->decideDice(1, true);
+            return;
+        }
+
         $this->gamestate->nextState("decisionPhase");
     }
 
-    function decideDice($die)
+    function decideDice($die, $auto = false)
     {
-        $this->checkAction("decideDice");
+        if (!$auto) {
+            $this->checkAction("decideDice");
+        }
 
         $player_id = $this->getActivePlayerId();
 
@@ -406,15 +429,15 @@ class BatallaDeCoronas extends Table
             $gold_die = $this->getGameStateValue("die_1");
         }
 
-        $location_counselors = $this->council->getCardsInLocation("vested:" . $player_id, $chair_die);
-        $counselor = array_shift($location_counselors);
-
         $this->notifyAllPlayers("decideDice", clienttranslate('${player_name} activates the chair ${chair_die}'), array(
             "player_name" => $this->getActivePlayerName(),
             "chair_die" => $chair_die,
         ));
 
         $this->generateGold($gold_die, $player_id);
+
+        $location_counselors = $this->council->getCardsInLocation("vested:" . $player_id, $chair_die);
+        $counselor = array_shift($location_counselors);
 
         if ($counselor === null) {
             $this->setGameStateValue("active_chair", $chair_die);

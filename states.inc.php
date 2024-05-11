@@ -32,7 +32,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} must roll the dice to start a new turn'),
         "type" => "activeplayer",
         "possibleactions" => array("rollDice"),
-        "transitions" => array("decisionPhase" => 3)
+        "transitions" => array("decisionPhase" => 3, "counselorVesting" => 31, "couselorActivaction" => 32)
     ),
 
     3 =>  array(
