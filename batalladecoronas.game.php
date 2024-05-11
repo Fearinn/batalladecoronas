@@ -31,8 +31,8 @@ class BatallaDeCoronas extends Table
         $this->initGameStateLabels(array(
             "die_1" => 10,
             "die_2" => 11,
-            "active_counselor" => 12,
-            "empty_chair" => 13
+            "active_chair" => 12,
+            "active_counselor" => 13,
         ));
 
         $this->crown = $this->getNew("module.common.deck");
@@ -92,7 +92,7 @@ class BatallaDeCoronas extends Table
 
         $this->setGameStateInitialValue('die_1', 0);
         $this->setGameStateInitialValue('die_2', 0);
-        $this->setGameStateInitialValue("empty_chair", 0);
+        $this->setGameStateInitialValue("active_chair", 0);
         $this->setGameStateInitialValue("active_counselor", 0);
 
         $this->crown->createCards(array(
@@ -228,13 +228,7 @@ class BatallaDeCoronas extends Table
         $council = array();
 
         foreach ($players as $player_id => $player) {
-            $council[$player_id] = array();
-            $location_cards = $this->council->getCardsInLocation("inactive", $player_id);
-
-            foreach ($location_cards as $card) {
-                $counselor_id = $card["type_arg"];
-                $council[$player_id][$counselor_id] = $card;
-            }
+            $council[$player_id] = $this->council->getCardsInLocation("inactive", $player_id);
         }
 
         return $council;
@@ -342,53 +336,6 @@ class BatallaDeCoronas extends Table
     //////////// Player actions
     ////////////
 
-    function decideDice($die)
-    {
-        $this->checkAction("decideDice");
-
-        $player_id = $this->getActivePlayerId();
-
-        $chair_die = 0;
-        $gold_die = 0;
-        if ($die == 1) {
-            $chair_die = $this->getGameStateValue("die_1");
-            $gold_die = $this->getGameStateValue("die_2");
-        } else {
-            $chair_die = $this->getGameStateValue("die_2");
-            $gold_die = $this->getGameStateValue("die_1");
-        }
-
-        $location_counselors = $this->council->getCardsInLocation("vested:" . $player_id, $chair_die);
-        $counselor = array_shift($location_counselors);
-
-        $this->notifyAllPlayers("decideDice", clienttranslate('${player_name} activates the chair ${chair_die}'), array(
-            "player_name" => $this->getActivePlayerName(),
-            "chair_die" => $chair_die,
-        ));
-
-        $this->generateGold($gold_die, $player_id);
-
-        if ($counselor === null) {
-            $this->setGameStateValue("empty_chair", $chair_die);
-            $this->gamestate->nextState("chairPicking");
-            return;
-        }
-
-        $counselor_id = $counselor["type_arg"];
-
-        $this->setGameStateValue("active_counselor", $counselor_id);
-        $this->gamestate->nextState("counselorActivation");
-    }
-
-    //////////////////////////////////////////////////////////////////////////////
-    //////////// Game state arguments
-    ////////////
-
-    //////////////////////////////////////////////////////////////////////////////
-    //////////// Game state actions
-    ////////////
-
-
     function rollDice()
     {
         $this->checkAction("rollDice");
@@ -423,6 +370,79 @@ class BatallaDeCoronas extends Table
 
         $this->gamestate->nextState("decisionPhase");
     }
+
+    function decideDice($die)
+    {
+        $this->checkAction("decideDice");
+
+        $player_id = $this->getActivePlayerId();
+
+        $chair_die = 0;
+        $gold_die = 0;
+        if ($die == 1) {
+            $chair_die = $this->getGameStateValue("die_1");
+            $gold_die = $this->getGameStateValue("die_2");
+        } else {
+            $chair_die = $this->getGameStateValue("die_2");
+            $gold_die = $this->getGameStateValue("die_1");
+        }
+
+        $location_counselors = $this->council->getCardsInLocation("vested:" . $player_id, $chair_die);
+        $counselor = array_shift($location_counselors);
+
+        $this->notifyAllPlayers("decideDice", clienttranslate('${player_name} activates the chair ${chair_die}'), array(
+            "player_name" => $this->getActivePlayerName(),
+            "chair_die" => $chair_die,
+        ));
+
+        $this->generateGold($gold_die, $player_id);
+
+        if ($counselor === null) {
+            $this->setGameStateValue("active_chair", $chair_die);
+            $this->gamestate->nextState("counselorVesting");
+            return;
+        }
+
+        $counselor_id = $counselor["type_arg"];
+
+        $this->setGameStateValue("active_counselor", $counselor_id);
+        $this->gamestate->nextState("counselorActivation");
+    }
+
+    function vestCounselor($card_id)
+    {
+        $this->checkAction("vestCounselor");
+
+        $player_id = $this->getActivePlayerId();
+
+        $active_chair = $this->getGameStateValue("active_chair");
+
+        $this->council->moveCard($card_id, "vested:" . $player_id, $active_chair);
+
+        $card = $this->council->getCard($card_id);
+        $counselor = $this->counselors_info[$card["type_arg"]];
+
+        $this->notifyAllPlayers(
+            "vestCounselor",
+            clienttranslate('${player_name} picks the ${counselor_name} to occupy the chair ${chair}'),
+            array(
+                "player_id" => $this->getActivePlayerId(),
+                "player_name" => $this->getActivePlayerName(),
+                "counselor_name" => $counselor["name"],
+                "chair" => $active_chair
+            )
+        );
+
+        $this->gamestate->nextState("counselorActivation");
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// Game state arguments
+    ////////////
+
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// Game state actions
+    ////////////
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Zombie

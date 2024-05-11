@@ -41,15 +41,15 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} must pick a die to activate a counselor. The other die shall generate gold'),
         "type" => "activeplayer",
         "possibleactions" => array("decideDice"),
-        "transitions" => array("chairPicking" => 31, "couselorActivaction" => 32)
+        "transitions" => array("counselorVesting" => 31, "couselorActivaction" => 32)
     ),
 
     31 => array(
-        "name" => "chairPicking",
+        "name" => "counselorVesting",
         "description" => clienttranslate('${actplayer} must pick a counselor to occupy this chair'),
         "descriptionmyturn" => clienttranslate('${you} must pick a counselor to occupy this chair'),
         "type" => "activeplayer",
-        "possibleactions" => array("pickChair"),
+        "possibleactions" => array("vestCounselor"),
         "transitions" => array("counselorActivation" => 32),
     ),
 

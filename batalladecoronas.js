@@ -56,6 +56,8 @@ define([
       this.treasure = gamedatas.treasure;
       this.dragon = gamedatas.dragon;
 
+      const currentPlayerId = this.player_id;
+
       //Setting up player boards
       for (const player_id in gamedatas.players) {
         const player = gamedatas.players[player_id];
@@ -130,28 +132,28 @@ define([
       this[inactiveCouncilStock].image_items_per_row = 6;
       this[inactiveCouncilStock].autowidth = true;
       this[inactiveCouncilStock].centerItems = true;
+      this[inactiveCouncilStock].item_margin = 8;
+      this[inactiveCouncilStock].extraClasses = "boc_unvestedCounselor";
       this[inactiveCouncilStock].setSelectionMode(0);
 
-      for (const counselorId in this.counselorsInfo) {
-        const player_id = this.player_id;
-        if (!this.inactiveCouncil[player_id][counselorId]) {
-          continue;
-        }
+      const inactiveCouncil = this.inactiveCouncil[currentPlayerId];
 
+      for (const cardId in inactiveCouncil) {
+        const counselorId = inactiveCouncil[cardId].type_arg;
         const counselor = this.counselorsInfo[counselorId];
         const spritePos = counselor.spritePos;
         const counselorName = counselor.name;
 
         this[inactiveCouncilStock].addItemType(
           counselorId,
-          0,
+          spritePos,
           g_gamethemeurl + "img/counselors.png",
           spritePos
         );
 
-        this[inactiveCouncilStock].addToStockWithId(counselorId, counselorId);
+        this[inactiveCouncilStock].addToStockWithId(counselorId, cardId);
 
-        const counselorElement = `boc_inactiveCouncil_item_${counselorId}`;
+        const counselorElement = `boc_inactiveCouncil_item_${cardId}`;
         this.addTooltip(counselorElement, counselorName, "");
       }
 
@@ -344,6 +346,9 @@ define([
       dojo.query(".boc_die").connect("onclick", this, (event) => {
         this.onDecideDice(event);
       });
+      dojo.query(".boc_unvestedCounselor").connect("onclick", this, (event) => {
+        this.onVestCouncelor(event);
+      });
 
       this.setupNotifications();
 
@@ -364,6 +369,12 @@ define([
           dojo.query(".boc_die").addClass("boc_selectable");
         }
       }
+
+      if (stateName === "counselorVesting") {
+        if (this.isCurrentPlayerActive()) {
+          dojo.query(".boc_unvestedCounselor").addClass("boc_selectable");
+        }
+      }
     },
 
     onLeavingState: function (stateName) {
@@ -371,6 +382,10 @@ define([
 
       if (stateName === "decisionPhase") {
         dojo.query(".boc_die").removeClass("boc_selectable");
+      }
+
+      if (stateName === "counselorVesting") {
+        dojo.query(".boc_unvestedCounselor").removeClass("boc_selectable");
       }
     },
 
@@ -405,7 +420,14 @@ define([
       const action = "decideDice";
 
       const die = event.target.id.split(":")[1];
-      this.sendAjaxCall(action, { die: die });
+      this.sendAjaxCall(action, { die });
+    },
+
+    onVestCouncelor: function (event) {
+      const action = "vestCounselor";
+
+      const cardId = event.target.id.split("item_")[1];
+      this.sendAjaxCall(action, { cardId });
     },
 
     ///////////////////////////////////////////////////
@@ -446,5 +468,7 @@ define([
       this[destinationStock].addToStock("gold", originElement);
       this[originStock].removeFromStock("gold");
     },
+
+    notif_vestCounselor: function (notif) {},
   });
 });

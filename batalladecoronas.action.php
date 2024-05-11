@@ -52,11 +52,11 @@ class action_batalladecoronas extends APP_GameAction
     $this->ajaxResponse();
   }
 
-  // public function pickChair()
-  // {
-  //   $this->setAjaxMode();
-  //   $counselor_id = $this->getArg("counselor_id", AT_enum, true, null, range(1, 6));
-  //   $this->game->pickChair($counselor_id);
-  //   $this->ajaxResponse();
-  // }
+  public function vestCounselor()
+  {
+    $this->setAjaxMode();
+    $card_id = $this->getArg("cardId", AT_enum, true, null, range(1, 6));
+    $this->game->vestCounselor($card_id);
+    $this->ajaxResponse();
+  }
 }
