@@ -578,6 +578,8 @@ define([
         this,
         "notif_vestCounselorPrivately"
       );
+      dojo.subscribe("increaseAttack", this, "notif_increaseAttack");
+      dojo.subscribe("increaseDefense", this, "notif_increaseDefense");
     },
 
     notif_dieRoll: function (notif) {
@@ -647,6 +649,37 @@ define([
         cardId,
         originElement
       );
+    },
+
+    notif_increaseAttack: function (notif) {
+      const player_id = notif.args.player_id;
+
+      const totalSwords = notif.args.totalSwords;
+      const prevSwords = notif.args.prevSwords;
+
+      const originStock = `swordStock$${player_id}:${prevSwords}`;
+      const originElement = `boc_sword$${player_id}:${prevSwords}`;
+      const destinationStock = `swordStock$${player_id}:${totalSwords}`;
+
+      this[destinationStock].addToStock("sword", originElement);
+      this[originStock].removeFromStock("sword");
+
+      this.attack = notif.args.attack;
+    },
+    notif_increaseDefense: function (notif) {
+      const player_id = notif.args.player_id;
+
+      const totalShields = notif.args.totalShields;
+      const prevShields = notif.args.prevShields;
+
+      const originStock = `shieldStock$${player_id}:${prevShields}`;
+      const originElement = `boc_shield$${player_id}:${prevShields}`;
+      const destinationStock = `shieldStock$${player_id}:${totalShields}`;
+
+      this[destinationStock].addToStock("shield", originElement);
+      this[originStock].removeFromStock("shield");
+
+      this.defense = notif.args.defense;
     },
   });
 });

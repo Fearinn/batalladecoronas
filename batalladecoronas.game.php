@@ -336,7 +336,7 @@ class BatallaDeCoronas extends Table
     function generateGold(int $gold_nbr, $player_id): int
     {
         if ($gold_nbr <= 0) {
-            return;
+            return $this->getTreasure()[$player_id];
         }
 
         $prev_gold_nbr = $this->getTreasure()[$player_id];
@@ -354,21 +354,59 @@ class BatallaDeCoronas extends Table
             )
         );
 
-        return $this->gold->countCardInLocation("treasure", $player_id);
+        return $this->getTreasure()[$player_id];
     }
 
     function increaseAttack(int $sword_nbr, $player_id): int
     {
+        $prev_swords = $this->getAttack()[$player_id];
+
         $this->moveCardsToLocation($this->attack, $sword_nbr, "unclaimed", "attack", $player_id, $player_id);
 
-        return $this->attack->countCardInLocation("attack", $player_id);
+        $total_swords = $this->getAttack()[$player_id];
+
+        if ($prev_swords != $total_swords) {
+            $this->notifyAllPlayers(
+                "increaseAttack",
+                clienttranslate('${player_name} gets ${newSwords} sword(s). The total is ${totalSwords}'),
+                array(
+                    "player_id" => $player_id,
+                    "player_name" => $this->getPlayerNameById($player_id),
+                    "prevSwords" => $prev_swords,
+                    "newSwords" => $sword_nbr,
+                    "totalSwords" => $total_swords,
+                    "attack" => $this->getAttack()
+                )
+            );
+        }
+
+        return $total_swords;
     }
 
     function increaseDefense(int $shield_nbr, $player_id): int
     {
+        $prev_shields = $this->getDefense()[$player_id];
+
         $this->moveCardsToLocation($this->defense, $shield_nbr, "unclaimed", "defense", $player_id, $player_id);
 
-        return $this->defense->countCardInLocation("defense", $player_id);
+        $total_shields = $this->getDefense()[$player_id];
+
+        if ($prev_shields != $total_shields) {
+            $this->notifyAllPlayers(
+                "increaseDefense",
+                clienttranslate('${player_name} gets ${newShields} sword(s). The total is ${totalShields}'),
+                array(
+                    "player_id" => $player_id,
+                    "player_name" => $this->getPlayerNameById($player_id),
+                    "prevShields" => $prev_shields,
+                    "newShields" => $shield_nbr,
+                    "totalShields" => $total_shields,
+                    "defense" => $this->getDefense()
+                )
+            );
+        }
+
+        return $total_shields;
     }
 
     function moveClergy(string $house, $player_id): void

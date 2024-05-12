@@ -157,8 +157,8 @@
 
 .boc_attack {
   position: absolute;
-  top: 280px;
-  left: 50px;
+  top: 285px;
+  right: 75px;
   height: 150px;
   width: 215px;
 }
@@ -188,8 +188,8 @@
 
 .boc_defense {
   position: absolute;
-  top: 280px;
-  right: 80px;
+  top: 285px;
+  left: 50px;
   height: 150px;
   width: 215px;
 }
