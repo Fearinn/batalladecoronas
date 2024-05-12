@@ -41,8 +41,8 @@ class BatallaDeCoronas extends Table
         $this->cross = $this->getNew("module.common.deck");
         $this->cross->init("sacredcross");
 
-        $this->blacksmith = $this->getNew("module.common.deck");
-        $this->blacksmith->init("blacksmith");
+        $this->smith = $this->getNew("module.common.deck");
+        $this->smith->init("smith");
 
         $this->council = $this->getNew("module.common.deck");
         $this->council->init("counselor");
@@ -103,8 +103,8 @@ class BatallaDeCoronas extends Table
             array("type" => "cross", "type_arg" => 0, "nbr" => 1)
         ), "supply");
 
-        $this->blacksmith->createCards(array(
-            array("type" => "blacksmith", "type_arg" => 0, "nbr" => 1)
+        $this->smith->createCards(array(
+            array("type" => "smith", "type_arg" => 0, "nbr" => 1)
         ), "supply");
 
         $this->gems->createCards(array(array("type" => "gem", "type_arg" => 0, "nbr" => 6)), "box");
@@ -137,10 +137,10 @@ class BatallaDeCoronas extends Table
             $this->moveCardsToLocation($this->gold, 7, "box", "unclaimed", null, $player_id);
 
             $this->moveCardsToLocation($this->attack, 5, "box", "unclaimed", null, $player_id);
-            $this->moveCardsToLocation($this->attack, 2, "unclaimed", "attack", null, $player_id);
+            $this->moveCardsToLocation($this->attack, 2, "unclaimed", "attack", $player_id, $player_id);
 
             $this->moveCardsToLocation($this->defense, 5, "box", "unclaimed", null, $player_id);
-            $this->moveCardsToLocation($this->defense, 2, "unclaimed", "defense", null, $player_id);
+            $this->moveCardsToLocation($this->defense, 2, "unclaimed", "defense", $player_id, $player_id);
 
             $this->moveCardsToLocation($this->clergy, 1, "box", "DOOR", null, $player_id);
 
@@ -218,7 +218,7 @@ class BatallaDeCoronas extends Table
         return array(
             "crown" => $this->crown->countCardInLocation("supply") > 0,
             "cross" => $this->cross->countCardInLocation("supply") > 0,
-            "blacksmith" => $this->blacksmith->countCardInLocation("supply") > 0
+            "smith" => $this->smith->countCardInLocation("supply") > 0
         );
     }
 
@@ -333,7 +333,7 @@ class BatallaDeCoronas extends Table
         return $dragon;
     }
 
-    function generateGold($gold_nbr, $player_id)
+    function generateGold(int $gold_nbr, $player_id): int
     {
         if ($gold_nbr <= 0) {
             return;
@@ -353,6 +353,86 @@ class BatallaDeCoronas extends Table
                 "totalGold" => $prev_gold_nbr + count($generated_gold)
             )
         );
+
+        return $this->gold->countCardInLocation("treasure", $player_id);
+    }
+
+    function increaseAttack(int $sword_nbr, $player_id): int
+    {
+        $this->moveCardsToLocation($this->attack, $sword_nbr, "unclaimed", "attack", $player_id, $player_id);
+
+        return $this->attack->countCardInLocation("attack", $player_id);
+    }
+
+    function increaseDefense(int $shield_nbr, $player_id): int
+    {
+        $this->moveCardsToLocation($this->defense, $shield_nbr, "unclaimed", "defense", $player_id, $player_id);
+
+        return $this->defense->countCardInLocation("defense", $player_id);
+    }
+
+    function moveClergy(string $house, $player_id): void
+    {
+        $prev_house = $this->getChurch()[$player_id];
+
+        if ($prev_house == $house) {
+            throw new BgaUserException($this->_("You must move the clergy to other house"));
+        }
+
+        $this->clergy->moveAllCardsInLocation($prev_house, $house, $player_id, $player_id);
+    }
+
+    function levelUpDragon(int $level_nbr, $player_id): int
+    {
+        $this->moveCardsToLocation($this->dragon, $level_nbr, "unclaimed", "dragon", $player_id, $player_id);
+
+        return $this->dragon->countCardInLocation("dragon", $player_id);
+    }
+
+    function claimSmith($player_id): void
+    {
+        $this->smith->moveCard(1, "smith", $player_id);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// Counselor actions
+    ////////////
+
+    function commanderAttack($player_id): int
+    {
+        return $this->increaseAttack(1, $player_id);
+    }
+    function commanderDefense($player_id): int
+    {
+        return $this->increaseDefense(1, $player_id);
+    }
+
+    function masterOfCoin($player_id): int
+    {
+        return $this->generateGold(3, $player_id);
+    }
+
+    function sorcerer($player_id): int
+    {
+        return $this->levelUpDragon(1, $player_id);
+    }
+
+    function smith($player_id): void
+    {
+        $this->claimSmith($player_id);
+    }
+
+    function priestGolden($player_id): void
+    {
+        $this->moveClergy("GOLDEN", $player_id);
+    }
+    function priestBlue($player_id): void
+    {
+        $this->moveClergy("BLUE", $player_id);
+    }
+    function priestRed($player_id): void
+    {
+        $this->moveClergy("RED", $player_id);
     }
 
     //////////////////////////////////////////////////////////////////////////////

@@ -69,11 +69,11 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} activated the Noble and must now pick other counselor to activate'),
         "type" => "activeplayer",
         "possibleactions" => array("pickCounselor"),
-        "transitions" => array("pickCounselor" => 33, "purchase" => 4),
+        "transitions" => array("pickCounselor" => 33, "buyingPhase" => 4),
     ),
 
     4 => array(
-        "name" => "purchasePhase",
+        "name" => "buyingPhase",
         "description" => clienttranslate('${actplayer} may select an area to spend his gold with'),
         "descriptionmyturn" => clienttranslate('${you} may select an area to spend his gold with'),
         "type" => "activeplayer",

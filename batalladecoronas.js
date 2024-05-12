@@ -117,7 +117,7 @@ define([
       );
 
       this[supplyStock].addItemType(
-        "blacksmith",
+        "smith",
         2,
         g_gamethemeurl + "img/supply.png",
         2
