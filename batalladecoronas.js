@@ -499,13 +499,16 @@ define([
     onSelectDie: function (targetId, stock) {
       const stateName = this.gamedatas.gamestate.name;
       const selectedItemsNbr = stock.getSelectedItems().length;
+      const die = targetId.split(":")[1];
 
       if (stateName === "decisionPhase") {
         if (this.isCurrentPlayerActive()) {
           this.removeActionButtons();
 
           if (selectedItemsNbr == 1) {
-            const die = targetId.split(":")[1];
+            const otherStock = die == 1 ? `dieStock:2` : `dieStock:1`;
+            console.log(otherStock);
+            this[otherStock].unselectAll();
 
             this.addActionButton(
               "boc_decideDice",
