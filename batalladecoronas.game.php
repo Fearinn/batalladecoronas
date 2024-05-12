@@ -333,10 +333,6 @@ class BatallaDeCoronas extends Table
         return $dragon;
     }
 
-    function checkCounselorVested()
-    {
-    }
-
     function generateGold($gold_nbr, $player_id)
     {
         if ($gold_nbr <= 0) {

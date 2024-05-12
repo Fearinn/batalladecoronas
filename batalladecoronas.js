@@ -26,6 +26,7 @@ define([
     constructor: function () {
       console.log("batalladecoronas constructor");
 
+      this.dieSize = 60;
       this.supplyItemSize = 70;
       this.counselorSize = 100;
       this.gemSize = 80;
@@ -71,6 +72,21 @@ define([
             { player_name: player.name }
           );
         }
+      }
+
+      for (let die = 1; die <= 2; die++) {
+        const dieStock = `dieStock:${die}`;
+        this[dieStock] = new ebg.stock();
+        this[dieStock].create(
+          this,
+          $(`boc_die:${die}`),
+          this.dieSize,
+          this.dieSize
+        );
+        this[dieStock].setSelectionMode(0);
+
+        this[dieStock].addItemType(0, 0, g_gamethemeurl + "img/dice.png", 5);
+        this[dieStock].addToStock(0);
       }
 
       //supply
@@ -388,12 +404,23 @@ define([
       }
 
       //connections
-      dojo.query(".boc_die").connect("onclick", this, (event) => {
-        this.onDecideDice(event);
-      });
-      dojo.query(".boc_unvestedCounselor").connect("onclick", this, (event) => {
-        this.onVestCouncelor(event);
-      });
+
+      for (let die = 1; die <= 2; die++) {
+        const dieStock = `dieStock:${die}`;
+
+        dojo.connect(this[dieStock], "onChangeSelection", this, (targetId) => {
+          this.onSelectDie(targetId, this[dieStock]);
+        });
+      }
+
+      dojo.connect(
+        this[inactiveCouncilStock],
+        "onChangeSelection",
+        this,
+        () => {
+          this.onSelectInactiveCounselor(this[inactiveCouncilStock]);
+        }
+      );
 
       this.setupNotifications();
 
@@ -411,13 +438,19 @@ define([
 
       if (stateName === "decisionPhase") {
         if (this.isCurrentPlayerActive()) {
-          dojo.query(".boc_die").addClass("boc_selectable");
+          dojo.query(".boc_die > *").addClass("boc_selectable");
+
+          for (let die = 1; die <= 2; die++) {
+            this[`dieStock:${die}`].setSelectionMode(1);
+          }
         }
       }
 
       if (stateName === "counselorVesting") {
         if (this.isCurrentPlayerActive()) {
           dojo.query(".boc_unvestedCounselor").addClass("boc_selectable");
+
+          this[`inactiveCouncilStock`].setSelectionMode(1);
         }
       }
     },
@@ -426,11 +459,17 @@ define([
       console.log("Leaving state: " + stateName);
 
       if (stateName === "decisionPhase") {
-        dojo.query(".boc_die").removeClass("boc_selectable");
+        dojo.query(".boc_die > *").removeClass("boc_selectable");
+
+        for (let die = 1; die <= 2; die++) {
+          this[`dieStock:${die}`].setSelectionMode(0);
+        }
       }
 
       if (stateName === "counselorVesting") {
         dojo.query(".boc_unvestedCounselor").removeClass("boc_selectable");
+
+        this[`inactiveCouncilStock`].setSelectionMode(0);
       }
     },
 
@@ -456,22 +495,69 @@ define([
     ///////////////////////////////////////////////////
     //// Player's actions
 
+    //stock selections
+    onSelectDie: function (targetId, stock) {
+      const stateName = this.gamedatas.gamestate.name;
+      const selectedItemsNbr = stock.getSelectedItems().length;
+
+      if (stateName === "decisionPhase") {
+        if (this.isCurrentPlayerActive()) {
+          this.removeActionButtons();
+
+          if (selectedItemsNbr == 1) {
+            const die = targetId.split(":")[1];
+
+            this.addActionButton(
+              "boc_decideDice",
+              _("Confirm selection"),
+              () => {
+                this.onDecideDice(die);
+              }
+            );
+            return;
+          }
+        }
+      }
+    },
+
+    onSelectInactiveCounselor: function (stock) {
+      const stateName = this.gamedatas.gamestate.name;
+      const selectedItemsNbr = stock.getSelectedItems().length;
+
+      if (stateName === "counselorVesting") {
+        if (this.isCurrentPlayerActive()) {
+          this.removeActionButtons();
+
+          if (selectedItemsNbr == 1) {
+            const cardId = stock.getSelectedItems()[0].id;
+
+            this.addActionButton(
+              "boc_vestCounselor",
+              _("Confirm selection"),
+              () => {
+                this.onVestCounselor(cardId);
+              }
+            );
+            return;
+          }
+        }
+      }
+    },
+
     onRollDice: function () {
       const action = "rollDice";
       this.sendAjaxCall(action);
     },
 
-    onDecideDice: function (event) {
+    onDecideDice: function (die) {
       const action = "decideDice";
 
-      const die = event.target.id.split(":")[1];
       this.sendAjaxCall(action, { die });
     },
 
-    onVestCouncelor: function (event) {
+    onVestCounselor: function (cardId) {
       const action = "vestCounselor";
 
-      const cardId = event.target.id.split("item_")[1];
       this.sendAjaxCall(action, { cardId });
     },
 
