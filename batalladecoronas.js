@@ -33,8 +33,10 @@ define([
       this.tokenSize = 80;
       this.dragonSize = 80;
 
-      this.supply = {};
       this.counselorsInfo = {};
+      this.churchHouses = {};
+
+      this.supply = {};
       this.inactiveCouncil = {};
       this.council = {};
       this.gems = {};
@@ -48,8 +50,10 @@ define([
     setup: function (gamedatas) {
       console.log("Starting game setup");
 
-      this.supply = gamedatas.supply;
       this.counselorsInfo = gamedatas.counselorsInfo;
+      this.churchHouses = gamedatas.churchHouses;
+
+      this.supply = gamedatas.supply;
       this.inactiveCouncil = gamedatas.inactiveCouncil;
       this.council = gamedatas.council;
       this.gems = gamedatas.gems;
@@ -257,10 +261,10 @@ define([
         }
 
         //church
-        const church = ["DOOR", "GOLDEN", "BLUE", "RED"];
-
-        church.forEach((house) => {
+        for (const house in this.churchHouses) {
           const clergyStock = `clergyStock$${player_id}:${house}`;
+
+          console.log(clergyStock, "stock");
           const clergy = $(`boc_clergy$${player_id}:${house}`);
 
           this[clergyStock] = new ebg.stock();
@@ -281,11 +285,11 @@ define([
             g_gamethemeurl + "img/tokens.png",
             1
           );
-        });
+        }
 
         const activeHouse = this.church[player_id];
         const activeClergyStock = `clergyStock$${player_id}:${activeHouse}`;
-        const initialClergy = $(`boc_clergy$${player_id}:DOOR`);
+        const initialClergy = $(`boc_clergy$${player_id}:0`);
         this[activeClergyStock].addToStock("clergy", initialClergy);
 
         //attack
@@ -509,7 +513,6 @@ define([
 
           if (selectedItemsNbr == 1) {
             const otherStock = die == 1 ? `dieStock:2` : `dieStock:1`;
-            console.log(otherStock);
             this[otherStock].unselectAll();
 
             this.addActionButton(
@@ -705,6 +708,8 @@ define([
     notif_moveClergy: function (notif) {
       const player_id = notif.args.player_id;
 
+      console.log(this.church, "church");
+
       const newHouse = notif.args.newHouse;
       const prevHouse = notif.args.prevHouse;
 
@@ -712,10 +717,12 @@ define([
       const originElement = `boc_clergy$${player_id}:${prevHouse}`;
       const destinationStock = `clergyStock$${player_id}:${newHouse}`;
 
+      console.log(destinationStock, "destination");
+
       this[destinationStock].addToStock("clergy", originElement);
       this[originStock].removeFromStock("clergy");
 
-      this.clergy = notif.args.clergy;
+      this.church = notif.args.church;
     },
   });
 });

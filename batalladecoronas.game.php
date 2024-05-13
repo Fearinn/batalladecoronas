@@ -142,7 +142,7 @@ class BatallaDeCoronas extends Table
             $this->moveCardsToLocation($this->defense, 5, "box", "unclaimed", null, $player_id);
             $this->moveCardsToLocation($this->defense, 2, "unclaimed", "defense", $player_id, $player_id);
 
-            $this->moveCardsToLocation($this->clergy, 1, "box", "DOOR", null, $player_id);
+            $this->moveCardsToLocation($this->clergy, 1, "box", 0, null, $player_id);
 
             $this->moveCardsToLocation($this->dragon, 5, "box", "unclaimed", null, $player_id);
         }
@@ -159,8 +159,11 @@ class BatallaDeCoronas extends Table
         $current_player_id = $this->getCurrentPlayerId();
 
         $sql = "SELECT player_id id, player_score score FROM player ";
-        $result["players"] = $this->getCollectionFromDb($sql);
+
         $result["counselorsInfo"] = $this->counselors_info;
+        $result["churchHouses"] = $this->church_houses;
+
+        $result["players"] = $this->getCollectionFromDb($sql);
         $result["dice"] = $this->getDice();
         $result["supply"] = $this->getSupply();
         $result["inactiveCouncil"] = $this->getInactiveCouncil();
@@ -295,12 +298,12 @@ class BatallaDeCoronas extends Table
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            foreach ($this->church_houses as $house_label => $house) {
-                $house_cards = $this->clergy->getCardsInLocation($house_label, $player_id);
+            foreach ($this->church_houses as $house_id => $house) {
+                $house_cards = $this->clergy->getCardsInLocation($house_id, $player_id);
                 $card = array_shift($house_cards);
 
                 if ($card !== null) {
-                    $church[$player_id] = $house_label;
+                    $church[$player_id] = $house_id;
                     break;
                 }
             }
@@ -409,13 +412,15 @@ class BatallaDeCoronas extends Table
         return $total_shields;
     }
 
-    function moveClergy(string $new_house, $player_id): void
+    function moveClergy(int $house_id, $player_id): void
     {
         $prev_house = $this->getChurch()[$player_id];
 
-        if ($prev_house == $new_house) {
+        if ($prev_house == $house_id) {
             throw new BgaUserException($this->_("You must move the clergy to other house"));
         }
+
+        $house = $this->church_houses[$house_id];
 
         $this->notifyAllPlayers(
             "moveClergy",
@@ -424,13 +429,14 @@ class BatallaDeCoronas extends Table
                 "i18n" => array("house_tr"),
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
-                "new_house_tr" => $this->church_houses[$new_house]["label_tr"],
-                "newHouse" => $new_house,
-                "prevHouse" => $prev_house
+                "new_house_tr" => $house["label_tr"],
+                "newHouse" => $house_id,
+                "prevHouse" => $prev_house,
+                "church" => $this->getChurch()
             )
         );
 
-        $this->clergy->moveAllCardsInLocation($prev_house, $new_house, $player_id, $player_id);
+        $this->clergy->moveAllCardsInLocation($prev_house, $house_id, $player_id, $player_id);
     }
 
     function levelUpDragon(int $level_nbr, $player_id): int
@@ -490,15 +496,15 @@ class BatallaDeCoronas extends Table
 
     function priestGolden($player_id): void
     {
-        $this->moveClergy("GOLDEN", $player_id);
+        $this->moveClergy(1, $player_id);
     }
     function priestBlue($player_id): void
     {
-        $this->moveClergy("BLUE", $player_id);
+        $this->moveClergy(2, $player_id);
     }
     function priestRed($player_id): void
     {
-        $this->moveClergy("RED", $player_id);
+        $this->moveClergy(3, $player_id);
     }
 
     //////////////////////////////////////////////////////////////////////////////

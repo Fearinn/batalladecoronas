@@ -61,10 +61,10 @@
           <div id="boc_sword${MY_ID}:6" class="boc_sword_6"></div>
         </div>
         <div id="boc_church:{MY_ID}" class="boc_church">
-          <div id="boc_clergy${MY_ID}:DOOR" class="boc_clergy_DOOR"></div>
-          <div id="boc_clergy${MY_ID}:GOLDEN" class="boc_clergy_GOLDEN"></div>
-          <div id="boc_clergy${MY_ID}:BLUE" class="boc_clergy_BLUE"></div>
-          <div id="boc_clergy${MY_ID}:RED" class="boc_clergy_RED"></div>
+          <div id="boc_clergy${MY_ID}:0" class="boc_clergy_DOOR"></div>
+          <div id="boc_clergy${MY_ID}:1" class="boc_clergy_GOLDEN"></div>
+          <div id="boc_clergy${MY_ID}:2" class="boc_clergy_BLUE"></div>
+          <div id="boc_clergy${MY_ID}:3" class="boc_clergy_RED"></div>
         </div>
         <div id="boc_treasure:{MY_ID}" class="boc_treasure">
           <div id="boc_treasure${MY_ID}:-1" class="boc_treasure_-1"></div>
@@ -129,13 +129,13 @@
           <div id="boc_sword${PLAYER_ID}:" class="boc_sword_6"></div>
         </div>
         <div id="boc_church:{PLAYER_ID}" class="boc_church">
-          <div id="boc_clergy${PLAYER_ID}:DOOR" class="boc_clergy_DOOR"></div>
+          <div id="boc_clergy${PLAYER_ID}:0" class="boc_clergy_DOOR"></div>
           <div
-            id="boc_clergy${PLAYER_ID}:GOLDEN"
+            id="boc_clergy${PLAYER_ID}:1"
             class="boc_clergy_GOLDEN"
           ></div>
-          <div id="boc_clergy${PLAYER_ID}:BLUE" class="boc_clergy_BLUE"></div>
-          <div id="boc_clergy${PLAYER_ID}:RED" class="boc_clergy_RED"></div>
+          <div id="boc_clergy${PLAYER_ID}:2" class="boc_clergy_BLUE"></div>
+          <div id="boc_clergy${PLAYER_ID}:3" class="boc_clergy_RED"></div>
         </div>
         <div id="boc_treasure:{PLAYER_ID}" class="boc_treasure">
           <div id="boc_treasure${PLAYER_ID}:-1" class="boc_treasure_-1"></div>
