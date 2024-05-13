@@ -108,6 +108,16 @@ define([
       this[supplyStock].autowidth = true;
       this[supplyStock].setSelectionMode(0);
 
+      this[supplyStock].onItemCreate = (element, type, id) => {
+        const possibleTitles = {
+          crown: _("Crown token"),
+          cross: _("Cross token"),
+          smith: _("Smith token"),
+        };
+
+        this.addTooltip(element.id, possibleTitles[type], "");
+      };
+
       this[supplyStock].addItemType(
         "crown",
         0,
@@ -160,13 +170,16 @@ define([
       this[inactiveCouncilStock].extraClasses = "boc_unvestedCounselor";
       this[inactiveCouncilStock].setSelectionMode(0);
 
-      const inactiveCouncil = this.inactiveCouncil[currentPlayerId];
+      this[inactiveCouncilStock].onItemCreate = (element, type, id) => {
+        const counselorName = this.counselorsInfo[type].name;
+        this.addTooltip(element.id, counselorName, "");
+      };
 
+      const inactiveCouncil = this.inactiveCouncil[currentPlayerId];
       for (const cardId in inactiveCouncil) {
         const counselorId = inactiveCouncil[cardId].type_arg;
         const counselor = this.counselorsInfo[counselorId];
         const spritePos = counselor.spritePos;
-        const counselorName = counselor.name;
 
         this[inactiveCouncilStock].addItemType(
           counselorId,
@@ -176,9 +189,6 @@ define([
         );
 
         this[inactiveCouncilStock].addToStockWithId(counselorId, cardId);
-
-        const counselorElement = `boc_inactiveCouncil_item_${cardId}`;
-        this.addTooltip(counselorElement, counselorName, "");
       }
 
       for (const player_id in gamedatas.players) {
@@ -196,6 +206,10 @@ define([
         );
         this[anvilStock].image_items_per_row = 3;
         this[anvilStock].setSelectionMode(0);
+
+        this[anvilStock].onItemCreate = (element, type, id) => {
+          this.addTooltip(element.id, _("Smith token"), "");
+        };
 
         this[anvilStock].addItemType(
           "smith",
@@ -226,7 +240,7 @@ define([
 
           this[chairStock].onItemCreate = (element, type, id) => {
             const counselorName = this.counselorsInfo[type].name;
-            this.addTooltip(element, counselorName, "");
+            this.addTooltip(element.id, counselorName, "");
           };
 
           for (const counselorId in this.counselorsInfo) {
