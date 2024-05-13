@@ -52,7 +52,7 @@
 
 .boc_die {
   background-image: url("img/dice.png");
-  background-position: 500% 0;
+  background-position: -500% 0;
   border-radius: 12px;
   height: 60px !important;
   width: 60px;

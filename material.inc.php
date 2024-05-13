@@ -53,8 +53,16 @@ $this->counselors_info = array(
 );
 
 $this->church_houses = array(
-  "DOOR" => array(),
-  "GOLDEN" => array(),
-  "BLUE" => array(),
-  "RED" => array()
+  "DOOR" => array(
+    "label_tr" => clienttranslate("DOOR")
+  ),
+  "GOLDEN" => array(
+    "label_tr" => clienttranslate("GOLDEN")
+  ),
+  "BLUE" => array(
+    "label_tr" => clienttranslate("BLUE")
+  ),
+  "RED" => array(
+    "label_tr" => clienttranslate("RED")
+  )
 );

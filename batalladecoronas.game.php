@@ -409,15 +409,28 @@ class BatallaDeCoronas extends Table
         return $total_shields;
     }
 
-    function moveClergy(string $house, $player_id): void
+    function moveClergy(string $new_house, $player_id): void
     {
         $prev_house = $this->getChurch()[$player_id];
 
-        if ($prev_house == $house) {
+        if ($prev_house == $new_house) {
             throw new BgaUserException($this->_("You must move the clergy to other house"));
         }
 
-        $this->clergy->moveAllCardsInLocation($prev_house, $house, $player_id, $player_id);
+        $this->notifyAllPlayers(
+            "moveClergy",
+            clienttranslate('${player_name} moves the clergy to the ${new_house_tr} square'),
+            array(
+                "i18n" => array("house_tr"),
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id),
+                "new_house_tr" => $this->church_houses[$new_house]["label_tr"],
+                "newHouse" => $new_house,
+                "prevHouse" => $prev_house
+            )
+        );
+
+        $this->clergy->moveAllCardsInLocation($prev_house, $new_house, $player_id, $player_id);
     }
 
     function levelUpDragon(int $level_nbr, $player_id): int

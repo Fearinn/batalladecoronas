@@ -582,6 +582,7 @@ define([
       );
       dojo.subscribe("increaseAttack", this, "notif_increaseAttack");
       dojo.subscribe("increaseDefense", this, "notif_increaseDefense");
+      dojo.subscribe("moveClergy", this, "notif_moveClergy");
       dojo.subscribe("levelUpDragon", this, "notif_levelUpDragon");
     },
 
@@ -699,6 +700,22 @@ define([
       this[originStock].removeFromStock("dragon");
 
       this.dragon = notif.args.dragon;
+    },
+
+    notif_moveClergy: function (notif) {
+      const player_id = notif.args.player_id;
+
+      const newHouse = notif.args.newHouse;
+      const prevHouse = notif.args.prevHouse;
+
+      const originStock = `clergyStock$${player_id}:${prevHouse}`;
+      const originElement = `boc_clergy$${player_id}:${prevHouse}`;
+      const destinationStock = `clergyStock$${player_id}:${newHouse}`;
+
+      this[destinationStock].addToStock("clergy", originElement);
+      this[originStock].removeFromStock("clergy");
+
+      this.clergy = notif.args.clergy;
     },
   });
 });
