@@ -37,6 +37,7 @@ define([
       this.churchHouses = {};
 
       this.supply = {};
+      this.claimedSupply = {};
       this.inactiveCouncil = {};
       this.council = {};
       this.gems = {};
@@ -54,6 +55,7 @@ define([
       this.churchHouses = gamedatas.churchHouses;
 
       this.supply = gamedatas.supply;
+      this.claimedSupply = gamedatas.claimedSupply;
       this.inactiveCouncil = gamedatas.inactiveCouncil;
       this.council = gamedatas.council;
       this.gems = gamedatas.gems;
@@ -62,8 +64,6 @@ define([
       this.church = gamedatas.church;
       this.treasure = gamedatas.treasure;
       this.dragon = gamedatas.dragon;
-
-      console.log(this.dragon);
 
       const currentPlayerId = this.player_id;
 
@@ -182,6 +182,32 @@ define([
       }
 
       for (const player_id in gamedatas.players) {
+        const claimedSupply = this.claimedSupply[player_id];
+        //anvil
+        const anvilStock = `anvilStock:${player_id}`;
+        const anvilElement = $(`boc_anvil:${player_id}`);
+
+        this[anvilStock] = new ebg.stock();
+        this[anvilStock].create(
+          this,
+          anvilElement,
+          this.supplyItemSize,
+          this.supplyItemSize
+        );
+        this[anvilStock].image_items_per_row = 3;
+        this[anvilStock].setSelectionMode(0);
+
+        this[anvilStock].addItemType(
+          "smith",
+          0,
+          g_gamethemeurl + "img/supply.png",
+          2
+        );
+
+        if (claimedSupply["smith"]) {
+          this[anvilStock].addToStock("smith");
+        }
+
         //council
         for (let chair = 1; chair <= 6; chair++) {
           const chairStock = `chairStock$${player_id}:${chair}`;
@@ -264,7 +290,6 @@ define([
         for (const house in this.churchHouses) {
           const clergyStock = `clergyStock$${player_id}:${house}`;
 
-          console.log(clergyStock, "stock");
           const clergy = $(`boc_clergy$${player_id}:${house}`);
 
           this[clergyStock] = new ebg.stock();
@@ -587,6 +612,7 @@ define([
       dojo.subscribe("increaseDefense", this, "notif_increaseDefense");
       dojo.subscribe("moveClergy", this, "notif_moveClergy");
       dojo.subscribe("levelUpDragon", this, "notif_levelUpDragon");
+      dojo.subscribe("claimSmith", this, "notif_claimSmith");
     },
 
     notif_dieRoll: function (notif) {
@@ -708,8 +734,6 @@ define([
     notif_moveClergy: function (notif) {
       const player_id = notif.args.player_id;
 
-      console.log(this.church, "church");
-
       const newHouse = notif.args.newHouse;
       const prevHouse = notif.args.prevHouse;
 
@@ -717,12 +741,31 @@ define([
       const originElement = `boc_clergy$${player_id}:${prevHouse}`;
       const destinationStock = `clergyStock$${player_id}:${newHouse}`;
 
-      console.log(destinationStock, "destination");
-
       this[destinationStock].addToStock("clergy", originElement);
       this[originStock].removeFromStock("clergy");
 
       this.church = notif.args.church;
+    },
+
+    notif_claimSmith: function (notif) {
+      const player_id = notif.args.player_id;
+      const other_player_id = notif.args.other_player_id;
+
+      const isOwned = notif.args.isOwned;
+
+      const originStock = isOwned
+        ? `anvilStock:${other_player_id}`
+        : `supplyStock`;
+
+      const originElement = isOwned
+        ? `boc_anvil:${other_player_id}`
+        : `boc_supply`;
+      const destinationStock = `anvilStock:${player_id}`;
+
+      this[destinationStock].addToStock("smith", originElement);
+      this[originStock].removeFromStock("smith");
+
+      this.supply = notif.args.supply;
     },
   });
 });

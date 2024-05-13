@@ -244,6 +244,12 @@
   left: 56px;
 }
 
+.boc_anvil {
+  position: absolute;
+  top: 480px;
+  left: 500px;
+}
+
 .boc_treasure > * {
   position: absolute;
   width: var(--tokenSize);

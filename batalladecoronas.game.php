@@ -166,6 +166,7 @@ class BatallaDeCoronas extends Table
         $result["players"] = $this->getCollectionFromDb($sql);
         $result["dice"] = $this->getDice();
         $result["supply"] = $this->getSupply();
+        $result["claimedSupply"] = $this->getClaimedSupply();
         $result["inactiveCouncil"] = $this->getInactiveCouncil();
         $result["council"] = $this->getCouncil();
         $result["gems"] = $this->getGemsByLocation();
@@ -223,6 +224,23 @@ class BatallaDeCoronas extends Table
             "cross" => $this->cross->countCardInLocation("supply") > 0,
             "smith" => $this->smith->countCardInLocation("supply") > 0
         );
+    }
+
+    function getClaimedSupply()
+    {
+        $claimed_supply = array();
+
+        $players = $this->loadPlayersBasicInfos();
+
+        foreach ($players as $player_id => $player) {
+            $claimed_supply[$player_id] = array(
+                "crown" => $this->crown->countCardInLocation("crown", $player_id) > 0,
+                "cross" => $this->cross->countCardInLocation("cross", $player_id) > 0,
+                "smith" => $this->smith->countCardInLocation("smith", $player_id) > 0
+            );
+        }
+
+        return $claimed_supply;
     }
 
     function getInactiveCouncil()
@@ -463,7 +481,27 @@ class BatallaDeCoronas extends Table
 
     function claimSmith($player_id): void
     {
+        if ($this->smith->countCardInLocation("smith", $player_id) == 1) {
+            throw new BgaVisibleSystemException("The smith is already in your castle");
+        }
+
+        $other_player_id = $this->getPlayerAfter($player_id);
+
+        $is_owned = $this->smith->countCardInLocation("smith", $other_player_id) == 1;
+
         $this->smith->moveCard(1, "smith", $player_id);
+
+        $this->notifyAllPlayers(
+            "claimSmith",
+            clienttranslate('${player_name} claims the Smith'),
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id),
+                "other_player_id" => $other_player_id,
+                "isOwned" => $is_owned,
+                "supply" => $this->getSupply()
+            )
+        );
     }
 
     //////////////////////////////////////////////////////////////////////////////

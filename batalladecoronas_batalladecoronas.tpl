@@ -66,6 +66,7 @@
           <div id="boc_clergy${MY_ID}:2" class="boc_clergy_BLUE"></div>
           <div id="boc_clergy${MY_ID}:3" class="boc_clergy_RED"></div>
         </div>
+        <div id="boc_anvil:{MY_ID}" class="boc_anvil"></div>
         <div id="boc_treasure:{MY_ID}" class="boc_treasure">
           <div id="boc_treasure${MY_ID}:-1" class="boc_treasure_-1"></div>
           <div id="boc_treasure${MY_ID}:0" class="boc_treasure_0"></div>
@@ -130,13 +131,11 @@
         </div>
         <div id="boc_church:{PLAYER_ID}" class="boc_church">
           <div id="boc_clergy${PLAYER_ID}:0" class="boc_clergy_DOOR"></div>
-          <div
-            id="boc_clergy${PLAYER_ID}:1"
-            class="boc_clergy_GOLDEN"
-          ></div>
+          <div id="boc_clergy${PLAYER_ID}:1" class="boc_clergy_GOLDEN"></div>
           <div id="boc_clergy${PLAYER_ID}:2" class="boc_clergy_BLUE"></div>
           <div id="boc_clergy${PLAYER_ID}:3" class="boc_clergy_RED"></div>
         </div>
+        <div id="boc_anvil:{PLAYER_ID}" class="boc_anvil"></div>
         <div id="boc_treasure:{PLAYER_ID}" class="boc_treasure">
           <div id="boc_treasure${PLAYER_ID}:-1" class="boc_treasure_-1"></div>
           <div id="boc_treasure${PLAYER_ID}:0" class="boc_treasure_0"></div>
