@@ -326,7 +326,7 @@ class BatallaDeCoronas extends Table
         $dragon = array();
         $players = $this->loadPlayersBasicInfos();
 
-        foreach ($players as $player_id => $player_id) {
+        foreach ($players as $player_id => $player) {
             $dragon[$player_id] = $this->dragon->countCardInLocation("dragon", $player_id);
         }
 
@@ -424,7 +424,22 @@ class BatallaDeCoronas extends Table
     {
         $this->moveCardsToLocation($this->dragon, $level_nbr, "unclaimed", "dragon", $player_id, $player_id);
 
-        return $this->dragon->countCardInLocation("dragon", $player_id);
+        $dragon = $this->getDragon();
+
+        $total_level = $this->getDragon()[$player_id];
+
+        $this->notifyAllPlayers(
+            "levelUpDragon",
+            clienttranslate('${player_name} levels up the dragon. The current level is ${totalLevel}'),
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id),
+                "totalLevel" => $total_level,
+                "dragon" => $dragon
+            ),
+        );
+
+        return $total_level;
     }
 
     function claimSmith($player_id): void

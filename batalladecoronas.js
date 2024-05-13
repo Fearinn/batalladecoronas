@@ -59,6 +59,8 @@ define([
       this.treasure = gamedatas.treasure;
       this.dragon = gamedatas.dragon;
 
+      console.log(this.dragon);
+
       const currentPlayerId = this.player_id;
 
       //Setting up player boards
@@ -580,6 +582,7 @@ define([
       );
       dojo.subscribe("increaseAttack", this, "notif_increaseAttack");
       dojo.subscribe("increaseDefense", this, "notif_increaseDefense");
+      dojo.subscribe("levelUpDragon", this, "notif_levelUpDragon");
     },
 
     notif_dieRoll: function (notif) {
@@ -680,6 +683,22 @@ define([
       this[originStock].removeFromStock("shield");
 
       this.defense = notif.args.defense;
+    },
+
+    notif_levelUpDragon: function (notif) {
+      const player_id = notif.args.player_id;
+
+      const totalLevel = notif.args.totalLevel;
+      const prevLevel = this.dragon[player_id];
+
+      const originStock = `dragonStock$${player_id}:${prevLevel}`;
+      const originElement = `boc_dragon$${player_id}:${prevLevel}`;
+      const destinationStock = `dragonStock$${player_id}:${totalLevel}`;
+
+      this[destinationStock].addToStock("dragon", originElement);
+      this[originStock].removeFromStock("dragon");
+
+      this.dragon = notif.args.dragon;
     },
   });
 });
