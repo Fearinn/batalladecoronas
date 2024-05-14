@@ -193,6 +193,65 @@ define([
 
       for (const player_id in gamedatas.players) {
         const claimedSupply = this.claimedSupply[player_id];
+
+        //crown tower
+        const crownTowerStock = `crownTowerStock:${player_id}`;
+        const crownTowerElement = $(`boc_crownTower:${player_id}`);
+
+        this[crownTowerStock] = new ebg.stock();
+        this[crownTowerStock].create(
+          this,
+          crownTowerElement,
+          this.supplyItemSize,
+          this.supplyItemSize
+        );
+        this[crownTowerStock].image_items_per_row = 3;
+        this[crownTowerStock].setSelectionMode(0);
+
+        this[crownTowerStock].onItemCreate = (element, type, id) => {
+          this.addTooltip(element.id, _("Crown token"), "");
+        };
+
+        this[crownTowerStock].addItemType(
+          "crown",
+          0,
+          g_gamethemeurl + "img/supply.png",
+          0
+        );
+
+        if (claimedSupply["crown"]) {
+          this[crownTowerStock].addToStock("crown");
+        }
+
+        //cross tower
+        const crossTowerStock = `crossTowerStock:${player_id}`;
+        const crossTowerElement = $(`boc_crossTower:${player_id}`);
+
+        this[crossTowerStock] = new ebg.stock();
+        this[crossTowerStock].create(
+          this,
+          crossTowerElement,
+          this.supplyItemSize,
+          this.supplyItemSize
+        );
+        this[crossTowerStock].image_items_per_row = 3;
+        this[crossTowerStock].setSelectionMode(0);
+
+        this[crossTowerStock].onItemCreate = (element, type, id) => {
+          this.addTooltip(element.id, _("Cross token"), "");
+        };
+
+        this[crossTowerStock].addItemType(
+          "cross",
+          0,
+          g_gamethemeurl + "img/supply.png",
+          1
+        );
+
+        if (claimedSupply["cross"]) {
+          this[crossTowerStock].addToStock("cross");
+        }
+
         //anvil
         const anvilStock = `anvilStock:${player_id}`;
         const anvilElement = $(`boc_anvil:${player_id}`);
@@ -626,6 +685,8 @@ define([
       dojo.subscribe("increaseDefense", this, "notif_increaseDefense");
       dojo.subscribe("moveClergy", this, "notif_moveClergy");
       dojo.subscribe("levelUpDragon", this, "notif_levelUpDragon");
+      dojo.subscribe("claimCrown", this, "notif_claimCrown");
+      dojo.subscribe("claimCross", this, "notif_claimCross");
       dojo.subscribe("claimSmith", this, "notif_claimSmith");
     },
 
@@ -761,6 +822,47 @@ define([
       this.church = notif.args.church;
     },
 
+    notif_claimCrown: function (notif) {
+      const player_id = notif.args.player_id;
+      const other_player_id = notif.args.other_player_id;
+
+      const isOwned = notif.args.isOwned;
+
+      const originStock = isOwned
+        ? `crownTowerStock:${other_player_id}`
+        : `supplyStock`;
+
+      const originElement = isOwned
+        ? `boc_crownTower:${other_player_id}`
+        : `boc_supply`;
+      const destinationStock = `crownTowerStock:${player_id}`;
+
+      this[destinationStock].addToStock("crown", originElement);
+      this[originStock].removeFromStock("crown");
+
+      this.supply = notif.args.supply;
+    },
+
+    notif_claimCross: function (notif) {
+      const player_id = notif.args.player_id;
+      const other_player_id = notif.args.other_player_id;
+
+      const isOwned = notif.args.isOwned;
+
+      const originStock = isOwned
+        ? `crossTowerStock:${other_player_id}`
+        : `supplyStock`;
+
+      const originElement = isOwned
+        ? `boc_crossTower:${other_player_id}`
+        : `boc_supply`;
+      const destinationStock = `crossTowerStock:${player_id}`;
+
+      this[destinationStock].addToStock("cross", originElement);
+      this[originStock].removeFromStock("cross");
+
+      this.supply = notif.args.supply;
+    },
     notif_claimSmith: function (notif) {
       const player_id = notif.args.player_id;
       const other_player_id = notif.args.other_player_id;

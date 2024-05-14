@@ -107,6 +107,22 @@
   width: 720px;
 }
 
+.boc_crownTower {
+  position: absolute;
+  top: 30px;
+  right: 100px;
+}
+.boc_crossTower {
+  position: absolute;
+  top: 30px;
+  left: 32px;
+}
+.boc_anvil {
+  position: absolute;
+  top: 480px;
+  left: 500px;
+}
+
 .boc_council {
   position: absolute;
   top: 100px;
@@ -242,12 +258,6 @@
   position: absolute;
   top: 565px;
   left: 56px;
-}
-
-.boc_anvil {
-  position: absolute;
-  top: 480px;
-  left: 500px;
 }
 
 .boc_treasure > * {

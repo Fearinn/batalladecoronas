@@ -479,6 +479,56 @@ class BatallaDeCoronas extends Table
         return $total_level;
     }
 
+    function claimCrown($player_id): void
+    {
+        if ($this->crown->countCardInLocation("crown", $player_id) == 1) {
+            throw new BgaVisibleSystemException("The crown is already in your castle");
+        }
+
+        $other_player_id = $this->getPlayerAfter($player_id);
+
+        $is_owned = $this->crown->countCardInLocation("crown", $other_player_id) == 1;
+
+        $this->crown->moveCard(1, "crown", $player_id);
+
+        $this->notifyAllPlayers(
+            "claimCrown",
+            clienttranslate('${player_name} obtains the Crown token'),
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id),
+                "other_player_id" => $other_player_id,
+                "isOwned" => $is_owned,
+                "supply" => $this->getSupply()
+            )
+        );
+    }
+
+    function claimCross($player_id): void
+    {
+        if ($this->cross->countCardInLocation("cross", $player_id) == 1) {
+            throw new BgaVisibleSystemException("The cross is already in your castle");
+        }
+
+        $other_player_id = $this->getPlayerAfter($player_id);
+
+        $is_owned = $this->cross->countCardInLocation("cross", $other_player_id) == 1;
+
+        $this->cross->moveCard(1, "cross", $player_id);
+
+        $this->notifyAllPlayers(
+            "claimCross",
+            clienttranslate('${player_name} obtains the Cross token'),
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id),
+                "other_player_id" => $other_player_id,
+                "isOwned" => $is_owned,
+                "supply" => $this->getSupply()
+            )
+        );
+    }
+
     function claimSmith($player_id): void
     {
         if ($this->smith->countCardInLocation("smith", $player_id) == 1) {
@@ -493,7 +543,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "claimSmith",
-            clienttranslate('${player_name} claims the Smith'),
+            clienttranslate('${player_name} claims the Smith token'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
