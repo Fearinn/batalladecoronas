@@ -354,6 +354,37 @@ class BatallaDeCoronas extends Table
         return $dragon;
     }
 
+    function spendGold(int $gold_nbr, $player_id, bool $to_box = false): int
+    {
+        if ($gold_nbr <= 0) {
+            return $this->getTreasure()[$player_id];
+        }
+
+        $prev_gold_nbr = $this->getTreasure()[$player_id];
+
+        $spent_gold  = array();
+
+        if ($to_box) {
+            $spent_gold = $this->moveCardsToLocation($this->gold, $gold_nbr, "treasure", "box", $player_id, $player_id);
+        } else {
+            $spent_gold = $this->moveCardsToLocation($this->gold, $gold_nbr, "treasure", "unclaimed", $player_id, $player_id);
+        }
+
+        $this->notifyAllPlayers(
+            "generateGold",
+            clienttranslate('${player_name} spends ${spentGold} of gold. The total is ${totalGold}'),
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id),
+                "prevGold" => $prev_gold_nbr,
+                "spentGold" => count($spent_gold),
+                "totalGold" => $prev_gold_nbr - count($spent_gold)
+            )
+        );
+
+        return $this->getTreasure()[$player_id];
+    }
+
     function generateGold(int $gold_nbr, $player_id): int
     {
         if ($gold_nbr <= 0) {
@@ -367,8 +398,8 @@ class BatallaDeCoronas extends Table
             "generateGold",
             clienttranslate('${player_name} generates ${generatedGold} of gold. The total is ${totalGold}'),
             array(
-                "player_id" => $this->getActivePlayerId(),
-                "player_name" => $this->getActivePlayerName(),
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id),
                 "prevGold" => $prev_gold_nbr,
                 "generatedGold" => count($generated_gold),
                 "totalGold" => $prev_gold_nbr + count($generated_gold)
@@ -552,6 +583,38 @@ class BatallaDeCoronas extends Table
                 "supply" => $this->getSupply()
             )
         );
+    }
+
+    function claimGem($player_id): int
+    {
+        $other_player_id = $this->getPlayerAfter($player_id);
+
+        $this->moveCardsToLocation($this->gems, 1, "power", "treasure", $other_player_id, $player_id);
+
+        $total_gems = $this->gems->countCardInLocation("treasure", $player_id);
+
+        $gold_nbr = $this->getTreasure()[$player_id];
+        $reduce_gold = $gold_nbr >= (8 - $total_gems);
+
+        if ($reduce_gold) {
+            $this->spendGold(1, $player_id, true);
+        }
+
+        $this->notifyAllPlayers(
+            "claimGem",
+            clienttranslate('${player_name} claims a gem. The total is ${totalGems}'),
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id),
+                "other_player_id" => $other_player_id,
+                "totalGems" => $total_gems,
+                "gemsByLocations" => $this->getGemsByLocation(),
+                "reduceGold" => $reduce_gold,
+                "treasure" => $this->getTreasure()
+            )
+        );
+
+        return $total_gems;
     }
 
     //////////////////////////////////////////////////////////////////////////////

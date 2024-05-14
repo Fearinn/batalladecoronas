@@ -336,14 +336,14 @@ define([
         this[powerStock].setSelectionMode(0);
 
         this[powerStock].addItemType(
-          "blue",
+          "blue_gem",
           0,
           g_gamethemeurl + "img/gems.png",
           1
         );
 
         this[powerStock].addItemType(
-          "purple",
+          "purple_gem",
           1,
           g_gamethemeurl + "img/gems.png",
           0
@@ -352,11 +352,11 @@ define([
         const power = this.gems[player_id].power;
 
         if (power == 3) {
-          this[powerStock].addToStockWithId("blue", 1);
+          this[powerStock].addToStockWithId("blue_gem", 1);
         }
 
         for (let i = 1; i <= 2 && i <= power; i++) {
-          this[powerStock].addToStockWithId("purple", 4 - i);
+          this[powerStock].addToStockWithId("purple_gem", 4 - i);
         }
 
         //church
@@ -470,12 +470,39 @@ define([
             g_gamethemeurl + "img/tokens.png",
             2
           );
+
+          this[treasureStock].addItemType(
+            "purple_gem",
+            0,
+            g_gamethemeurl + "img/gems.png",
+            0
+          );
+          this[treasureStock].addItemType(
+            "blue_gem",
+            0,
+            g_gamethemeurl + "img/gems.png",
+            1
+          );
         }
 
         const goldNbr = this.treasure[player_id];
         const treasureStock = `treasureStock$${player_id}:${goldNbr}`;
         const treasureInitial = $(`boc_treasure$${player_id}:0`);
         this[treasureStock].addToStock("gold", treasureInitial);
+
+        const gemNbr = this.gems[player_id].treasure;
+        const gemsInitial = $(`boc_power:${player_id}`);
+
+        //gem treasure
+        for (let gem = 1; gem <= 2 && gem <= gemNbr; gem++) {
+          const gemTreasureStock = `treasureStock$${player_id}:${8 - gem}`;
+          this[gemTreasureStock].addToStock("purple_gem", gemsInitial);
+        }
+
+        if (gemNbr == 3) {
+          const gemTreasureStock = `treasureStock$${player_id}:${5}`;
+          this[gemTreasureStock].addToStock("blue_gem");
+        }
 
         //dragon
         for (let dragonLevel = 0; dragonLevel <= 5; dragonLevel++) {
@@ -688,6 +715,7 @@ define([
       dojo.subscribe("claimCrown", this, "notif_claimCrown");
       dojo.subscribe("claimCross", this, "notif_claimCross");
       dojo.subscribe("claimSmith", this, "notif_claimSmith");
+      dojo.subscribe("claimGem", this, "notif_claimGem");
     },
 
     notif_dieRoll: function (notif) {
@@ -863,6 +891,7 @@ define([
 
       this.supply = notif.args.supply;
     },
+
     notif_claimSmith: function (notif) {
       const player_id = notif.args.player_id;
       const other_player_id = notif.args.other_player_id;
@@ -882,6 +911,28 @@ define([
       this[originStock].removeFromStock("smith");
 
       this.supply = notif.args.supply;
+    },
+
+    notif_claimGem: function (notif) {
+      const player_id = notif.args.player_id;
+      const other_player_id = notif.args.other_player_id;
+
+      const totalGems = notif.args.totalGems;
+
+      const originStock = `powerStock:${other_player_id}`;
+      const originElement = `boc_power:${other_player_id}`;
+      const destinationStock = `treasureStock$${player_id}:${8 - totalGems}`;
+
+      if (totalGems == 3) {
+        this[destinationStock].addToStock("blue_gem", originElement);
+      } else {
+        this[destinationStock].addToStock("purple_gem", originElement);
+      }
+
+      this[originStock].removeFromStockById(4 - totalGems);
+
+      this.treasure = notif.args.treasure;
+      this.gems = notif.args.gemsByLocations;
     },
   });
 });
