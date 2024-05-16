@@ -73,4 +73,12 @@ class action_batalladecoronas extends APP_GameAction
     $this->game->skipActivation();
     $this->ajaxResponse();
   }
+
+  public function activateNoble()
+  {
+    $this->setAjaxMode();
+    $card_id = $this->getArg("cardId", AT_enum, true, null, range(1, 6));
+    $this->game->activateNoble($card_id);
+    $this->ajaxResponse();
+  }
 }

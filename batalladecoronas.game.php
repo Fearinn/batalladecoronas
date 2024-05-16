@@ -926,6 +926,52 @@ class BatallaDeCoronas extends Table
         $this->gamestate->nextState("skip");
     }
 
+    function activateNoble($card_id)
+    {
+        $this->checkAction("activateNoble");
+
+        $player_id = $this->getActivePlayerId();
+
+        $counselor = $this->council->getCard($card_id);
+
+        $active_counselor = $counselor["type_arg"];
+        $chair = $counselor["location_arg"];
+
+        if ($active_counselor == 4) {
+            throw new BgaVisibleSystemException("You can't active the Noble with their own effect");
+        }
+
+        $this->notifyAllPlayers(
+            "activateNoble",
+            clienttranslate('${player_name} activates the Noble. The effect of other counselor is activated'),
+            array("player_name" => $this->getPlayerNameById($player_id))
+        );
+
+        if ($active_counselor == 2) {
+            $this->masterOfCoin($player_id);
+        }
+
+        if ($active_counselor == 3) {
+            $this->sorcerer($player_id);
+        }
+
+        if ($active_counselor == 5) {
+            $this->smith($player_id);
+        }
+
+        if ($active_counselor == 1) {
+            $this->gamestate->nextState("commanderActivation");
+            return;
+        }
+
+        if ($active_counselor == 6) {
+            $this->gamestate->nextState("priestActivation");
+            return;
+        }
+
+        $this->gamestate->nextState("buyingPhase");
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //////////// Game state arguments
     ////////////

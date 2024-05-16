@@ -561,6 +561,8 @@ define([
     onEnteringState: function (stateName, args) {
       console.log("Entering state: " + stateName);
 
+      const player_id = this.getActivePlayerId();
+
       if (stateName === "diceRoll") {
         if (this.isCurrentPlayerActive()) {
           this.addActionButton("boc_rollDice", _("Roll dice"), "onRollDice");
@@ -603,6 +605,21 @@ define([
           );
         }
       }
+
+      if (stateName === "nobleActivation") {
+        if (this.isCurrentPlayerActive()) {
+          this["inactiveCouncilStock"].setSelectionMode(1);
+
+          this.addActionButton(
+            "boc_cancel",
+            _("Cancel"),
+            "onCancelActivation",
+            null,
+            null,
+            "red"
+          );
+        }
+      }
     },
 
     onLeavingState: function (stateName) {
@@ -619,7 +636,11 @@ define([
       if (stateName === "counselorVesting") {
         dojo.query(".boc_unvestedCounselor").removeClass("boc_selectable");
 
-        this[`inactiveCouncilStock`].setSelectionMode(0);
+        this["inactiveCouncilStock"].setSelectionMode(0);
+      }
+
+      if (stateName === "nobleActivation") {
+        this["inactiveCouncilStock"].setSelectionMode(0);
       }
     },
 
@@ -639,6 +660,35 @@ define([
           (result) => {},
           (isError) => {}
         );
+      }
+    },
+
+    changeChairsSelection: function (player_id, enable = true) {
+      for (let chair = 1; chair <= 6; chair++) {
+        const chairStock = `chairStock$${player_id}:${chair}`;
+
+        if (enable) {
+          this[chairStock].setSelectionMode(1);
+          return;
+        }
+
+        this[chairStock].setSelectionMode(0);
+      }
+    },
+
+    unselectOtherStocks: function (stock) {
+      if (stock.getSelectedItems().length === 0) {
+        return;
+      }
+      for (field in this) {
+        if (
+          this[field] &&
+          this[field].unselectAll &&
+          this[field].getSelectedItems().length > 0 &&
+          this[field].control_name != stock.control_name
+        ) {
+          this[field].unselectAll();
+        }
       }
     },
 
@@ -694,6 +744,34 @@ define([
           }
         }
       }
+
+      if (stateName === "nobleActivation") {
+        if (this.isCurrentPlayerActive()) {
+          this.removeActionButtons();
+
+          if (selectedItemsNbr == 1) {
+            const cardId = stock.getSelectedItems()[0].id;
+
+            this.addActionButton(
+              "boc_nobleActivation",
+              _("Confirm selection"),
+              () => {
+                this.onActivateNoble(cardId);
+              }
+            );
+            return;
+          }
+
+          this.addActionButton(
+            "boc_cancel",
+            _("Cancel"),
+            "onCancelActivation",
+            null,
+            null,
+            "red"
+          );
+        }
+      }
     },
 
     onRollDice: function () {
@@ -721,6 +799,18 @@ define([
 
     onSkipActivation: function () {
       const action = "skipActivation";
+
+      this.sendAjaxCall(action);
+    },
+
+    onActivateNoble: function (cardId) {
+      const action = "activateNoble";
+
+      this.sendAjaxCall(action, { cardId });
+    },
+
+    onCancelActivation: function () {
+      const action = "cancelActivation";
 
       this.sendAjaxCall(action);
     },
