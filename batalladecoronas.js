@@ -584,6 +584,25 @@ define([
           this[`inactiveCouncilStock`].setSelectionMode(1);
         }
       }
+
+      if (stateName === "counselorActivation") {
+        if (this.isCurrentPlayerActive()) {
+          this.addActionButton(
+            "boc_activateCounselor",
+            _("Activate"),
+            "onActivateCounselor"
+          );
+
+          this.addActionButton(
+            "boc_skip",
+            _("Skip"),
+            "onSkipActivation",
+            null,
+            null,
+            "red"
+          );
+        }
+      }
     },
 
     onLeavingState: function (stateName) {
@@ -692,6 +711,18 @@ define([
       const action = "vestCounselor";
 
       this.sendAjaxCall(action, { cardId });
+    },
+
+    onActivateCounselor: function () {
+      const action = "activateCounselor";
+
+      this.sendAjaxCall(action);
+    },
+
+    onSkipActivation: function () {
+      const action = "skipActivation";
+
+      this.sendAjaxCall(action);
     },
 
     ///////////////////////////////////////////////////

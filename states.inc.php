@@ -56,20 +56,21 @@ $machinestates = array(
 
     32 => array(
         "name" => "counselorActivation",
-        "description" => clienttranslate('${actplayer} may activate the counselor'),
-        "descriptionmyturn" => clienttranslate('${you} may activate the counselor'),
+        "description" => clienttranslate('${actplayer} may activate the ${counselor_name}'),
+        "descriptionmyturn" => clienttranslate('${you} may activate the ${counselor_name}'),
         "type" => "activeplayer",
-        "possibleactions" => array("counselorActivation", "skip"),
-        "transitions" => array("pickCounselor" => 33, "skip" => 4),
+        "args" => "argCounselorActivation",
+        "possibleactions" => array("activateCounselor", "skipActivation"),
+        "transitions" => array("nobleActivation" => 33, "buyingPhase" => 4, "skip" => 4),
     ),
 
     33 => array(
-        "name" => "counselorPicking",
+        "name" => "nobleActivation",
         "description" => clienttranslate('${actplayer} activated the Noble and must now pick other counselor to activate'),
         "descriptionmyturn" => clienttranslate('${you} activated the Noble and must now pick other counselor to activate'),
         "type" => "activeplayer",
-        "possibleactions" => array("pickCounselor"),
-        "transitions" => array("pickCounselor" => 33, "buyingPhase" => 4),
+        "possibleactions" => array("activateNoble"),
+        "transitions" => array("buyingPhase" => 4),
     ),
 
     4 => array(

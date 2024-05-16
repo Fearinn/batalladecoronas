@@ -122,7 +122,7 @@ class BatallaDeCoronas extends Table
             $counselors = array();
             foreach ($this->counselors_info as $counselor_id => $counselor) {
                 $card = array(
-                    "type" => $counselor["name"],
+                    "type" => "counselor",
                     "type_arg" => $counselor_id,
                     "nbr" => 1
                 );
@@ -623,38 +623,117 @@ class BatallaDeCoronas extends Table
 
     function commanderAttack($player_id): int
     {
+        $this->notifyAllPlayers(
+            "activateCommander",
+            clienttranslate('${player_name} activates the ${counselor_name}'),
+            array(
+                "i18n" => array("counselor_name"),
+                "player_name" => $this->getPlayerNameById($player_id),
+                "counselor_name" => clienttranslate("Militia Commander")
+            )
+        );
         return $this->increaseAttack(1, $player_id);
     }
     function commanderDefense($player_id): int
     {
+        $this->notifyAllPlayers(
+            "activateCommander",
+            clienttranslate('${player_name} activates the ${counselor_name}'),
+            array(
+                "i18n" => array("counselor_name"),
+                "player_name" => $this->getPlayerNameById($player_id),
+                "counselor_name" => clienttranslate("Militia Commander")
+            )
+        );
+
         return $this->increaseDefense(1, $player_id);
     }
 
     function masterOfCoin($player_id): int
     {
+        $this->notifyAllPlayers(
+            "activateMaster",
+            clienttranslate('${player_name} activates the ${counselor_name}'),
+            array(
+                "i18n" => array("counselor_name"),
+                "player_name" => $this->getPlayerNameById($player_id),
+                "counselor_name" => clienttranslate("Master of Coin")
+            )
+        );
+
         return $this->generateGold(3, $player_id);
     }
 
     function sorcerer($player_id): int
     {
+        $this->notifyAllPlayers(
+            "activateSorcerer",
+            clienttranslate('${player_name} activates the ${counselor_name}'),
+            array(
+                "i18n" => array("counselor_name"),
+                "player_name" => $this->getPlayerNameById($player_id),
+                "counselor_name" => clienttranslate("Sorcerer")
+            )
+        );
+
         return $this->levelUpDragon(1, $player_id);
     }
 
     function smith($player_id): void
     {
+        $this->notifyAllPlayers(
+            "activateSmith",
+            clienttranslate('${player_name} activates the ${counselor_name}'),
+            array(
+                "i18n" => array("counselor_name"),
+                "player_name" => $this->getPlayerNameById($player_id),
+                "counselor_name" => clienttranslate("Smith")
+            )
+        );
+
         $this->claimSmith($player_id);
     }
 
     function priestGolden($player_id): void
     {
+        $this->notifyAllPlayers(
+            "activatePriest",
+            clienttranslate('${player_name} activates the ${counselor_name}'),
+            array(
+                "i18n" => array("counselor_name"),
+                "player_name" => $this->getPlayerNameById($player_id),
+                "counselor_name" => clienttranslate("Priest")
+            )
+        );
+
         $this->moveClergy(1, $player_id);
     }
     function priestBlue($player_id): void
     {
+        $this->notifyAllPlayers(
+            "activatePriest",
+            clienttranslate('${player_name} activates the ${counselor_name}'),
+            array(
+                "i18n" => array("counselor_name"),
+                "player_name" => $this->getPlayerNameById($player_id),
+                "counselor_name" => clienttranslate("Priest")
+            )
+        );
+
         $this->moveClergy(2, $player_id);
     }
     function priestRed($player_id): void
     {
+        $this->notifyAllPlayers(
+            "activatePriest",
+            clienttranslate('${player_name} activates the ${counselor_name}'),
+            array(
+                "i18n" => array("counselor_name"),
+                "player_name" => $this->getPlayerNameById($player_id),
+                "counselor_name" => clienttranslate("Priest")
+            )
+        );
+
         $this->moveClergy(3, $player_id);
     }
 
@@ -794,7 +873,57 @@ class BatallaDeCoronas extends Table
             )
         );
 
+        $this->setGameStateValue("active_counselor", $counselor_id);
+
         $this->gamestate->nextState("counselorActivation");
+    }
+
+    function activateCounselor()
+    {
+        $this->checkAction("activateCounselor");
+
+        $player_id = $this->getActivePlayerId();
+
+        $active_counselor = $this->getGameStateValue("active_counselor");
+
+        if ($active_counselor == 2) {
+            $this->masterOfCoin($player_id);
+        }
+
+        if ($active_counselor == 3) {
+            $this->sorcerer($player_id);
+        }
+
+        if ($active_counselor == 5) {
+            $this->smith($player_id);
+        }
+
+        if ($active_counselor == 1) {
+            $this->gamestate->nextState("commanderActivation");
+            return;
+        }
+
+        if ($active_counselor == 4) {
+            $this->gamestate->nextState("nobleActivation");
+            return;
+        }
+
+        if ($active_counselor == 6) {
+            $this->gamestate->nextState("priestActivation");
+            return;
+        }
+
+        $this->gamestate->nextState("buyingPhase");
+    }
+
+    function skipActivation()
+    {
+        $this->checkAction("skipActivation");
+
+        $this->setGameStateValue("active_counselor", 0);
+        $this->setGameStateValue("active_chair", 0);
+
+        $this->gamestate->nextState("skip");
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -805,6 +934,15 @@ class BatallaDeCoronas extends Table
     {
         return array(
             "chair" => $this->getGameStateValue("active_chair")
+        );
+    }
+
+    function argCounselorActivation()
+    {
+        $counselor_id = $this->getGameStateValue("active_counselor");
+
+        return array(
+            "counselor_name" => $this->counselors_info[$counselor_id]["name"]
         );
     }
 

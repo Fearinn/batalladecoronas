@@ -59,4 +59,18 @@ class action_batalladecoronas extends APP_GameAction
     $this->game->vestCounselor($card_id);
     $this->ajaxResponse();
   }
+
+  public function activateCounselor()
+  {
+    $this->setAjaxMode();
+    $this->game->activateCounselor();
+    $this->ajaxResponse();
+  }
+
+  public function skipActivation()
+  {
+    $this->setAjaxMode();
+    $this->game->skipActivation();
+    $this->ajaxResponse();
+  }
 }
