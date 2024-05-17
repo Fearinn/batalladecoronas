@@ -535,13 +535,21 @@ define([
       }
 
       //connections
-
       for (let die = 1; die <= 2; die++) {
         const dieStock = `dieStock:${die}`;
 
         dojo.connect(this[dieStock], "onChangeSelection", this, (targetId) => {
           this.onSelectDie(targetId, this[dieStock]);
         });
+      }
+
+      for (const player_id in gamedatas.players) {
+        for (let chair = 1; chair <= 6; chair++) {
+          const chairStock = `chairStock$${player_id}:${chair}`;
+          dojo.connect(this[chairStock], "onChangeSelection", this, () => {
+            this.onSelectCounselor(this[chairStock]);
+          });
+        }
       }
 
       dojo.connect(
@@ -609,6 +617,7 @@ define([
       if (stateName === "nobleActivation") {
         if (this.isCurrentPlayerActive()) {
           this["inactiveCouncilStock"].setSelectionMode(1);
+          this.changeChairsSelection(player_id);
 
           this.addActionButton(
             "boc_cancel",
@@ -625,6 +634,8 @@ define([
     onLeavingState: function (stateName) {
       console.log("Leaving state: " + stateName);
 
+      const player_id = this.getActivePlayerId();
+
       if (stateName === "decisionPhase") {
         dojo.query(".boc_die > *").removeClass("boc_selectable");
 
@@ -635,12 +646,14 @@ define([
 
       if (stateName === "counselorVesting") {
         dojo.query(".boc_unvestedCounselor").removeClass("boc_selectable");
-
         this["inactiveCouncilStock"].setSelectionMode(0);
       }
 
       if (stateName === "nobleActivation") {
+        dojo.query(".boc_unvestedCounselor").removeClass("boc_selectable");
         this["inactiveCouncilStock"].setSelectionMode(0);
+
+        this.changeChairsSelection(player_id, false);
       }
     },
 
@@ -669,10 +682,11 @@ define([
 
         if (enable) {
           this[chairStock].setSelectionMode(1);
-          return;
+          dojo.query(".boc_counselor").addClass("boc_selectable");
+        } else {
+          this[chairStock].setSelectionMode(0);
+          dojo.query(".boc_counselor").removeClass("boc_selectable");
         }
-
-        this[chairStock].setSelectionMode(0);
       }
     },
 
@@ -697,6 +711,8 @@ define([
 
     //stock selections
     onSelectDie: function (targetId, stock) {
+      this.unselectOtherStocks(stock);
+
       const stateName = this.gamedatas.gamestate.name;
       const selectedItemsNbr = stock.getSelectedItems().length;
       const die = targetId.split(":")[1];
@@ -723,6 +739,8 @@ define([
     },
 
     onSelectInactiveCounselor: function (stock) {
+      this.unselectOtherStocks(stock);
+
       const stateName = this.gamedatas.gamestate.name;
       const selectedItemsNbr = stock.getSelectedItems().length;
 
@@ -774,6 +792,41 @@ define([
       }
     },
 
+    onSelectCounselor: function (stock) {
+      this.unselectOtherStocks(stock);
+
+      const stateName = this.gamedatas.gamestate.name;
+      const selectedItemsNbr = stock.getSelectedItems().length;
+
+      if (stateName === "nobleActivation") {
+        if (this.isCurrentPlayerActive()) {
+          this.removeActionButtons();
+          if (selectedItemsNbr == 1) {
+            const cardId = stock.getSelectedItems()[0].id;
+
+            this.addActionButton(
+              "boc_nobleActivation",
+              _("Confirm selection"),
+              () => {
+                this.onActivateNoble(cardId);
+              }
+            );
+            return;
+          }
+
+          this.addActionButton(
+            "boc_cancel",
+            _("Cancel"),
+            "onCancelActivation",
+            null,
+            null,
+            "red"
+          );
+        }
+      }
+    },
+
+    //actions
     onRollDice: function () {
       const action = "rollDice";
       this.sendAjaxCall(action);

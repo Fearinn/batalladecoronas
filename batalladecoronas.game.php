@@ -938,7 +938,7 @@ class BatallaDeCoronas extends Table
         $chair = $counselor["location_arg"];
 
         if ($active_counselor == 4) {
-            throw new BgaVisibleSystemException("You can't active the Noble with their own effect");
+            throw new BgaUserException($this->_("You can't activate the Noble with its own effect"));
         }
 
         $this->notifyAllPlayers(
