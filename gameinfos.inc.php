@@ -16,16 +16,16 @@ $gameinfos = array(
     'game_name' => "Batalla de Coronas",
 
     // Game publisher (use empty string if there is no publisher)
-    'publisher' => 'La Vaca Del Tablero',
+    'publisher' => 'La Vaca del Tablero',
 
     // Url of game publisher website
     'publisher_website' => 'https://lavacadeltablero.cl/',
 
     // Board Game Geek ID of the publisher
-    'publisher_bgg_id' => 0,
+    'publisher_bgg_id' => 56781,
 
     // Board game geek ID of the game
-    'bgg_id' => 0,
+    'bgg_id' => 421255,
 
     // Players configuration that can be played (ex: 2 to 4 players)
     'players' => array(2),
