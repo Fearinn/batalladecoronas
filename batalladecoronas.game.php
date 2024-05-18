@@ -916,16 +916,6 @@ class BatallaDeCoronas extends Table
         $this->gamestate->nextState("buyingPhase");
     }
 
-    function skipActivation()
-    {
-        $this->checkAction("skipActivation");
-
-        $this->setGameStateValue("active_counselor", 0);
-        $this->setGameStateValue("active_chair", 0);
-
-        $this->gamestate->nextState("skip");
-    }
-
     function activateNoble($card_id)
     {
         $this->checkAction("activateNoble");
@@ -970,6 +960,48 @@ class BatallaDeCoronas extends Table
         }
 
         $this->gamestate->nextState("buyingPhase");
+    }
+
+    function cancelActivation()
+    {
+        $this->checkAction("cancelActivation");
+
+        $player_id = $this->getActivePlayerId();
+
+        $counselor_id = $this->getGameStateValue("active_counselor");
+
+        $this->notifyAllPlayers(
+            "cancelActivation",
+            "",
+            array()
+        );
+
+        $this->gamestate->nextState("cancel");
+    }
+
+    function skipActivation()
+    {
+        $this->checkAction("skipActivation");
+
+        $player_id = $this->getActivePlayerId();
+
+        $counselor_id = $this->getGameStateValue("active_counselor");
+
+        $this->notifyAllPlayers(
+            "skipActivation",
+            clienttranslate('${player_name} skips the activation of the ${counselor_name}'),
+            array(
+                "i18n" => array("counselor_name"),
+                "player_name" => $this->getPlayerNameById($player_id),
+                "counselor_name" => $this->counselors_info[$counselor_id]["name"]
+            )
+        );
+
+        $this->setGameStateValue("active_counselor", 0);
+        $this->setGameStateValue("active_chair", 0);
+
+
+        $this->gamestate->nextState("skip");
     }
 
     //////////////////////////////////////////////////////////////////////////////

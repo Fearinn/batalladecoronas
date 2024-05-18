@@ -850,16 +850,16 @@ define([
       this.sendAjaxCall(action);
     },
 
-    onSkipActivation: function () {
-      const action = "skipActivation";
-
-      this.sendAjaxCall(action);
-    },
-
     onActivateNoble: function (cardId) {
       const action = "activateNoble";
 
       this.sendAjaxCall(action, { cardId });
+    },
+
+    onSkipActivation: function () {
+      const action = "skipActivation";
+
+      this.sendAjaxCall(action);
     },
 
     onCancelActivation: function () {
