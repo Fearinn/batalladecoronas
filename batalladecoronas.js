@@ -561,6 +561,10 @@ define([
         }
       );
 
+      dojo.query(".boc_militia").connect("onclick", (event) => {
+        this.onPickMilitia(event);
+      });
+
       this.setupNotifications();
 
       console.log("Ending game setup");
@@ -579,7 +583,7 @@ define([
 
       if (stateName === "decisionPhase") {
         if (this.isCurrentPlayerActive()) {
-          dojo.query(".boc_die > *").addClass("boc_selectable");
+          dojo.query(".boc_die > *").addClass("boc_selectableItem");
 
           for (let die = 1; die <= 2; die++) {
             this[`dieStock:${die}`].setSelectionMode(1);
@@ -589,7 +593,7 @@ define([
 
       if (stateName === "counselorVesting") {
         if (this.isCurrentPlayerActive()) {
-          dojo.query(".boc_unvestedCounselor").addClass("boc_selectable");
+          dojo.query(".boc_unvestedCounselor").addClass("boc_selectableItem");
 
           this[`inactiveCouncilStock`].setSelectionMode(1);
         }
@@ -629,6 +633,21 @@ define([
           );
         }
       }
+
+      if (stateName === "commanderActivation") {
+        if (this.isCurrentPlayerActive()) {
+          dojo.query(".boc_militia").addClass("boc_selectableContainer");
+
+          this.addActionButton(
+            "boc_cancel",
+            _("Cancel"),
+            "onCancelActivation",
+            null,
+            null,
+            "red"
+          );
+        }
+      }
     },
 
     onLeavingState: function (stateName) {
@@ -637,7 +656,7 @@ define([
       const player_id = this.getActivePlayerId();
 
       if (stateName === "decisionPhase") {
-        dojo.query(".boc_die > *").removeClass("boc_selectable");
+        dojo.query(".boc_die > *").removeClass("boc_selectableItem");
 
         for (let die = 1; die <= 2; die++) {
           this[`dieStock:${die}`].setSelectionMode(0);
@@ -645,15 +664,21 @@ define([
       }
 
       if (stateName === "counselorVesting") {
-        dojo.query(".boc_unvestedCounselor").removeClass("boc_selectable");
+        dojo.query(".boc_unvestedCounselor").removeClass("boc_selectableItem");
         this["inactiveCouncilStock"].setSelectionMode(0);
       }
 
       if (stateName === "nobleActivation") {
-        dojo.query(".boc_unvestedCounselor").removeClass("boc_selectable");
+        dojo.query(".boc_unvestedCounselor").removeClass("boc_selectableItem");
         this["inactiveCouncilStock"].setSelectionMode(0);
 
         this.changeChairsSelection(player_id, false);
+      }
+
+      if (stateName === "commanderActivation") {
+        dojo
+          .query(".boc_militia")
+          .removeClass("boc_selectableContainer");
       }
     },
 
@@ -682,10 +707,10 @@ define([
 
         if (enable) {
           this[chairStock].setSelectionMode(1);
-          dojo.query(".boc_counselor").addClass("boc_selectable");
+          dojo.query(".boc_counselor").addClass("boc_selectableItem");
         } else {
           this[chairStock].setSelectionMode(0);
-          dojo.query(".boc_counselor").removeClass("boc_selectable");
+          dojo.query(".boc_counselor").removeClass("boc_selectableItem");
         }
       }
     },
@@ -854,6 +879,23 @@ define([
       const action = "activateNoble";
 
       this.sendAjaxCall(action, { cardId });
+    },
+
+    onPickMilitia: function (event) {
+      const stateName = this.gamedatas.gamestate.name;
+      if (stateName === "commanderActivation") {
+        const action = "activateCommander";
+
+        const idInfo = event.currentTarget.id.split("boc_")[1].split(":");
+        const militia = idInfo[0].toUpperCase();
+        const player_id = idInfo[1];
+
+        if (this.player_id != player_id) {
+          return;
+        }
+
+        this.sendAjaxCall(action, { militia });
+      }
     },
 
     onSkipActivation: function () {

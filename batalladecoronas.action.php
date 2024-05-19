@@ -75,6 +75,14 @@ class action_batalladecoronas extends APP_GameAction
     $this->ajaxResponse();
   }
 
+  public function activateCommander()
+  {
+    $this->setAjaxMode();
+    $militia = $this->getArg("militia", AT_enum, true, null, array("ATTACK", "DEFENSE"));
+    $this->game->activateCommander($militia);
+    $this->ajaxResponse();
+  }
+
   public function cancelActivation()
   {
     $this->setAjaxMode();

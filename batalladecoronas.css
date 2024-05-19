@@ -41,9 +41,15 @@
   gap: 4px;
 }
 
-.boc_selectable {
+.boc_selectableItem {
   cursor: pointer !important;
   pointer-events: all;
+}
+
+.boc_selectableContainer {
+  cursor: pointer;
+  pointer-events: all;
+  border: 3px solid green;
 }
 
 .boc_dice {
@@ -173,10 +179,10 @@
 
 .boc_attack {
   position: absolute;
-  top: 285px;
-  right: 75px;
-  height: 150px;
-  width: 215px;
+  top: 280px;
+  right: 65px;
+  height: 160px;
+  width: 220px;
 }
 
 .boc_attack > * {
@@ -185,29 +191,29 @@
 }
 
 .boc_sword_1 {
-  left: 80px;
+  left: 75px;
 }
 .boc_sword_2 {
-  left: 160px;
+  left: 150px;
 }
 .boc_sword_3 {
   top: 70px;
 }
 .boc_sword_4 {
   top: 70px;
-  left: 80px;
+  left: 75px;
 }
 .boc_sword_5 {
   top: 70px;
-  left: 160px;
+  left: 150px;
 }
 
 .boc_defense {
   position: absolute;
-  top: 285px;
-  left: 50px;
-  height: 150px;
-  width: 215px;
+  top: 280px;
+  left: 60px;
+  height: 160px;
+  width: 220px;
 }
 
 .boc_defense > * {
@@ -216,21 +222,21 @@
 }
 
 .boc_shield_1 {
-  left: 80px;
+  left: 75px;
 }
 .boc_shield_2 {
-  left: 160px;
+  left: 150px;
 }
 .boc_shield_3 {
   top: 70px;
 }
 .boc_shield_4 {
   top: 70px;
-  left: 80px;
+  left: 75px;
 }
 .boc_shield_5 {
   top: 70px;
-  left: 160px;
+  left: 150px;
 }
 
 .boc_church {

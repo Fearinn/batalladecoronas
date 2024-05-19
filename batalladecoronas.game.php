@@ -417,20 +417,23 @@ class BatallaDeCoronas extends Table
 
         $total_swords = $this->getAttack()[$player_id];
 
-        if ($prev_swords != $total_swords) {
-            $this->notifyAllPlayers(
-                "increaseAttack",
-                clienttranslate('${player_name} gets ${newSwords} sword(s). The total is ${totalSwords}'),
-                array(
-                    "player_id" => $player_id,
-                    "player_name" => $this->getPlayerNameById($player_id),
-                    "prevSwords" => $prev_swords,
-                    "newSwords" => $sword_nbr,
-                    "totalSwords" => $total_swords,
-                    "attack" => $this->getAttack()
-                )
-            );
+        if ($prev_swords == $total_swords) {
+            throw new BgaUserException($this->_("The attack can't be further improved"));
         }
+
+        $this->notifyAllPlayers(
+            "increaseAttack",
+            clienttranslate('${player_name} gets ${newSwords} sword(s). The total is ${totalSwords}'),
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id),
+                "prevSwords" => $prev_swords,
+                "newSwords" => $sword_nbr,
+                "totalSwords" => $total_swords,
+                "attack" => $this->getAttack()
+            )
+        );
+
 
         return $total_swords;
     }
@@ -443,20 +446,22 @@ class BatallaDeCoronas extends Table
 
         $total_shields = $this->getDefense()[$player_id];
 
-        if ($prev_shields != $total_shields) {
-            $this->notifyAllPlayers(
-                "increaseDefense",
-                clienttranslate('${player_name} gets ${newShields} sword(s). The total is ${totalShields}'),
-                array(
-                    "player_id" => $player_id,
-                    "player_name" => $this->getPlayerNameById($player_id),
-                    "prevShields" => $prev_shields,
-                    "newShields" => $shield_nbr,
-                    "totalShields" => $total_shields,
-                    "defense" => $this->getDefense()
-                )
-            );
+        if ($prev_shields == $total_shields) {
+            throw new BgaUserException($this->_("The defense can't be further improved"));
         }
+
+        $this->notifyAllPlayers(
+            "increaseDefense",
+            clienttranslate('${player_name} gets ${newShields} sword(s). The total is ${totalShields}'),
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id),
+                "prevShields" => $prev_shields,
+                "newShields" => $shield_nbr,
+                "totalShields" => $total_shields,
+                "defense" => $this->getDefense()
+            )
+        );
 
         return $total_shields;
     }
@@ -962,13 +967,26 @@ class BatallaDeCoronas extends Table
         $this->gamestate->nextState("buyingPhase");
     }
 
-    function cancelActivation()
+    function activateCommander($militia)
     {
-        $this->checkAction("cancelActivation");
+        $this->checkAction("activateCommander");
 
         $player_id = $this->getActivePlayerId();
 
-        $counselor_id = $this->getGameStateValue("active_counselor");
+        if ($militia === "ATTACK") {
+            $this->commanderAttack($player_id);
+        }
+
+        if ($militia === "DEFENSE") {
+            $this->commanderDefense($player_id);
+        }
+
+        $this->gamestate->nextState("buyingPhase");
+    }
+
+    function cancelActivation()
+    {
+        $this->checkAction("cancelActivation");
 
         $this->notifyAllPlayers(
             "cancelActivation",
@@ -999,7 +1017,6 @@ class BatallaDeCoronas extends Table
 
         $this->setGameStateValue("active_counselor", 0);
         $this->setGameStateValue("active_chair", 0);
-
 
         $this->gamestate->nextState("skip");
     }
