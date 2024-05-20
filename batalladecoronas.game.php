@@ -330,9 +330,10 @@ class BatallaDeCoronas extends Table
         return $church;
     }
 
-    function setNegativated($player_id)
+    function setNegativated($player_id, bool $unset = false)
     {
-        $this->DbQuery("UPDATE player SET player_score_aux=-1 WHERE player_id='$player_id'");
+        $score_aux = $unset ? 0 : -1;
+        $this->DbQuery("UPDATE player SET player_score_aux=$score_aux WHERE player_id='$player_id'");
     }
 
     function isNegativated($player_id): bool
@@ -435,6 +436,8 @@ class BatallaDeCoronas extends Table
                 "totalGold" => $totalGold
             )
         );
+
+        $this->setNegativated($player_id, true);
 
         return $totalGold;
     }
