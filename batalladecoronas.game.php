@@ -161,7 +161,7 @@ class BatallaDeCoronas extends Table
         $sql = "SELECT player_id id, player_score score FROM player ";
 
         $result["counselorsInfo"] = $this->counselors_info;
-        $result["churchHouses"] = $this->church_houses;
+        $result["churchSquares"] = $this->church_squares;
 
         $result["players"] = $this->getCollectionFromDb($sql);
         $result["dice"] = $this->getDice();
@@ -316,18 +316,30 @@ class BatallaDeCoronas extends Table
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            foreach ($this->church_houses as $house_id => $house) {
-                $house_cards = $this->clergy->getCardsInLocation($house_id, $player_id);
-                $card = array_shift($house_cards);
+            foreach ($this->church_squares as $square_id => $square) {
+                $square_cards = $this->clergy->getCardsInLocation($square_id, $player_id);
+                $card = array_shift($square_cards);
 
                 if ($card !== null) {
-                    $church[$player_id] = $house_id;
+                    $church[$player_id] = $square_id;
                     break;
                 }
             }
         }
 
         return $church;
+    }
+
+    function setNegativated($player_id)
+    {
+        $this->DbQuery("UPDATE player SET player_score_aux=-1 WHERE player_id='$player_id'");
+    }
+
+    function isNegativated($player_id): bool
+    {
+        $score_aux = $this->getUniqueValueFromDB("SELECT player_score_aux from player WHERE player_id='$player_id'");
+
+        return $score_aux == -1;
     }
 
     function getTreasure()
@@ -337,6 +349,10 @@ class BatallaDeCoronas extends Table
 
         foreach ($players as $player_id => $player) {
             $treasure[$player_id] = $this->gold->countCardInLocation("treasure", $player_id);
+
+            if ($this->isNegativated($player_id)) {
+                $treasure[$player_id] = -1;
+            }
         }
 
         return $treasure;
@@ -354,7 +370,7 @@ class BatallaDeCoronas extends Table
         return $dragon;
     }
 
-    function spendGold(int $gold_nbr, $player_id, bool $to_box = false): int
+    function spendGold(int $gold_nbr, $player_id, bool $to_box = false, bool $message = false): int
     {
         if ($gold_nbr <= 0) {
             return $this->getTreasure()[$player_id];
@@ -370,19 +386,29 @@ class BatallaDeCoronas extends Table
             $spent_gold = $this->moveCardsToLocation($this->gold, $gold_nbr, "treasure", "unclaimed", $player_id, $player_id);
         }
 
+        $spent_gold_nbr = count($spent_gold);
+
+        if ($gold_nbr > $prev_gold_nbr) {
+            $this->setNegativated($player_id);
+            $spent_gold_nbr += 1;
+        }
+
+        $totalGold = $this->getTreasure()[$player_id];
+
         $this->notifyAllPlayers(
             "generateGold",
-            clienttranslate('${player_name} spends ${spentGold} of gold. The total is ${totalGold}'),
+            $message ? clienttranslate('${player_name} spends ${spentGold} of gold. The total is ${totalGold}') : "",
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "prevGold" => $prev_gold_nbr,
-                "spentGold" => count($spent_gold),
-                "totalGold" => $prev_gold_nbr - count($spent_gold)
+                "spentGold" => $spent_gold_nbr,
+                "totalGold" => $totalGold,
+                "treasure" => $this->getTreasure(),
             )
         );
 
-        return $this->getTreasure()[$player_id];
+        return $totalGold;
     }
 
     function generateGold(int $gold_nbr, $player_id): int
@@ -391,8 +417,12 @@ class BatallaDeCoronas extends Table
             return $this->getTreasure()[$player_id];
         }
 
+        $debt = $this->isNegativated($player_id) ? -1 : 0;
+
         $prev_gold_nbr = $this->getTreasure()[$player_id];
-        $generated_gold = $this->moveCardsToLocation($this->gold, $gold_nbr, "unclaimed", "treasure", $player_id, $player_id);
+        $generated_gold = $this->moveCardsToLocation($this->gold, $gold_nbr - $debt, "unclaimed", "treasure", $player_id, $player_id);
+
+        $totalGold = $this->getTreasure()[$player_id];
 
         $this->notifyAllPlayers(
             "generateGold",
@@ -402,11 +432,11 @@ class BatallaDeCoronas extends Table
                 "player_name" => $this->getPlayerNameById($player_id),
                 "prevGold" => $prev_gold_nbr,
                 "generatedGold" => count($generated_gold),
-                "totalGold" => $prev_gold_nbr + count($generated_gold)
+                "totalGold" => $totalGold
             )
         );
 
-        return $this->getTreasure()[$player_id];
+        return $totalGold;
     }
 
     function increaseAttack(int $sword_nbr, $player_id): int
@@ -433,7 +463,6 @@ class BatallaDeCoronas extends Table
                 "attack" => $this->getAttack()
             )
         );
-
 
         return $total_swords;
     }
@@ -466,38 +495,103 @@ class BatallaDeCoronas extends Table
         return $total_shields;
     }
 
-    function moveClergy(int $house_id, $player_id): void
+    function decreaseAttack(int $sword_nbr, $player_id)
     {
-        $prev_house = $this->getChurch()[$player_id];
+        $prev_swords = $this->getAttack()[$player_id];
 
-        if ($prev_house == $house_id) {
-            throw new BgaUserException($this->_("You must move the clergy to other house"));
+        $this->moveCardsToLocation($this->attack, $sword_nbr, "attack", "unclaimed", $player_id, $player_id);
+
+        $total_swords = $this->getAttack()[$player_id];
+
+        if ($prev_swords == $total_swords) {
+            throw new BgaUserException($this->_("There's no sword to destroy"));
         }
 
-        $house = $this->church_houses[$house_id];
+        $this->notifyAllPlayers(
+            "increaseAttack",
+            "",
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id),
+                "prevSwords" => $prev_swords,
+                "newSwords" => $sword_nbr,
+                "totalSwords" => $total_swords,
+                "attack" => $this->getAttack()
+            )
+        );
+
+        return $total_swords;
+    }
+
+    function activateGoldenSquare($player_id): void
+    {
+        $other_player_id = $this->getPlayerAfter($player_id);
+
+        $gold_nbr = $this->getTreasure()[$other_player_id];
+
+        $this->spendGold($gold_nbr + 1, $other_player_id);
+    }
+
+    function activateBlueSquare($player_id): void
+    {
+        $other_player_id = $this->getPlayerAfter($player_id);
+        $this->decreaseAttack(1, $other_player_id);
+    }
+
+    function activateRedSquare($player_id): void
+    {
+        $other_player_id = $this->getPlayerAfter($player_id);
+        $this->levelDownDragon(1, $other_player_id);
+    }
+
+    function moveClergy(int $square_id, $player_id): void
+    {
+        $prev_square = $this->getChurch()[$player_id];
+
+        if ($prev_square == $square_id) {
+            throw new BgaUserException($this->_("You must move the clergy to other square"));
+        }
+
+        $square = $this->church_squares[$square_id];
 
         $this->notifyAllPlayers(
             "moveClergy",
-            clienttranslate('${player_name} moves the clergy to the ${new_house_tr} square'),
+            clienttranslate('${player_name} moves the clergy to the ${new_square_tr} square and activates its effect'),
             array(
-                "i18n" => array("house_tr"),
+                "i18n" => array("square_tr"),
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
-                "new_house_tr" => $house["label_tr"],
-                "newHouse" => $house_id,
-                "prevHouse" => $prev_house,
+                "new_square_tr" => $square["label_tr"],
+                "newSquare" => $square_id,
+                "prevSquare" => $prev_square,
                 "church" => $this->getChurch()
             )
         );
 
-        $this->clergy->moveAllCardsInLocation($prev_house, $house_id, $player_id, $player_id);
+        if ($square_id == 1) {
+            $this->activateGoldenSquare($player_id);
+        }
+
+        if ($square_id == 2) {
+            $this->activateBlueSquare($player_id);
+        }
+
+        if ($square_id == 3) {
+            $this->activateRedSquare($player_id);
+        }
+
+        $this->clergy->moveAllCardsInLocation($prev_square, $square_id, $player_id, $player_id);
     }
 
     function levelUpDragon(int $level_nbr, $player_id): int
     {
-        $this->moveCardsToLocation($this->dragon, $level_nbr, "unclaimed", "dragon", $player_id, $player_id);
+        $prev_level = $this->getDragon()[$player_id];
 
-        $dragon = $this->getDragon();
+        if ($prev_level == 6) {
+            throw new BgaVisibleSystemException("The level of the dragon can't be further increased");
+        }
+
+        $this->moveCardsToLocation($this->dragon, $level_nbr, "unclaimed", "dragon", $player_id, $player_id);
 
         $total_level = $this->getDragon()[$player_id];
 
@@ -507,8 +601,36 @@ class BatallaDeCoronas extends Table
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
+                "prevLevel" => $prev_level,
                 "totalLevel" => $total_level,
-                "dragon" => $dragon
+                "dragon" => $this->getDragon()
+            ),
+        );
+
+        return $total_level;
+    }
+
+    function levelDownDragon(int $level_nbr, $player_id): int
+    {
+        $prev_level = $this->getDragon()[$player_id];
+
+        if ($prev_level == 0) {
+            throw new BgaUserException($this->_("The level of the dragon can't be further reduced"));
+        }
+
+        $this->moveCardsToLocation($this->dragon, $level_nbr, "dragon", "unclaimed", $player_id, $player_id);
+
+        $total_level = $this->getDragon()[$player_id];
+
+        $this->notifyAllPlayers(
+            "levelUpDragon",
+            "",
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id),
+                "prevLevel" => $prev_level,
+                "totalLevel" => $total_level,
+                "dragon" => $this->getDragon()
             ),
         );
 
@@ -707,7 +829,7 @@ class BatallaDeCoronas extends Table
             array(
                 "i18n" => array("counselor_name"),
                 "player_name" => $this->getPlayerNameById($player_id),
-                "counselor_name" => clienttranslate("Priest")
+                "counselor_name" => clienttranslate("Priest"),
             )
         );
 
@@ -984,21 +1106,21 @@ class BatallaDeCoronas extends Table
         $this->gamestate->nextState("buyingPhase");
     }
 
-    function activatePriest($house)
+    function activatePriest($square)
     {
         $this->checkAction("activatePriest");
 
         $player_id = $this->getActivePlayerId();
 
-        if ($house == 1) {
+        if ($square == 1) {
             $this->priestGolden($player_id);
         }
 
-        if ($house == 2) {
+        if ($square == 2) {
             $this->priestBlue($player_id);
         }
 
-        if ($house == 3) {
+        if ($square == 3) {
             $this->priestRed($player_id);
         }
 

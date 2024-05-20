@@ -86,8 +86,8 @@ class action_batalladecoronas extends APP_GameAction
   public function activatePriest()
   {
     $this->setAjaxMode();
-    $house = $this->getArg("house", AT_enum, true, null, array(1, 2, 3));
-    $this->game->activatePriest($house);
+    $square = $this->getArg("square", AT_enum, true, null, array(1, 2, 3));
+    $this->game->activatePriest($square);
     $this->ajaxResponse();
   }
 

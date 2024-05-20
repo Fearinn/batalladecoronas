@@ -97,7 +97,7 @@ $machinestates = array(
     4 => array(
         "name" => "buyingPhase",
         "description" => clienttranslate('${actplayer} may select an area to spend his gold with'),
-        "descriptionmyturn" => clienttranslate('${you} may select an area to spend his gold with'),
+        "descriptionmyturn" => clienttranslate('${you} may select an area to spend your gold with'),
         "type" => "activeplayer",
         "possibleactions" => array("purchaseShields", "purchaseSwords", "evolveDragon", "skip"),
         "transitions" => array("purchaseAgain" => 4, "battlePhase" => 5, "skip" => 5)

@@ -34,7 +34,7 @@ define([
       this.dragonSize = 80;
 
       this.counselorsInfo = {};
-      this.churchHouses = {};
+      this.churchSquares = {};
 
       this.supply = {};
       this.claimedSupply = {};
@@ -52,7 +52,7 @@ define([
       console.log("Starting game setup");
 
       this.counselorsInfo = gamedatas.counselorsInfo;
-      this.churchHouses = gamedatas.churchHouses;
+      this.churchSquares = gamedatas.churchSquares;
 
       this.supply = gamedatas.supply;
       this.claimedSupply = gamedatas.claimedSupply;
@@ -360,10 +360,10 @@ define([
         }
 
         //church
-        for (const house in this.churchHouses) {
-          const clergyStock = `clergyStock$${player_id}:${house}`;
+        for (const square in this.churchSquares) {
+          const clergyStock = `clergyStock$${player_id}:${square}`;
 
-          const clergy = $(`boc_clergy$${player_id}:${house}`);
+          const clergy = $(`boc_clergy$${player_id}:${square}`);
 
           this[clergyStock] = new ebg.stock();
           this[clergyStock].create(
@@ -385,8 +385,8 @@ define([
           );
         }
 
-        const activeHouse = this.church[player_id];
-        const activeClergyStock = `clergyStock$${player_id}:${activeHouse}`;
+        const activeSquare = this.church[player_id];
+        const activeClergyStock = `clergyStock$${player_id}:${activeSquare}`;
         const initialClergy = $(`boc_clergy$${player_id}:0`);
         this[activeClergyStock].addToStock("clergy", initialClergy);
 
@@ -567,7 +567,7 @@ define([
 
       dojo.query(".boc_myClergy").connect("onclick", (event) => {
         console.log("clergy");
-        this.onPickHouse(event);
+        this.onPickSquare(event);
       });
 
       this.setupNotifications();
@@ -656,12 +656,12 @@ define([
 
       if (stateName === "priestActivation") {
         if (this.isCurrentPlayerActive()) {
-          for (const houseId in this.churchHouses) {
-            const currentHouseId = this.church[player_id];
-            const houseElement = $(`boc_clergy$${player_id}:${houseId}`);
+          for (const squareId in this.churchSquares) {
+            const currentSquareId = this.church[player_id];
+            const squareElement = $(`boc_clergy$${player_id}:${squareId}`);
 
-            if (houseId != currentHouseId) {
-              dojo.addClass(houseElement, "boc_selectableContainer");
+            if (squareId != currentSquareId) {
+              dojo.addClass(squareElement, "boc_selectableContainer");
             }
           }
 
@@ -944,14 +944,14 @@ define([
       }
     },
 
-    onPickHouse: function (event) {
+    onPickSquare: function (event) {
       const stateName = this.gamedatas.gamestate.name;
       if (stateName === "priestActivation") {
         const action = "activatePriest";
 
-        const house = event.currentTarget.id.split(":")[1];
+        const square = event.currentTarget.id.split(":")[1];
 
-        this.sendAjaxCall(action, { house });
+        this.sendAjaxCall(action, { square });
       }
     },
 
@@ -1015,6 +1015,8 @@ define([
       const originStock = `treasureStock$${player_id}:${prevGold}`;
       const originElement = `boc_treasure$${player_id}:${prevGold}`;
       const destinationStock = `treasureStock$${player_id}:${totalGold}`;
+
+      console.log(destinationStock);
 
       this[destinationStock].addToStock("gold", originElement);
       this[originStock].removeFromStock("gold");
@@ -1095,7 +1097,7 @@ define([
       const player_id = notif.args.player_id;
 
       const totalLevel = notif.args.totalLevel;
-      const prevLevel = this.dragon[player_id];
+      const prevLevel = notif.args.prevLevel;
 
       const originStock = `dragonStock$${player_id}:${prevLevel}`;
       const originElement = `boc_dragon$${player_id}:${prevLevel}`;
@@ -1110,12 +1112,12 @@ define([
     notif_moveClergy: function (notif) {
       const player_id = notif.args.player_id;
 
-      const newHouse = notif.args.newHouse;
-      const prevHouse = notif.args.prevHouse;
+      const newSquare = notif.args.newSquare;
+      const prevSquare = notif.args.prevSquare;
 
-      const originStock = `clergyStock$${player_id}:${prevHouse}`;
-      const originElement = `boc_clergy$${player_id}:${prevHouse}`;
-      const destinationStock = `clergyStock$${player_id}:${newHouse}`;
+      const originStock = `clergyStock$${player_id}:${prevSquare}`;
+      const originElement = `boc_clergy$${player_id}:${prevSquare}`;
+      const destinationStock = `clergyStock$${player_id}:${newSquare}`;
 
       this[destinationStock].addToStock("clergy", originElement);
       this[originStock].removeFromStock("clergy");

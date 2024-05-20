@@ -52,7 +52,7 @@ $this->counselors_info = array(
   )
 );
 
-$this->church_houses = array(
+$this->church_squares = array(
   0 => array(
     "label" => "DOOR",
     "label_tr" => clienttranslate("DOOR")
