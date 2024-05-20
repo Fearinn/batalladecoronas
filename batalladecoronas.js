@@ -126,7 +126,7 @@ define([
       );
 
       this[supplyStock].addItemType(
-        "cross",
+        "sacredcross",
         1,
         g_gamethemeurl + "img/supply.png",
         1
@@ -242,14 +242,14 @@ define([
         };
 
         this[crossTowerStock].addItemType(
-          "cross",
+          "sacredcross",
           0,
           g_gamethemeurl + "img/supply.png",
           1
         );
 
-        if (claimedSupply["cross"]) {
-          this[crossTowerStock].addToStock("cross");
+        if (claimedSupply["sacredcross"]) {
+          this[crossTowerStock].addToStock("sacredcross");
         }
 
         //anvil
@@ -386,8 +386,11 @@ define([
         }
 
         const activeSquare = this.church[player_id];
+
         const activeClergyStock = `clergyStock$${player_id}:${activeSquare}`;
         const initialClergy = $(`boc_clergy$${player_id}:0`);
+
+        console.log(this[activeClergyStock]);
         this[activeClergyStock].addToStock("clergy", initialClergy);
 
         //attack
@@ -1161,8 +1164,8 @@ define([
         : `boc_supply`;
       const destinationStock = `crossTowerStock:${player_id}`;
 
-      this[destinationStock].addToStock("cross", originElement);
-      this[originStock].removeFromStock("cross");
+      this[destinationStock].addToStock("sacredcross", originElement);
+      this[originStock].removeFromStock("sacredcross");
 
       this.supply = notif.args.supply;
     },

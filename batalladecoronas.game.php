@@ -35,35 +35,11 @@ class BatallaDeCoronas extends Table
             "active_counselor" => 13,
         ));
 
-        $this->crown = $this->getNew("module.common.deck");
-        $this->crown->init("crown");
-
-        $this->cross = $this->getNew("module.common.deck");
-        $this->cross->init("sacredcross");
-
-        $this->smith = $this->getNew("module.common.deck");
-        $this->smith->init("smith");
+        $this->tokens = $this->getNew("module.common.deck");
+        $this->tokens->init("token");
 
         $this->council = $this->getNew("module.common.deck");
         $this->council->init("counselor");
-
-        $this->gems = $this->getNew("module.common.deck");
-        $this->gems->init("gem");
-
-        $this->attack = $this->getNew("module.common.deck");
-        $this->attack->init("attack");
-
-        $this->defense = $this->getNew("module.common.deck");
-        $this->defense->init("defense");
-
-        $this->clergy = $this->getNew("module.common.deck");
-        $this->clergy->init("clergy");
-
-        $this->gold = $this->getNew("module.common.deck");
-        $this->gold->init("gold");
-
-        $this->dragon = $this->getNew("module.common.deck");
-        $this->dragon->init("dragon");
     }
 
     protected function getGameName()
@@ -95,29 +71,6 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue("active_chair", 0);
         $this->setGameStateInitialValue("active_counselor", 0);
 
-        $this->crown->createCards(array(
-            array("type" => "crown", "type_arg" => 0, "nbr" => 1)
-        ), "supply");
-
-        $this->cross->createCards(array(
-            array("type" => "cross", "type_arg" => 0, "nbr" => 1)
-        ), "supply");
-
-        $this->smith->createCards(array(
-            array("type" => "smith", "type_arg" => 0, "nbr" => 1)
-        ), "supply");
-
-        $this->gems->createCards(array(array("type" => "gem", "type_arg" => 0, "nbr" => 6)), "box");
-
-        $this->gold->createCards(array(array("type" => "gold", "type_arg" => 0, "nbr" => 14)), "box");
-
-        $this->attack->createCards(array(array("type" => "attack", "type_arg" => 0, "nbr" => 10)), "box");
-        $this->defense->createCards(array(array("type" => "defense", "type_arg" => 0, "nbr" => 10)), "box");
-
-        $this->clergy->createCards(array(array("type" => "clergy", "type_arg" => 0, "nbr" => 2)), "box");
-
-        $this->dragon->createCards(array(array("type" => "dragon", "type_arg" => 0, "nbr" => 10)), "box");
-
         foreach ($players as $player_id => $player) {
             $counselors = array();
             foreach ($this->counselors_info as $counselor_id => $counselor) {
@@ -131,20 +84,6 @@ class BatallaDeCoronas extends Table
             }
             $this->council->createCards($counselors, "box");
             $this->council->moveAllCardsInLocation("box", "inactive", null, $player_id);
-
-            $this->moveCardsToLocation($this->gems, 3, "box", "power", null, $player_id);
-
-            $this->moveCardsToLocation($this->gold, 7, "box", "unclaimed", null, $player_id);
-
-            $this->moveCardsToLocation($this->attack, 5, "box", "unclaimed", null, $player_id);
-            $this->moveCardsToLocation($this->attack, 2, "unclaimed", "attack", $player_id, $player_id);
-
-            $this->moveCardsToLocation($this->defense, 5, "box", "unclaimed", null, $player_id);
-            $this->moveCardsToLocation($this->defense, 2, "unclaimed", "defense", $player_id, $player_id);
-
-            $this->moveCardsToLocation($this->clergy, 1, "box", 0, null, $player_id);
-
-            $this->moveCardsToLocation($this->dragon, 5, "box", "unclaimed", null, $player_id);
         }
 
         $this->activeNextPlayer();
@@ -191,6 +130,11 @@ class BatallaDeCoronas extends Table
     //////////// Utility functions
     //////////// 
 
+    function getPlayerProperty(string $property, $player_id)
+    {
+        return $this->getUniqueValueFromDB("SELECT $property from player WHERE player_id='$player_id'");
+    }
+
     function moveCardsToLocation(
         $deck,
         $moved_nbr,
@@ -219,28 +163,46 @@ class BatallaDeCoronas extends Table
 
     function getSupply()
     {
-        return array(
-            "crown" => $this->crown->countCardInLocation("supply") > 0,
-            "cross" => $this->cross->countCardInLocation("supply") > 0,
-            "smith" => $this->smith->countCardInLocation("supply") > 0
-        );
+        $supply = array();
+
+        $players = $this->loadPlayersBasicInfos();
+
+        foreach ($this->tokens_info as $token_info) {
+            $label = $token_info["label"];
+            $supply[$label] = true;
+
+            foreach ($players as $player_id => $player) {
+                $owned = $this->getPlayerProperty($label, $player_id);
+
+                if ($owned) {
+                    $supply[$label] = false;
+                }
+            }
+        }
+
+        return $supply;
     }
 
     function getClaimedSupply()
     {
-        $claimed_supply = array();
+        $supply = array();
 
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            $claimed_supply[$player_id] = array(
-                "crown" => $this->crown->countCardInLocation("crown", $player_id) > 0,
-                "cross" => $this->cross->countCardInLocation("cross", $player_id) > 0,
-                "smith" => $this->smith->countCardInLocation("smith", $player_id) > 0
-            );
+            foreach ($this->tokens_info as $token_info) {
+                $label = $token_info["label"];
+                $supply[$player_id][$label] = false;
+
+                $owned = $this->getUniqueValueFromDB("SELECT $label from player WHERE player_id='$player_id'");
+
+                if ($owned) {
+                    $supply[$player_id][$label] = true;
+                }
+            }
         }
 
-        return $claimed_supply;
+        return $supply;
     }
 
     function getInactiveCouncil()
@@ -276,14 +238,19 @@ class BatallaDeCoronas extends Table
 
     function getGemsByLocation()
     {
-        $gem_nbr = array();
+        $gems = array();
+
         $players = $this->loadPlayersBasicInfos();
+
         foreach ($players as $player_id => $player) {
-            $gem_nbr[$player_id]["power"] = $this->gems->countCardInLocation("power", $player_id);
-            $gem_nbr[$player_id]["treasure"] = $this->gems->countCardInLocation("treasure", $player_id);
+            $power = $this->getPlayerProperty("gem_power", $player_id);
+            $treasure = $this->getPlayerProperty("gem_treasure", $player_id);
+
+            $gems[$player_id]["power"] = $power;
+            $gems[$player_id]["treasure"] = $treasure;
         }
 
-        return $gem_nbr;
+        return $gems;
     }
 
     function getAttack()
@@ -292,7 +259,7 @@ class BatallaDeCoronas extends Table
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            $attack[$player_id] = $this->attack->countCardInLocation("attack", $player_id);
+            $attack[$player_id] = $this->getPlayerProperty("attack", $player_id);
         }
 
         return $attack;
@@ -304,7 +271,7 @@ class BatallaDeCoronas extends Table
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            $defense[$player_id] = $this->defense->countCardInLocation("defense", $player_id);
+            $defense[$player_id] = $this->getPlayerProperty("defense", $player_id);
         }
 
         return $defense;
@@ -316,18 +283,34 @@ class BatallaDeCoronas extends Table
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            foreach ($this->church_squares as $square_id => $square) {
-                $square_cards = $this->clergy->getCardsInLocation($square_id, $player_id);
-                $card = array_shift($square_cards);
-
-                if ($card !== null) {
-                    $church[$player_id] = $square_id;
-                    break;
-                }
-            }
+            $church[$player_id] = $this->getPlayerProperty("clergy", $player_id);
         }
 
         return $church;
+    }
+
+    function getTreasure()
+    {
+        $treasure = array();
+        $players = $this->loadPlayersBasicInfos();
+
+        foreach ($players as $player_id => $player) {
+            $treasure[$player_id] = $this->getPlayerProperty("gold", $player_id);
+        }
+
+        return $treasure;
+    }
+
+    function getDragon()
+    {
+        $dragon = array();
+        $players = $this->loadPlayersBasicInfos();
+
+        foreach ($players as $player_id => $player) {
+            $dragon[$player_id] = $this->getPlayerProperty("dragon", $player_id);
+        }
+
+        return $dragon;
     }
 
     function setNegativated($player_id, bool $unset = false)
@@ -341,34 +324,6 @@ class BatallaDeCoronas extends Table
         $score_aux = $this->getUniqueValueFromDB("SELECT player_score_aux from player WHERE player_id='$player_id'");
 
         return $score_aux == -1;
-    }
-
-    function getTreasure()
-    {
-        $treasure = array();
-        $players = $this->loadPlayersBasicInfos();
-
-        foreach ($players as $player_id => $player) {
-            $treasure[$player_id] = $this->gold->countCardInLocation("treasure", $player_id);
-
-            if ($this->isNegativated($player_id)) {
-                $treasure[$player_id] = -1;
-            }
-        }
-
-        return $treasure;
-    }
-
-    function getDragon()
-    {
-        $dragon = array();
-        $players = $this->loadPlayersBasicInfos();
-
-        foreach ($players as $player_id => $player) {
-            $dragon[$player_id] = $this->dragon->countCardInLocation("dragon", $player_id);
-        }
-
-        return $dragon;
     }
 
     function spendGold(int $gold_nbr, $player_id, bool $to_box = false, bool $message = false): int

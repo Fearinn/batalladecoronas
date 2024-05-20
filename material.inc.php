@@ -52,6 +52,21 @@ $this->counselors_info = array(
   )
 );
 
+$this->tokens_info = array(
+  1 => array(
+    "label" => "crown",
+    "label_tr" => clienttranslate("Crown")
+  ),
+  2 => array(
+    "label" => "sacredcross",
+    "label_tr" => clienttranslate("Cross")
+  ),
+  3 => array(
+    "label" => "smith",
+    "label_tr" => clienttranslate("Smith")
+  ),
+);
+
 $this->church_squares = array(
   0 => array(
     "label" => "DOOR",
