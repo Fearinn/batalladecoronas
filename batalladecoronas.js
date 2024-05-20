@@ -561,8 +561,13 @@ define([
         }
       );
 
-      dojo.query(".boc_militia").connect("onclick", (event) => {
+      dojo.query(".boc_myMilitia").connect("onclick", (event) => {
         this.onPickMilitia(event);
+      });
+
+      dojo.query(".boc_myClergy").connect("onclick", (event) => {
+        console.log("clergy");
+        this.onPickHouse(event);
       });
 
       this.setupNotifications();
@@ -636,7 +641,29 @@ define([
 
       if (stateName === "commanderActivation") {
         if (this.isCurrentPlayerActive()) {
-          dojo.query(".boc_militia").addClass("boc_selectableContainer");
+          dojo.query(".boc_myMilitia").addClass("boc_selectableContainer");
+
+          this.addActionButton(
+            "boc_cancel",
+            _("Cancel"),
+            "onCancelActivation",
+            null,
+            null,
+            "red"
+          );
+        }
+      }
+
+      if (stateName === "priestActivation") {
+        if (this.isCurrentPlayerActive()) {
+          for (const houseId in this.churchHouses) {
+            const currentHouseId = this.church[player_id];
+            const houseElement = $(`boc_clergy$${player_id}:${houseId}`);
+
+            if (houseId != currentHouseId) {
+              dojo.addClass(houseElement, "boc_selectableContainer");
+            }
+          }
 
           this.addActionButton(
             "boc_cancel",
@@ -676,9 +703,11 @@ define([
       }
 
       if (stateName === "commanderActivation") {
-        dojo
-          .query(".boc_militia")
-          .removeClass("boc_selectableContainer");
+        dojo.query(".boc_myMilitia").removeClass("boc_selectableContainer");
+      }
+
+      if (stateName === "priestActivation") {
+        dojo.query(".boc_myClergy").removeClass("boc_selectableContainer");
       }
     },
 
@@ -895,6 +924,34 @@ define([
         }
 
         this.sendAjaxCall(action, { militia });
+      }
+    },
+
+    onPickMilitia: function (event) {
+      const stateName = this.gamedatas.gamestate.name;
+      if (stateName === "commanderActivation") {
+        const action = "activateCommander";
+
+        const idInfo = event.currentTarget.id.split("boc_")[1].split(":");
+        const militia = idInfo[0].toUpperCase();
+        const player_id = idInfo[1];
+
+        if (this.player_id != player_id) {
+          return;
+        }
+
+        this.sendAjaxCall(action, { militia });
+      }
+    },
+
+    onPickHouse: function (event) {
+      const stateName = this.gamedatas.gamestate.name;
+      if (stateName === "priestActivation") {
+        const action = "activatePriest";
+
+        const house = event.currentTarget.id.split(":")[1];
+
+        this.sendAjaxCall(action, { house });
       }
     },
 

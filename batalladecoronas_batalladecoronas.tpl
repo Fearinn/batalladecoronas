@@ -44,7 +44,7 @@
           <div id="boc_chair${MY_ID}:5" class="boc_chair_5"></div>
           <div id="boc_chair${MY_ID}:6" class="boc_chair_6"></div>
         </div>
-        <div id="boc_defense:{MY_ID}" class="boc_defense boc_militia">
+        <div id="boc_defense:{MY_ID}" class="boc_defense boc_myMilitia">
           <div id="boc_shield${MY_ID}:0" class="boc_shield_0"></div>
           <div id="boc_shield${MY_ID}:1" class="boc_shield_1"></div>
           <div id="boc_shield${MY_ID}:2" class="boc_shield_2"></div>
@@ -54,7 +54,7 @@
           <div id="boc_shield${MY_ID}:" class="boc_shield_6"></div>
         </div>
         <div id="boc_power:{MY_ID}" class="boc_power"></div>
-        <div id="boc_attack:{MY_ID}" class="boc_attack boc_militia">
+        <div id="boc_attack:{MY_ID}" class="boc_attack boc_myMilitia">
           <div id="boc_sword${MY_ID}:0" class="boc_sword_0"></div>
           <div id="boc_sword${MY_ID}:1" class="boc_sword_1"></div>
           <div id="boc_sword${MY_ID}:2" class="boc_sword_2"></div>
@@ -65,9 +65,18 @@
         </div>
         <div id="boc_church:{MY_ID}" class="boc_church">
           <div id="boc_clergy${MY_ID}:0" class="boc_clergy_DOOR"></div>
-          <div id="boc_clergy${MY_ID}:1" class="boc_clergy_GOLDEN"></div>
-          <div id="boc_clergy${MY_ID}:2" class="boc_clergy_BLUE"></div>
-          <div id="boc_clergy${MY_ID}:3" class="boc_clergy_RED"></div>
+          <div
+            id="boc_clergy${MY_ID}:1"
+            class="boc_clergy_GOLDEN boc_myClergy"
+          ></div>
+          <div
+            id="boc_clergy${MY_ID}:2"
+            class="boc_clergy_BLUE boc_myClergy"
+          ></div>
+          <div
+            id="boc_clergy${MY_ID}:3"
+            class="boc_clergy_RED boc_myClergy"
+          ></div>
         </div>
         <div id="boc_treasure:{MY_ID}" class="boc_treasure">
           <div id="boc_treasure${MY_ID}:-1" class="boc_treasure_-1"></div>

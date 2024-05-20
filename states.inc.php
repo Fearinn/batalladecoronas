@@ -61,7 +61,10 @@ $machinestates = array(
         "type" => "activeplayer",
         "args" => "argCounselorActivation",
         "possibleactions" => array("activateCounselor", "skipActivation"),
-        "transitions" => array("nobleActivation" => 33, "commanderActivation" => 34, "buyingPhase" => 4, "skip" => 4),
+        "transitions" => array(
+            "nobleActivation" => 33, "commanderActivation" => 34, "priestActivation"  => 35,
+            "buyingPhase" => 4, "skip" => 4
+        ),
     ),
 
     33 => array(
@@ -79,6 +82,15 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} activated the Commander and must now pick a militia to improve'),
         "type" => "activeplayer",
         "possibleactions" => array("activateCommander", "cancelActivation"),
+        "transitions" => array("buyingPhase" => 4, "cancel" => 32),
+    ),
+
+    35 => array(
+        "name" => "priestActivation",
+        "description" => clienttranslate('${actplayer} activated the Priest and must now pick a square to move the Clergy to'),
+        "descriptionmyturn" => clienttranslate('${you} activated the Priest and must now pick a square to move the Clergy to'),
+        "type" => "activeplayer",
+        "possibleactions" => array("activatePriest", "cancelActivation"),
         "transitions" => array("buyingPhase" => 4, "cancel" => 32),
     ),
 

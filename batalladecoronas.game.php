@@ -984,6 +984,27 @@ class BatallaDeCoronas extends Table
         $this->gamestate->nextState("buyingPhase");
     }
 
+    function activatePriest($house)
+    {
+        $this->checkAction("activatePriest");
+
+        $player_id = $this->getActivePlayerId();
+
+        if ($house == 1) {
+            $this->priestGolden($player_id);
+        }
+
+        if ($house == 2) {
+            $this->priestBlue($player_id);
+        }
+
+        if ($house == 3) {
+            $this->priestRed($player_id);
+        }
+
+        $this->gamestate->nextState("buyingPhase");
+    }
+
     function cancelActivation()
     {
         $this->checkAction("cancelActivation");
