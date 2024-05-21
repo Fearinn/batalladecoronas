@@ -33,6 +33,7 @@ class BatallaDeCoronas extends Table
             "die_2" => 11,
             "active_chair" => 12,
             "active_counselor" => 13,
+            "highest_gems" => 80
         ));
 
         $this->tokens = $this->getNew("module.common.deck");
@@ -70,6 +71,7 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue('die_2', 0);
         $this->setGameStateInitialValue("active_chair", 0);
         $this->setGameStateInitialValue("active_counselor", 0);
+        $this->setGameStateInitialValue("highest_gems", 0);
 
         foreach ($players as $player_id => $player) {
             $counselors = array();
@@ -120,11 +122,9 @@ class BatallaDeCoronas extends Table
 
     function getGameProgression()
     {
-        // TODO: compute and return the game progression
-
-        return 0;
+        $progression = (100 / 3) * $this->getGameStateValue("highest_gems");
+        return round($progression);
     }
-
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
@@ -776,10 +776,10 @@ class BatallaDeCoronas extends Table
         $prev_power = $this->getPlayerPower($other_player_id);
         $this->setPlayerPower($prev_power - 1, $other_player_id);
 
-        $reduce_gold = $this->getPlayerGold($player_id) >= $this->getPlayerMaxGold($player_id);
+        $prev_highest_gems = $this->getGameStateValue("highest_gems");
 
-        if ($reduce_gold) {
-            $this->spendGold(1, $player_id);
+        if ($total_gems > $prev_highest_gems) {
+            $this->setGameStateValue("highest_gems", $total_gems);
         }
 
         $this->notifyAllPlayers(
@@ -791,10 +791,15 @@ class BatallaDeCoronas extends Table
                 "other_player_id" => $other_player_id,
                 "totalGems" => $total_gems,
                 "gemsByLocations" => $this->getGemsByLocation(),
-                "reduceGold" => $reduce_gold,
-                "treasure" => $this->getTreasure()
             )
         );
+
+        $gold = $this->getPlayerGold($player_id);
+        $max_gold = $this->getPlayerMaxGold($player_id);
+
+        if ($gold >= $max_gold) {
+            $this->spendGold(1, $player_id);
+        }
 
         return $total_gems;
     }

@@ -32,7 +32,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} must roll the dice to start a new turn'),
         "type" => "activeplayer",
         "possibleactions" => array("rollDice"),
-        "transitions" => array("decisionPhase" => 3, "counselorVesting" => 31, "couselorActivaction" => 32)
+        "transitions" => array("decisionPhase" => 3, "counselorVesting" => 31, "couselorActivaction" => 32),
     ),
 
     3 =>  array(
@@ -41,7 +41,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} must pick a die to activate a counselor. The other die shall generate gold'),
         "type" => "activeplayer",
         "possibleactions" => array("decideDice"),
-        "transitions" => array("counselorVesting" => 31, "couselorActivaction" => 32)
+        "transitions" => array("counselorVesting" => 31, "couselorActivaction" => 32),
     ),
 
     31 => array(
@@ -119,6 +119,7 @@ $machinestates = array(
         "type" => "game",
         "action" => "stBattle",
         "transitions" => array("destroyShields" => 52, "diceRoll" => 2),
+        "updateGameProgression" => true
     ),
 
     52 => array(

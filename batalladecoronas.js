@@ -1209,7 +1209,6 @@ define([
 
       this[originStock].removeFromStockById(4 - totalGems);
 
-      this.treasure = notif.args.treasure;
       this.gems = notif.args.gemsByLocations;
     },
   });
