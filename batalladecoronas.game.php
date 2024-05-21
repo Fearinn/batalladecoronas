@@ -591,6 +591,8 @@ class BatallaDeCoronas extends Table
             throw new BgaUserException($this->_("You must move the clergy to other square"));
         }
 
+        $this->setPlayerClergy($square_id, $player_id);
+
         $square = $this->church_squares[$square_id];
 
         $this->notifyAllPlayers(
@@ -618,8 +620,6 @@ class BatallaDeCoronas extends Table
         if ($square_id == 3) {
             $this->activateRedSquare($player_id);
         }
-
-        $this->setPlayerClergy($square_id, $player_id);
     }
 
     function levelUpDragon(int $value, $player_id): int
@@ -635,6 +635,8 @@ class BatallaDeCoronas extends Table
         if ($total_level > 6) {
             $total_level = 6;
         }
+
+        $this->setPlayerDragon($total_level, $player_id);
 
         $this->notifyAllPlayers(
             "levelUpDragon",
@@ -660,6 +662,8 @@ class BatallaDeCoronas extends Table
         if ($value > $prev_level) {
             $total_level = 0;
         }
+
+        $this->setPlayerDragon($total_level, $player_id);
 
         $this->notifyAllPlayers(
             "levelUpDragon",
