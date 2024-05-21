@@ -130,9 +130,88 @@ class BatallaDeCoronas extends Table
     //////////// Utility functions
     //////////// 
 
-    function getPlayerProperty(string $property, $player_id)
+    function getPlayerSupply(string $supply, $player_id): int
     {
-        return $this->getUniqueValueFromDB("SELECT $property from player WHERE player_id='$player_id'");
+        return $this->getUniqueValueFromDB("SELECT $supply from player WHERE player_id='$player_id'");
+    }
+
+    function setPlayerSupply(string $supply, int $value, $player_id): void
+    {
+        $this->DbQuery("UPDATE player SET $supply='$value' WHERE player_id='$player_id'");
+    }
+
+    function getPlayerAttack($player_id): int
+    {
+        return $this->getUniqueValueFromDB("SELECT attack from player WHERE player_id='$player_id'");
+    }
+
+    function setPlayerAttack(int $value, $player_id): void
+    {
+        $this->DbQuery("UPDATE player SET attack='$value' from player WHERE player_id='$player_id'");
+    }
+
+    function getPlayerDefense($player_id): int
+    {
+        return $this->getUniqueValueFromDB("SELECT defense from player WHERE player_id='$player_id'");
+    }
+
+    function setPlayerDefense(int $value, $player_id): void
+    {
+        $this->DbQuery("UPDATE player SET defense='$value' from player WHERE player_id='$player_id'");
+    }
+
+    function getPlayerClergy($player_id): int
+    {
+        return $this->getUniqueValueFromDB("SELECT clergy from player WHERE player_id='$player_id'");
+    }
+
+    function setPlayerClergy(int $value, $player_id): void
+    {
+        if ($value < 1 || $value > 3) {
+            throw new BgaVisibleSystemException("Invalid value for Clergy");
+        }
+
+        $this->DbQuery("UPDATE player SET clergy='$value' from player WHERE player_id='$player_id'");
+    }
+
+    function getPlayerDragon($player_id): int
+    {
+        return $this->getUniqueValueFromDB("SELECT dragon from player WHERE player_id='$player_id'");
+    }
+
+    function setPlayerDragon(int $value, $player_id): void
+    {
+        $this->DbQuery("UPDATE player SET dragon='$value' from player WHERE player_id='$player_id'");
+    }
+
+    function getPlayerPower($player_id): int
+    {
+        return $this->getUniqueValueFromDB("SELECT gem_power from player WHERE player_id='$player_id'");
+    }
+
+    function setPlayerPower(int $value, $player_id): void
+    {
+        $this->DbQuery("UPDATE player SET gem_power='$value' from player WHERE player_id='$player_id'");
+    }
+
+    function getPlayerGems($player_id): int
+    {
+        return $this->getUniqueValueFromDB("SELECT gem_treasure from player WHERE player_id='$player_id'");
+    }
+
+    function setPlayerGems(int $value, $player_id): void
+    {
+        $this->DbQuery("UPDATE player SET gem_treasure='$value' from player WHERE player_id='$player_id'");
+    }
+
+    function getPlayerGold($player_id): int
+    {
+        return $this->getUniqueValueFromDB("SELECT gold from player WHERE player_id='$player_id'");
+    }
+
+    function setPlayerGold(int $gold_nbr, $player_id): void
+    {
+        $this->DbQuery("UPDATE player SET gold='$gold_nbr' WHERE player_id='$player_id'");
     }
 
     function moveCardsToLocation(
@@ -172,7 +251,7 @@ class BatallaDeCoronas extends Table
             $supply[$label] = true;
 
             foreach ($players as $player_id => $player) {
-                $owned = $this->getPlayerProperty($label, $player_id);
+                $owned = $this->getPlayerSupply($label, $player_id);
 
                 if ($owned) {
                     $supply[$label] = false;
@@ -243,8 +322,8 @@ class BatallaDeCoronas extends Table
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            $power = $this->getPlayerProperty("gem_power", $player_id);
-            $treasure = $this->getPlayerProperty("gem_treasure", $player_id);
+            $power = $this->getPlayerPower("gem_power", $player_id);
+            $treasure = $this->getPlayerGems("gem_treasure", $player_id);
 
             $gems[$player_id]["power"] = $power;
             $gems[$player_id]["treasure"] = $treasure;
@@ -259,7 +338,7 @@ class BatallaDeCoronas extends Table
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            $attack[$player_id] = $this->getPlayerProperty("attack", $player_id);
+            $attack[$player_id] = $this->getPlayerAttack($player_id);
         }
 
         return $attack;
@@ -271,7 +350,7 @@ class BatallaDeCoronas extends Table
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            $defense[$player_id] = $this->getPlayerProperty("defense", $player_id);
+            $defense[$player_id] = $this->getPlayerDefense($player_id);
         }
 
         return $defense;
@@ -283,7 +362,7 @@ class BatallaDeCoronas extends Table
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            $church[$player_id] = $this->getPlayerProperty("clergy", $player_id);
+            $church[$player_id] = $this->getPlayerClergy("clergy", $player_id);
         }
 
         return $church;
@@ -295,7 +374,7 @@ class BatallaDeCoronas extends Table
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            $treasure[$player_id] = $this->getPlayerProperty("gold", $player_id);
+            $treasure[$player_id] = $this->getPlayerGold($player_id);
         }
 
         return $treasure;
@@ -307,23 +386,10 @@ class BatallaDeCoronas extends Table
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            $dragon[$player_id] = $this->getPlayerProperty("dragon", $player_id);
+            $dragon[$player_id] = $this->getPlayerDragon($player_id);
         }
 
         return $dragon;
-    }
-
-    function setNegativated($player_id, bool $unset = false)
-    {
-        $score_aux = $unset ? 0 : -1;
-        $this->DbQuery("UPDATE player SET player_score_aux=$score_aux WHERE player_id='$player_id'");
-    }
-
-    function isNegativated($player_id): bool
-    {
-        $score_aux = $this->getUniqueValueFromDB("SELECT player_score_aux from player WHERE player_id='$player_id'");
-
-        return $score_aux == -1;
     }
 
     function spendGold(int $gold_nbr, $player_id, bool $to_box = false, bool $message = false): int
@@ -334,19 +400,11 @@ class BatallaDeCoronas extends Table
 
         $prev_gold_nbr = $this->getTreasure()[$player_id];
 
-        $spent_gold  = array();
-
-        if ($to_box) {
-            $spent_gold = $this->moveCardsToLocation($this->gold, $gold_nbr, "treasure", "box", $player_id, $player_id);
-        } else {
-            $spent_gold = $this->moveCardsToLocation($this->gold, $gold_nbr, "treasure", "unclaimed", $player_id, $player_id);
-        }
-
-        $spent_gold_nbr = count($spent_gold);
+        $spent_gold_nbr = $prev_gold_nbr;
 
         if ($gold_nbr > $prev_gold_nbr) {
-            $this->setNegativated($player_id);
-            $spent_gold_nbr += 1;
+            $spent_gold_nbr = $prev_gold_nbr + 1;
+            $this->setPlayerGold(-1, $player_id);
         }
 
         $totalGold = $this->getTreasure()[$player_id];
@@ -373,7 +431,7 @@ class BatallaDeCoronas extends Table
             return $this->getTreasure()[$player_id];
         }
 
-        $debt = $this->isNegativated($player_id) ? -1 : 0;
+        $debt = 0;
 
         $prev_gold_nbr = $this->getTreasure()[$player_id];
         $generated_gold = $this->moveCardsToLocation($this->gold, $gold_nbr - $debt, "unclaimed", "treasure", $player_id, $player_id);
@@ -391,8 +449,6 @@ class BatallaDeCoronas extends Table
                 "totalGold" => $totalGold
             )
         );
-
-        $this->setNegativated($player_id, true);
 
         return $totalGold;
     }
