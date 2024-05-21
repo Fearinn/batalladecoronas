@@ -132,12 +132,12 @@ class BatallaDeCoronas extends Table
 
     function getPlayerSupply(string $supply, $player_id): int
     {
-        return $this->getUniqueValueFromDB("SELECT $supply from player WHERE player_id='$player_id'");
+        return !!$this->getUniqueValueFromDB("SELECT $supply from player WHERE player_id='$player_id'");
     }
 
     function setPlayerSupply(string $supply, int $value, $player_id): void
     {
-        $this->DbQuery("UPDATE player SET $supply='$value' WHERE player_id='$player_id'");
+        $this->DbQuery("UPDATE player SET $supply=$value WHERE player_id='$player_id'");
     }
 
     function getPlayerAttack($player_id): int
@@ -147,7 +147,7 @@ class BatallaDeCoronas extends Table
 
     function setPlayerAttack(int $value, $player_id): void
     {
-        $this->DbQuery("UPDATE player SET attack='$value' from player WHERE player_id='$player_id'");
+        $this->DbQuery("UPDATE player SET attack=$value WHERE player_id='$player_id'");
     }
 
     function getPlayerDefense($player_id): int
@@ -157,7 +157,7 @@ class BatallaDeCoronas extends Table
 
     function setPlayerDefense(int $value, $player_id): void
     {
-        $this->DbQuery("UPDATE player SET defense='$value' from player WHERE player_id='$player_id'");
+        $this->DbQuery("UPDATE player SET defense=$value WHERE player_id='$player_id'");
     }
 
     function getPlayerClergy($player_id): int
@@ -171,7 +171,7 @@ class BatallaDeCoronas extends Table
             throw new BgaVisibleSystemException("Invalid value for Clergy");
         }
 
-        $this->DbQuery("UPDATE player SET clergy='$value' from player WHERE player_id='$player_id'");
+        $this->DbQuery("UPDATE player SET clergy=$value WHERE player_id='$player_id'");
     }
 
     function getPlayerDragon($player_id): int
@@ -181,7 +181,7 @@ class BatallaDeCoronas extends Table
 
     function setPlayerDragon(int $value, $player_id): void
     {
-        $this->DbQuery("UPDATE player SET dragon='$value' from player WHERE player_id='$player_id'");
+        $this->DbQuery("UPDATE player SET dragon=$value WHERE player_id='$player_id'");
     }
 
     function getPlayerPower($player_id): int
@@ -191,7 +191,7 @@ class BatallaDeCoronas extends Table
 
     function setPlayerPower(int $value, $player_id): void
     {
-        $this->DbQuery("UPDATE player SET gem_power='$value' from player WHERE player_id='$player_id'");
+        $this->DbQuery("UPDATE player SET gem_power=$value WHERE player_id='$player_id'");
     }
 
     function getPlayerGems($player_id): int
@@ -201,7 +201,7 @@ class BatallaDeCoronas extends Table
 
     function setPlayerGems(int $value, $player_id): void
     {
-        $this->DbQuery("UPDATE player SET gem_treasure='$value' from player WHERE player_id='$player_id'");
+        $this->DbQuery("UPDATE player SET gem_treasure=$value WHERE player_id='$player_id'");
     }
 
     function getPlayerGold($player_id): int
@@ -209,27 +209,19 @@ class BatallaDeCoronas extends Table
         return $this->getUniqueValueFromDB("SELECT gold from player WHERE player_id='$player_id'");
     }
 
-    function setPlayerGold(int $gold_nbr, $player_id): void
+    function setPlayerGold(int $value, $player_id): void
     {
-        $this->DbQuery("UPDATE player SET gold='$gold_nbr' WHERE player_id='$player_id'");
+        $this->DbQuery("UPDATE player SET gold=$value WHERE player_id='$player_id'");
     }
 
-    function moveCardsToLocation(
-        $deck,
-        $moved_nbr,
-        $from_location,
-        $to_location,
-        $from_location_arg = null,
-        $to_location_arg = null
-    ) {
-        $location_cards = $deck->getCardsInLocation($from_location, $from_location_arg);
+    function getPlayerMaxGold($player_id): int
+    {
+        return $this->getUniqueValueFromDB("SELECT max_gold from player WHERE player_id='$player_id'");
+    }
 
-        $moved_cards = array_slice($location_cards, 0, $moved_nbr, true);
-        $moved_ids = array_keys($moved_cards);
-
-        $deck->moveCards($moved_ids, $to_location, $to_location_arg);
-
-        return $moved_cards;
+    function setPlayerMaxGold(int $value, $player_id): void
+    {
+        $this->DbQuery("UPDATE player SET max_gold=$value WHERE player_id='$player_id'");
     }
 
     function getDice()
@@ -322,8 +314,8 @@ class BatallaDeCoronas extends Table
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            $power = $this->getPlayerPower("gem_power", $player_id);
-            $treasure = $this->getPlayerGems("gem_treasure", $player_id);
+            $power = $this->getPlayerPower($player_id);
+            $treasure = $this->getPlayerGems($player_id);
 
             $gems[$player_id]["power"] = $power;
             $gems[$player_id]["treasure"] = $treasure;
@@ -362,7 +354,7 @@ class BatallaDeCoronas extends Table
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            $church[$player_id] = $this->getPlayerClergy("clergy", $player_id);
+            $church[$player_id] = $this->getPlayerClergy($player_id);
         }
 
         return $church;
@@ -392,22 +384,40 @@ class BatallaDeCoronas extends Table
         return $dragon;
     }
 
-    function spendGold(int $gold_nbr, $player_id, bool $to_box = false, bool $message = false): int
+    function negativateGold($player_id): void
     {
-        if ($gold_nbr <= 0) {
-            return $this->getTreasure()[$player_id];
+        $prev_gold = $this->getTreasure()[$player_id];
+
+        $this->setPlayerGold(-1, $player_id);
+
+        $this->notifyAllPlayers(
+            "generateGold",
+            "",
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id),
+                "prevGold" => $prev_gold,
+                "totalGold" => -1,
+                "treasure" => $this->getTreasure(),
+            )
+        );
+    }
+
+    function spendGold(int $value, $player_id, bool $message = false): int
+    {
+        if ($value <= 0) {
+            throw new BgaVisibleSystemException("The gold value must be positive");
         }
 
-        $prev_gold_nbr = $this->getTreasure()[$player_id];
+        $prev_gold = $this->getTreasure()[$player_id];
 
-        $spent_gold_nbr = $prev_gold_nbr;
-
-        if ($gold_nbr > $prev_gold_nbr) {
-            $spent_gold_nbr = $prev_gold_nbr + 1;
-            $this->setPlayerGold(-1, $player_id);
+        if ($value > $prev_gold) {
+            throw new BgaUserException($this->_("You don't have the gold required by this action"));
         }
 
-        $totalGold = $this->getTreasure()[$player_id];
+        $total_gold = $prev_gold - $value;
+
+        $this->setPlayerGold($total_gold, $player_id);
 
         $this->notifyAllPlayers(
             "generateGold",
@@ -415,28 +425,37 @@ class BatallaDeCoronas extends Table
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
-                "prevGold" => $prev_gold_nbr,
-                "spentGold" => $spent_gold_nbr,
-                "totalGold" => $totalGold,
+                "prevGold" => $prev_gold,
+                "spentGold" => $value,
+                "totalGold" => $total_gold,
                 "treasure" => $this->getTreasure(),
             )
         );
 
-        return $totalGold;
+        return $total_gold;
     }
 
-    function generateGold(int $gold_nbr, $player_id): int
+    function generateGold(int $value, $player_id): int
     {
-        if ($gold_nbr <= 0) {
-            return $this->getTreasure()[$player_id];
+        if ($value <= 0) {
+            throw new BgaVisibleSystemException("The gold value must be positive");
         }
 
-        $debt = 0;
+        $prev_gold = $this->getTreasure()[$player_id];
 
-        $prev_gold_nbr = $this->getTreasure()[$player_id];
-        $generated_gold = $this->moveCardsToLocation($this->gold, $gold_nbr - $debt, "unclaimed", "treasure", $player_id, $player_id);
+        $max_gold = $this->getPlayerMaxGold($player_id);
 
-        $totalGold = $this->getTreasure()[$player_id];
+        if ($prev_gold == $max_gold) {
+            throw new BgaUserException($this->_("You can't generate more gold"));
+        }
+
+        $total_gold = $prev_gold + $value;
+
+        if ($total_gold > $max_gold) {
+            $total_gold = $max_gold;
+        }
+
+        $this->setPlayerGold($total_gold, $player_id);
 
         $this->notifyAllPlayers(
             "generateGold",
@@ -444,26 +463,30 @@ class BatallaDeCoronas extends Table
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
-                "prevGold" => $prev_gold_nbr,
-                "generatedGold" => count($generated_gold),
-                "totalGold" => $totalGold
+                "prevGold" => $prev_gold,
+                "generatedGold" => $value,
+                "totalGold" => $total_gold
             )
         );
 
-        return $totalGold;
+        return $total_gold;
     }
 
-    function increaseAttack(int $sword_nbr, $player_id): int
+    function increaseAttack(int $value, $player_id): int
     {
         $prev_swords = $this->getAttack()[$player_id];
 
-        $this->moveCardsToLocation($this->attack, $sword_nbr, "unclaimed", "attack", $player_id, $player_id);
-
-        $total_swords = $this->getAttack()[$player_id];
-
-        if ($prev_swords == $total_swords) {
+        if ($prev_swords == 5) {
             throw new BgaUserException($this->_("The attack can't be further improved"));
         }
+
+        $total_swords = $prev_swords + $value;
+
+        if ($total_swords > 5) {
+            $total_swords = 5;
+        }
+
+        $this->setPlayerAttack($total_swords, $player_id);
 
         $this->notifyAllPlayers(
             "increaseAttack",
@@ -472,7 +495,7 @@ class BatallaDeCoronas extends Table
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "prevSwords" => $prev_swords,
-                "newSwords" => $sword_nbr,
+                "newSwords" => $value,
                 "totalSwords" => $total_swords,
                 "attack" => $this->getAttack()
             )
@@ -481,69 +504,71 @@ class BatallaDeCoronas extends Table
         return $total_swords;
     }
 
-    function increaseDefense(int $shield_nbr, $player_id): int
+    function decreaseAttack(int $value, $player_id, $message = false)
+    {
+        $prev_swords = $this->getAttack()[$player_id];
+
+        $total_swords = $prev_swords - $value;
+
+        if ($value > $prev_swords) {
+            $total_swords = 0;
+        }
+
+        $this->setPlayerAttack($total_swords, $player_id);
+
+        $this->notifyAllPlayers(
+            "increaseAttack",
+            $message ? clienttranslate('${newSwords} swords of ${player_name} are destroyed') : "",
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id),
+                "prevSwords" => $prev_swords,
+                "newSwords" => $value,
+                "totalSwords" => $total_swords,
+                "attack" => $this->getAttack()
+            )
+        );
+
+        return $total_swords;
+    }
+
+    function increaseDefense(int $value, $player_id): int
     {
         $prev_shields = $this->getDefense()[$player_id];
 
-        $this->moveCardsToLocation($this->defense, $shield_nbr, "unclaimed", "defense", $player_id, $player_id);
-
-        $total_shields = $this->getDefense()[$player_id];
-
-        if ($prev_shields == $total_shields) {
+        if ($prev_shields == 5) {
             throw new BgaUserException($this->_("The defense can't be further improved"));
         }
 
+        $total_shields = $prev_shields + $value;
+
+        if ($total_shields > 5) {
+            $total_shields = 5;
+        }
+
+        $this->setPlayerDefense($total_shields, $player_id);
+
         $this->notifyAllPlayers(
             "increaseDefense",
-            clienttranslate('${player_name} gets ${newShields} sword(s). The total is ${totalShields}'),
+            clienttranslate('${player_name} gets ${newShields} shield(s). The total is ${totalShields}'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "prevShields" => $prev_shields,
-                "newShields" => $shield_nbr,
+                "newShields" => $value,
                 "totalShields" => $total_shields,
-                "defense" => $this->getDefense()
+                "attack" => $this->getDefense()
             )
         );
 
         return $total_shields;
     }
 
-    function decreaseAttack(int $sword_nbr, $player_id)
-    {
-        $prev_swords = $this->getAttack()[$player_id];
-
-        $this->moveCardsToLocation($this->attack, $sword_nbr, "attack", "unclaimed", $player_id, $player_id);
-
-        $total_swords = $this->getAttack()[$player_id];
-
-        if ($prev_swords == $total_swords) {
-            throw new BgaUserException($this->_("There's no sword to destroy"));
-        }
-
-        $this->notifyAllPlayers(
-            "increaseAttack",
-            "",
-            array(
-                "player_id" => $player_id,
-                "player_name" => $this->getPlayerNameById($player_id),
-                "prevSwords" => $prev_swords,
-                "newSwords" => $sword_nbr,
-                "totalSwords" => $total_swords,
-                "attack" => $this->getAttack()
-            )
-        );
-
-        return $total_swords;
-    }
-
     function activateGoldenSquare($player_id): void
     {
         $other_player_id = $this->getPlayerAfter($player_id);
 
-        $gold_nbr = $this->getTreasure()[$other_player_id];
-
-        $this->spendGold($gold_nbr + 1, $other_player_id);
+        $this->negativateGold($other_player_id);
     }
 
     function activateBlueSquare($player_id): void
@@ -570,7 +595,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "moveClergy",
-            clienttranslate('${player_name} moves the clergy to the ${new_square_tr} square and activates its effect'),
+            clienttranslate('${player_name} moves the Clergy to the ${new_square_tr} square and activates its effect'),
             array(
                 "i18n" => array("square_tr"),
                 "player_id" => $player_id,
@@ -594,24 +619,26 @@ class BatallaDeCoronas extends Table
             $this->activateRedSquare($player_id);
         }
 
-        $this->clergy->moveAllCardsInLocation($prev_square, $square_id, $player_id, $player_id);
+        $this->setPlayerClergy($square_id, $player_id);
     }
 
-    function levelUpDragon(int $level_nbr, $player_id): int
+    function levelUpDragon(int $value, $player_id): int
     {
         $prev_level = $this->getDragon()[$player_id];
 
         if ($prev_level == 6) {
-            throw new BgaVisibleSystemException("The level of the dragon can't be further increased");
+            throw new BgaUserException($this->_("The level of the dragon can't be further increased"));
         }
 
-        $this->moveCardsToLocation($this->dragon, $level_nbr, "unclaimed", "dragon", $player_id, $player_id);
+        $total_level = $prev_level + $value;
 
-        $total_level = $this->getDragon()[$player_id];
+        if ($total_level > 6) {
+            $total_level = 6;
+        }
 
         $this->notifyAllPlayers(
             "levelUpDragon",
-            clienttranslate('${player_name} levels up the dragon. The current level is ${totalLevel}'),
+            "",
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
@@ -624,17 +651,15 @@ class BatallaDeCoronas extends Table
         return $total_level;
     }
 
-    function levelDownDragon(int $level_nbr, $player_id): int
+    function levelDownDragon(int $value, $player_id): int
     {
         $prev_level = $this->getDragon()[$player_id];
 
-        if ($prev_level == 0) {
-            throw new BgaUserException($this->_("The level of the dragon can't be further reduced"));
+        $total_level = $prev_level - $value;
+
+        if ($value > $prev_level) {
+            $total_level = 0;
         }
-
-        $this->moveCardsToLocation($this->dragon, $level_nbr, "dragon", "unclaimed", $player_id, $player_id);
-
-        $total_level = $this->getDragon()[$player_id];
 
         $this->notifyAllPlayers(
             "levelUpDragon",
@@ -653,20 +678,23 @@ class BatallaDeCoronas extends Table
 
     function claimCrown($player_id): void
     {
-        if ($this->crown->countCardInLocation("crown", $player_id) == 1) {
+        if ($this->getPlayerSupply("crown", $player_id)) {
             throw new BgaVisibleSystemException("The crown is already in your castle");
         }
 
         $other_player_id = $this->getPlayerAfter($player_id);
 
-        $is_owned = $this->crown->countCardInLocation("crown", $other_player_id) == 1;
+        $is_owned = $this->getPlayerSupply("crown", $other_player_id);
 
-        $this->crown->moveCard(1, "crown", $player_id);
+        $this->setPlayerSupply("crown", 1, $player_id);
+        $this->setPlayerSupply("crown", 0, $other_player_id);
 
         $this->notifyAllPlayers(
             "claimCrown",
-            clienttranslate('${player_name} obtains the Crown token'),
+            clienttranslate('${player_name} obtains the ${label_tr} token'),
             array(
+                "i18n" => array("label_tr"),
+                "label_tr" => $this->tokens_info[1]["label_tr"],
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "other_player_id" => $other_player_id,
@@ -678,20 +706,23 @@ class BatallaDeCoronas extends Table
 
     function claimCross($player_id): void
     {
-        if ($this->cross->countCardInLocation("cross", $player_id) == 1) {
-            throw new BgaVisibleSystemException("The cross is already in your castle");
+        if ($this->getPlayerSupply("sacredcross", $player_id)) {
+            throw new BgaVisibleSystemException("The Cross is already in your castle");
         }
 
         $other_player_id = $this->getPlayerAfter($player_id);
 
-        $is_owned = $this->cross->countCardInLocation("cross", $other_player_id) == 1;
+        $is_owned = $this->getPlayerSupply("sacredcross", $other_player_id);
 
-        $this->cross->moveCard(1, "cross", $player_id);
+        $this->setPlayerSupply("sacredcross", 1, $player_id);
+        $this->setPlayerSupply("sacredcross", 0, $other_player_id);
 
         $this->notifyAllPlayers(
             "claimCross",
-            clienttranslate('${player_name} obtains the Cross token'),
+            clienttranslate('${player_name} obtains the ${token_label} token'),
             array(
+                "i18n" => array("token_label"),
+                "token_label" => $this->tokens_info[2]["label_tr"],
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "other_player_id" => $other_player_id,
@@ -703,20 +734,23 @@ class BatallaDeCoronas extends Table
 
     function claimSmith($player_id): void
     {
-        if ($this->smith->countCardInLocation("smith", $player_id) == 1) {
-            throw new BgaVisibleSystemException("The smith is already in your castle");
+        if ($this->getPlayerSupply("smith", $player_id)) {
+            throw new BgaVisibleSystemException("The Smith is already in your castle");
         }
 
         $other_player_id = $this->getPlayerAfter($player_id);
 
-        $is_owned = $this->smith->countCardInLocation("smith", $other_player_id) == 1;
+        $is_owned = $this->getPlayerSupply("smith", $other_player_id);
 
-        $this->smith->moveCard(1, "smith", $player_id);
+        $this->setPlayerSupply("smith", 1, $player_id);
+        $this->setPlayerSupply("smith", 0, $other_player_id);
 
         $this->notifyAllPlayers(
             "claimSmith",
-            clienttranslate('${player_name} claims the Smith token'),
+            clienttranslate('${player_name} obtains the ${token_label} token'),
             array(
+                "i18n" => array("token_label"),
+                "token_label" => $this->tokens_info[3]["label_tr"],
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "other_player_id" => $other_player_id,
@@ -730,20 +764,23 @@ class BatallaDeCoronas extends Table
     {
         $other_player_id = $this->getPlayerAfter($player_id);
 
-        $this->moveCardsToLocation($this->gems, 1, "power", "treasure", $other_player_id, $player_id);
+        $total_gems = $this->getPlayerGems($player_id) + 1;
 
-        $total_gems = $this->gems->countCardInLocation("treasure", $player_id);
+        $this->setPlayerMaxGold(7 - $total_gems, $player_id);
+        $this->setPlayerGems($total_gems, $player_id);
 
-        $gold_nbr = $this->getTreasure()[$player_id];
-        $reduce_gold = $gold_nbr >= (8 - $total_gems);
+        $prev_power = $this->getPlayerPower($other_player_id);
+        $this->setPlayerPower($prev_power - 1, $other_player_id);
+
+        $reduce_gold = $this->getPlayerGold($player_id) >= $this->getPlayerMaxGold($player_id);
 
         if ($reduce_gold) {
-            $this->spendGold(1, $player_id, true);
+            $this->spendGold(1, $player_id);
         }
 
         $this->notifyAllPlayers(
             "claimGem",
-            clienttranslate('${player_name} claims a gem. The total is ${totalGems}'),
+            clienttranslate('${player_name} gets a gem. The total is ${totalGems}'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
