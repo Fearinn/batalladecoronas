@@ -1113,7 +1113,7 @@ class BatallaDeCoronas extends Table
 
         $active_counselor = $counselor["type_arg"];
 
-        if ($counselor["location"] !== "active") {
+        if ($counselor["location"] !== ("vested:" . $player_id)) {
             throw new BgaVisibleSystemException("The Noble can only activate counselor on chairs");
         }
 
