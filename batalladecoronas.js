@@ -628,7 +628,6 @@ define([
 
       if (stateName === "nobleActivation") {
         if (this.isCurrentPlayerActive()) {
-          this["inactiveCouncilStock"].setSelectionMode(1);
           this.changeChairsSelection(player_id);
 
           this.addActionButton(
@@ -700,7 +699,6 @@ define([
 
       if (stateName === "nobleActivation") {
         dojo.query(".boc_unvestedCounselor").removeClass("boc_selectableItem");
-        this["inactiveCouncilStock"].setSelectionMode(0);
 
         this.changeChairsSelection(player_id, false);
       }
@@ -817,34 +815,6 @@ define([
             );
             return;
           }
-        }
-      }
-
-      if (stateName === "nobleActivation") {
-        if (this.isCurrentPlayerActive()) {
-          this.removeActionButtons();
-
-          if (selectedItemsNbr == 1) {
-            const cardId = stock.getSelectedItems()[0].id;
-
-            this.addActionButton(
-              "boc_nobleActivation",
-              _("Confirm selection"),
-              () => {
-                this.onActivateNoble(cardId);
-              }
-            );
-            return;
-          }
-
-          this.addActionButton(
-            "boc_cancel",
-            _("Cancel"),
-            "onCancelActivation",
-            null,
-            null,
-            "red"
-          );
         }
       }
     },

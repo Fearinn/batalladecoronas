@@ -1112,7 +1112,10 @@ class BatallaDeCoronas extends Table
         $counselor = $this->council->getCard($card_id);
 
         $active_counselor = $counselor["type_arg"];
-        $chair = $counselor["location_arg"];
+
+        if ($counselor["location"] !== "active") {
+            throw new BgaVisibleSystemException("The Noble can only activate counselor on chairs");
+        }
 
         if ($active_counselor == 4) {
             throw new BgaUserException($this->_("You can't activate the Noble with its own effect"));
