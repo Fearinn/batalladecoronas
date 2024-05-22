@@ -126,7 +126,7 @@ define([
       );
 
       this[supplyStock].addItemType(
-        "sacredcross",
+        "cross",
         1,
         g_gamethemeurl + "img/supply.png",
         1

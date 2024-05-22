@@ -130,14 +130,41 @@ class BatallaDeCoronas extends Table
     //////////// Utility functions
     //////////// 
 
-    function getPlayerSupply(string $supply, $player_id): int
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// DB manipulation
+    ////////////
+
+    function getPlayerCrown($player_id): int
     {
-        return !!$this->getUniqueValueFromDB("SELECT $supply from player WHERE player_id='$player_id'");
+        return !!$this->getUniqueValueFromDB("SELECT crown from player WHERE player_id='$player_id'");
     }
 
-    function setPlayerSupply(string $supply, int $value, $player_id): void
+    function setPlayerCrown(bool $value, $player_id): void
     {
-        $this->DbQuery("UPDATE player SET $supply=$value WHERE player_id='$player_id'");
+        $owned = $value ? 1 : 0;
+        $this->DbQuery("UPDATE player SET crown=$owned WHERE player_id='$player_id'");
+    }
+
+    function getPlayerCross($player_id): int
+    {
+        return !!$this->getUniqueValueFromDB("SELECT sacredcross from player WHERE player_id='$player_id'");
+    }
+
+    function getPlayerSmith($player_id): int
+    {
+        return !!$this->getUniqueValueFromDB("SELECT smith from player WHERE player_id='$player_id'");
+    }
+
+    function setPlayerCross(bool $value, $player_id): void
+    {
+        $owned = $value ? 1 : 0;
+        $this->DbQuery("UPDATE player SET sacredcross=$owned WHERE player_id='$player_id'");
+    }
+
+    function setPlayerSmith(bool $value, $player_id): void
+    {
+        $owned = $value ? 1 : 0;
+        $this->DbQuery("UPDATE player SET smith=$owned WHERE player_id='$player_id'");
     }
 
     function getPlayerAttack($player_id): int
@@ -224,6 +251,10 @@ class BatallaDeCoronas extends Table
         $this->DbQuery("UPDATE player SET max_gold=$value WHERE player_id='$player_id'");
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// Getters
+    ////////////
+
     function getDice()
     {
         return array(
@@ -238,18 +269,27 @@ class BatallaDeCoronas extends Table
 
         $players = $this->loadPlayersBasicInfos();
 
-        foreach ($this->tokens_info as $token_info) {
-            $label = $token_info["label"];
-            $supply[$label] = true;
+        $crown_unclaimed = true;
+        $cross_unclaimed = true;
+        $smith_unclaimed = true;
 
-            foreach ($players as $player_id => $player) {
-                $owned = $this->getPlayerSupply($label, $player_id);
+        foreach ($players as $player_id => $player) {
+            if ($this->getPlayerCrown($player_id)) {
+                $crown_unclaimed = false;
+            };
 
-                if ($owned) {
-                    $supply[$label] = false;
-                }
-            }
+            if ($this->getPlayerCross($player_id)) {
+                $cross_unclaimed = false;
+            };
+
+            if ($this->getPlayerSmith($player_id)) {
+                $smith_unclaimed = false;
+            };
         }
+
+        $supply["crown"] = $crown_unclaimed;
+        $supply["cross"] = $cross_unclaimed;
+        $supply["smith"] = $smith_unclaimed;
 
         return $supply;
     }
@@ -261,16 +301,9 @@ class BatallaDeCoronas extends Table
         $players = $this->loadPlayersBasicInfos();
 
         foreach ($players as $player_id => $player) {
-            foreach ($this->tokens_info as $token_info) {
-                $label = $token_info["label"];
-                $supply[$player_id][$label] = false;
-
-                $owned = $this->getUniqueValueFromDB("SELECT $label from player WHERE player_id='$player_id'");
-
-                if ($owned) {
-                    $supply[$player_id][$label] = true;
-                }
-            }
+            $supply[$player_id]["crown"] = $this->getPlayerCrown($player_id);
+            $supply[$player_id]["cross"] = $this->getPlayerCross($player_id);
+            $supply[$player_id]["smith"] = $this->getPlayerSmith($player_id);
         }
 
         return $supply;
@@ -384,9 +417,13 @@ class BatallaDeCoronas extends Table
         return $dragon;
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// Operations
+    ////////////
+
     function negativateGold($player_id): void
     {
-        $prev_gold = $this->getTreasure()[$player_id];
+        $prev_gold = $this->getPlayerGold($player_id);
 
         $this->setPlayerGold(-1, $player_id);
 
@@ -409,7 +446,7 @@ class BatallaDeCoronas extends Table
             throw new BgaVisibleSystemException("The gold value must be positive");
         }
 
-        $prev_gold = $this->getTreasure()[$player_id];
+        $prev_gold = $this->getPlayerGold($player_id);
 
         if ($value > $prev_gold) {
             throw new BgaUserException($this->_("You don't have the gold required by this action"));
@@ -441,7 +478,7 @@ class BatallaDeCoronas extends Table
             throw new BgaVisibleSystemException("The gold value must be positive");
         }
 
-        $prev_gold = $this->getTreasure()[$player_id];
+        $prev_gold = $this->getPlayerGold($player_id);
 
         $max_gold = $this->getPlayerMaxGold($player_id);
 
@@ -474,7 +511,7 @@ class BatallaDeCoronas extends Table
 
     function increaseAttack(int $value, $player_id): int
     {
-        $prev_swords = $this->getAttack()[$player_id];
+        $prev_swords = $this->getPlayerAttack($player_id);
 
         if ($prev_swords == 5) {
             throw new BgaUserException($this->_("The attack can't be further improved"));
@@ -506,7 +543,7 @@ class BatallaDeCoronas extends Table
 
     function decreaseAttack(int $value, $player_id, $message = false)
     {
-        $prev_swords = $this->getAttack()[$player_id];
+        $prev_swords = $this->getPlayerAttack($player_id);
 
         $total_swords = $prev_swords - $value;
 
@@ -534,7 +571,7 @@ class BatallaDeCoronas extends Table
 
     function increaseDefense(int $value, $player_id): int
     {
-        $prev_shields = $this->getDefense()[$player_id];
+        $prev_shields = $this->getPlayerDefense($player_id);
 
         if ($prev_shields == 5) {
             throw new BgaUserException($this->_("The defense can't be further improved"));
@@ -585,7 +622,7 @@ class BatallaDeCoronas extends Table
 
     function moveClergy(int $square_id, $player_id): void
     {
-        $prev_square = $this->getChurch()[$player_id];
+        $prev_square = $this->getPlayerClergy($player_id);
 
         if ($prev_square == $square_id) {
             throw new BgaUserException($this->_("You must move the clergy to other square"));
@@ -597,12 +634,12 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "moveClergy",
-            clienttranslate('${player_name} moves the Clergy to the ${new_square_tr} square and activates its effect'),
+            clienttranslate('${player_name} moves the Clergy to the ${square_label} square and activates its effect'),
             array(
-                "i18n" => array("square_tr"),
+                "i18n" => array("square_label"),
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
-                "new_square_tr" => $square["label_tr"],
+                "square_label" => $square["label_tr"],
                 "newSquare" => $square_id,
                 "prevSquare" => $prev_square,
                 "church" => $this->getChurch()
@@ -624,7 +661,7 @@ class BatallaDeCoronas extends Table
 
     function levelUpDragon(int $value, $player_id): int
     {
-        $prev_level = $this->getDragon()[$player_id];
+        $prev_level = $this->getPlayerDragon($player_id);
 
         if ($prev_level == 6) {
             throw new BgaUserException($this->_("The level of the dragon can't be further increased"));
@@ -655,7 +692,7 @@ class BatallaDeCoronas extends Table
 
     function levelDownDragon(int $value, $player_id): int
     {
-        $prev_level = $this->getDragon()[$player_id];
+        $prev_level = $this->getPlayerDragon($player_id);
 
         $total_level = $prev_level - $value;
 
@@ -682,27 +719,27 @@ class BatallaDeCoronas extends Table
 
     function claimCrown($player_id): void
     {
-        if ($this->getPlayerSupply("crown", $player_id)) {
-            throw new BgaVisibleSystemException("The crown is already in your castle");
+        if ($this->getPlayerCrown($player_id)) {
+            throw new BgaVisibleSystemException("The Crown is already in your castle");
         }
 
         $other_player_id = $this->getPlayerAfter($player_id);
 
-        $is_owned = $this->getPlayerSupply("crown", $other_player_id);
+        $owned = $this->getPlayerCrown($other_player_id);
 
-        $this->setPlayerSupply("crown", 1, $player_id);
-        $this->setPlayerSupply("crown", 0, $other_player_id);
+        $this->setPlayerCrown(1, $player_id);
+        $this->setPlayerCrown(0, $other_player_id);
 
         $this->notifyAllPlayers(
             "claimCrown",
-            clienttranslate('${player_name} obtains the ${label_tr} token'),
+            clienttranslate('${player_name} obtains the ${token_label} token'),
             array(
-                "i18n" => array("label_tr"),
-                "label_tr" => $this->tokens_info[1]["label_tr"],
+                "i18n" => array("token_label"),
+                "token_label" => $this->tokens_info[1]["label_tr"],
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "other_player_id" => $other_player_id,
-                "isOwned" => $is_owned,
+                "isOwned" => $owned,
                 "supply" => $this->getSupply()
             )
         );
@@ -710,16 +747,16 @@ class BatallaDeCoronas extends Table
 
     function claimCross($player_id): void
     {
-        if ($this->getPlayerSupply("sacredcross", $player_id)) {
+        if ($this->getPlayerCross($player_id)) {
             throw new BgaVisibleSystemException("The Cross is already in your castle");
         }
 
         $other_player_id = $this->getPlayerAfter($player_id);
 
-        $is_owned = $this->getPlayerSupply("sacredcross", $other_player_id);
+        $owned = $this->getPlayerCross($other_player_id);
 
-        $this->setPlayerSupply("sacredcross", 1, $player_id);
-        $this->setPlayerSupply("sacredcross", 0, $other_player_id);
+        $this->setPlayerCross(1, $player_id);
+        $this->setPlayerCross(0, $other_player_id);
 
         $this->notifyAllPlayers(
             "claimCross",
@@ -730,7 +767,7 @@ class BatallaDeCoronas extends Table
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "other_player_id" => $other_player_id,
-                "isOwned" => $is_owned,
+                "isOwned" => $owned,
                 "supply" => $this->getSupply()
             )
         );
@@ -738,16 +775,16 @@ class BatallaDeCoronas extends Table
 
     function claimSmith($player_id): void
     {
-        if ($this->getPlayerSupply("smith", $player_id)) {
+        if ($this->getPlayerSmith($player_id)) {
             throw new BgaVisibleSystemException("The Smith is already in your castle");
         }
 
         $other_player_id = $this->getPlayerAfter($player_id);
 
-        $is_owned = $this->getPlayerSupply("smith", $other_player_id);
+        $owned = $this->getPlayerSmith($other_player_id);
 
-        $this->setPlayerSupply("smith", 1, $player_id);
-        $this->setPlayerSupply("smith", 0, $other_player_id);
+        $this->setPlayerSmith(1, $player_id);
+        $this->setPlayerSmith(0, $other_player_id);
 
         $this->notifyAllPlayers(
             "claimSmith",
@@ -758,7 +795,7 @@ class BatallaDeCoronas extends Table
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "other_player_id" => $other_player_id,
-                "isOwned" => $is_owned,
+                "isOwned" => $owned,
                 "supply" => $this->getSupply()
             )
         );
@@ -803,6 +840,11 @@ class BatallaDeCoronas extends Table
 
         return $total_gems;
     }
+
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// Verifications
+    ////////////
+
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Counselor actions
