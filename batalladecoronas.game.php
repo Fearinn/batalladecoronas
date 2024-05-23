@@ -458,7 +458,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "generateGold",
-            $message ? clienttranslate('${player_name} spends ${spentGold} of gold. The total is ${totalGold}') : "",
+            $message ? clienttranslate('${player_name} spends ${spentGold} of gold') : "",
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
@@ -496,7 +496,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "generateGold",
-            clienttranslate('${player_name} generates ${generatedGold} of gold. The total is ${totalGold}'),
+            clienttranslate('${player_name} generates ${generatedGold} of gold'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
@@ -527,7 +527,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "increaseAttack",
-            clienttranslate('${player_name} gets ${newSwords} sword(s). The total is ${totalSwords}'),
+            clienttranslate('${player_name} gets ${newSwords} sword(s)'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
@@ -587,7 +587,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "increaseDefense",
-            clienttranslate('${player_name} gets ${newShields} shield(s). The total is ${totalShields}'),
+            clienttranslate('${player_name} gets ${newShields} shield(s)'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
@@ -677,7 +677,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "levelUpDragon",
-            "",
+            clienttranslate('${player_name} levels up the dragon'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
@@ -821,7 +821,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "claimGem",
-            clienttranslate('${player_name} gets a gem. The total is ${totalGems}'),
+            clienttranslate('${player_name} gets a gem'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
@@ -891,11 +891,11 @@ class BatallaDeCoronas extends Table
         $commander_picks = array();
 
         if ($this->getPlayerAttack($player_id) < 5) {
-            $commander_picks["attack"] = "attack";
+            $commander_picks["ATTACK"] = "ATTACK";
         }
 
         if ($this->getPlayerDefense($player_id) < 5) {
-            $commander_picks["defense"] = "defense";
+            $commander_picks["DEFENSE"] = "DEFENSE";
         }
 
         return $commander_picks;
@@ -917,24 +917,24 @@ class BatallaDeCoronas extends Table
         $commander_picks = $this->getCommanderPicks($player_id);
 
         if ($this->getPlayerGold($player_id) >= 3) {
-            if (in_array("attack", $commander_picks)) {
-                $buyable_areas["attack"] = "attack";
+            if (in_array("ATTACK", $commander_picks)) {
+                $buyable_areas["ATTACK"] = "ATTACK";
             }
 
-            if (in_array("defense", $commander_picks)) {
-                $buyable_areas["attack"] = "attack";
+            if (in_array("DEFENSE", $commander_picks)) {
+                $buyable_areas["DEFENSE"] = "DEFENSE";
             }
         }
 
         if ($this->getPlayerDragon($player_id) < 5 && $this->canPayDragon($player_id)) {
-            $buyable_areas["dragon"] = "dragon";
+            $buyable_areas["DRAGON"] = "DRAGON";
         }
 
         return $buyable_areas;
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    //////////// Counselor actions
+    //////////// Counselor effects
     ////////////
 
     function commanderAttack($player_id): int
@@ -1371,6 +1371,42 @@ class BatallaDeCoronas extends Table
         $this->gamestate->nextState("skip");
     }
 
+    function buyArea($area)
+    {
+        $this->checkAction("buyArea");
+
+        $player_id = $this->getActivePlayerId();
+
+        if (!in_array($area, $this->getBuyableAreas($player_id))) {
+            throw new BgaVisibleSystemException("You can't buy this area");
+        }
+
+        if ($area === "ATTACK") {
+            $this->spendGold(3, $player_id, true);
+            $this->increaseAttack(1, $player_id);
+        }
+
+        if ($area === "DEFENSE") {
+            $this->spendGold(3, $player_id, true);
+            $this->increaseDefense(1, $player_id);
+        }
+
+        if ($area === "DRAGON") {
+            $level = $this->getPlayerDragon($player_id) + 1;
+            $price = $this->dragon_prices[$level];
+
+            $this->spendGold($price, $player_id, true);
+            $this->levelUpDragon(1, $player_id);
+        }
+
+        if (!$this->getBuyableAreas($player_id)) {
+            $this->gamestate->nextState("battlePhase");
+            return;
+        }
+
+        $this->gamestate->nextState("buyAgain");
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //////////// Game state arguments
     ////////////
@@ -1389,6 +1425,13 @@ class BatallaDeCoronas extends Table
         return array(
             "counselor_name" => $this->counselors_info[$counselor_id]["name"]
         );
+    }
+
+    function argBuyingPhase()
+    {
+        $player_id = $this->getActivePlayerId();
+
+        return array("buyableAreas" => $this->getBuyableAreas($player_id));
     }
 
     //////////////////////////////////////////////////////////////////////////////

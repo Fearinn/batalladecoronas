@@ -44,7 +44,12 @@
           <div id="boc_chair${MY_ID}:5" class="boc_chair_5"></div>
           <div id="boc_chair${MY_ID}:6" class="boc_chair_6"></div>
         </div>
-        <div id="boc_defense:{MY_ID}" class="boc_defense boc_myMilitia">
+        <div
+          id="boc_defense:{MY_ID}"
+          class="boc_defense"
+          data-militia="DEFENSE"
+          data-area="DEFENSE"
+        >
           <div id="boc_shield${MY_ID}:0" class="boc_shield_0"></div>
           <div id="boc_shield${MY_ID}:1" class="boc_shield_1"></div>
           <div id="boc_shield${MY_ID}:2" class="boc_shield_2"></div>
@@ -54,7 +59,12 @@
           <div id="boc_shield${MY_ID}:" class="boc_shield_6"></div>
         </div>
         <div id="boc_power:{MY_ID}" class="boc_power"></div>
-        <div id="boc_attack:{MY_ID}" class="boc_attack boc_myMilitia">
+        <div
+          id="boc_attack:{MY_ID}"
+          class="boc_attack"
+          data-militia="ATTACK"
+          data-area="ATTACK"
+        >
           <div id="boc_sword${MY_ID}:0" class="boc_sword_0"></div>
           <div id="boc_sword${MY_ID}:1" class="boc_sword_1"></div>
           <div id="boc_sword${MY_ID}:2" class="boc_sword_2"></div>
@@ -67,15 +77,18 @@
           <div id="boc_clergy${MY_ID}:0" class="boc_clergy_DOOR"></div>
           <div
             id="boc_clergy${MY_ID}:1"
-            class="boc_clergy_GOLDEN boc_myClergy"
+            class="boc_clergy_GOLDEN"
+            data-clergy
           ></div>
           <div
             id="boc_clergy${MY_ID}:2"
-            class="boc_clergy_BLUE boc_myClergy"
+            class="boc_clergy_BLUE"
+            data-clergy
           ></div>
           <div
             id="boc_clergy${MY_ID}:3"
-            class="boc_clergy_RED boc_myClergy"
+            class="boc_clergy_RED"
+            data-clergy
           ></div>
         </div>
         <div id="boc_treasure:{MY_ID}" class="boc_treasure">
@@ -89,7 +102,7 @@
           <div id="boc_treasure${MY_ID}:6" class="boc_treasure_6"></div>
           <div id="boc_treasure${MY_ID}:7" class="boc_treasure_7"></div>
         </div>
-        <div id="boc_dragon:{MY_ID}" class="boc_dragon">
+        <div id="boc_dragon:{MY_ID}" class="boc_dragon" data-area="DRAGON">
           <div id="boc_dragon${MY_ID}:0" class="boc_dragon_0"></div>
           <div id="boc_dragon${MY_ID}:1" class="boc_dragon_1"></div>
           <div id="boc_dragon${MY_ID}:2" class="boc_dragon_2"></div>

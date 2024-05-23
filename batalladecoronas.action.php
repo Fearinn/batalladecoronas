@@ -104,4 +104,12 @@ class action_batalladecoronas extends APP_GameAction
     $this->game->skipActivation();
     $this->ajaxResponse();
   }
+
+  public function buyArea()
+  {
+    $this->setAjaxMode();
+    $area = $this->getArg("area", AT_enum, true, null, array("ATTACK", "DEFENSE", "DRAGON"));
+    $this->game->buyArea($area);
+    $this->ajaxResponse();
+  }
 }

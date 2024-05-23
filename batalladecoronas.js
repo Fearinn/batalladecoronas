@@ -564,13 +564,16 @@ define([
         }
       );
 
-      dojo.query(".boc_myMilitia").connect("onclick", (event) => {
+      dojo.query("[data-militia]").connect("onclick", (event) => {
         this.onPickMilitia(event);
       });
 
-      dojo.query(".boc_myClergy").connect("onclick", (event) => {
-        console.log("clergy");
+      dojo.query("[data-clergy]").connect("onclick", (event) => {
         this.onPickSquare(event);
+      });
+
+      dojo.query("[data-area]").connect("onclick", (event) => {
+        this.onPickArea(event);
       });
 
       this.setupNotifications();
@@ -643,7 +646,7 @@ define([
 
       if (stateName === "commanderActivation") {
         if (this.isCurrentPlayerActive()) {
-          dojo.query(".boc_myMilitia").addClass("boc_selectableContainer");
+          dojo.query("[data-militia]").addClass("boc_selectableContainer");
 
           this.addActionButton(
             "boc_cancel",
@@ -668,13 +671,26 @@ define([
           }
 
           this.addActionButton(
-            "boc_cancel",
+            "boc_cancel_btn",
             _("Cancel"),
             "onCancelActivation",
             null,
             null,
             "red"
           );
+        }
+      }
+
+      if (stateName === "buyingPhase") {
+        if (this.isCurrentPlayerActive()) {
+          const buyableAreas = args.args.buyableAreas;
+
+          dojo.query("[data-area]").forEach((element) => {
+            const area = element.dataset.area;
+            if (buyableAreas[area]) {
+              dojo.addClass(element, "boc_selectableContainer");
+            }
+          });
         }
       }
     },
@@ -704,11 +720,15 @@ define([
       }
 
       if (stateName === "commanderActivation") {
-        dojo.query(".boc_myMilitia").removeClass("boc_selectableContainer");
+        dojo.query("[data-militia]").removeClass("boc_selectableContainer");
       }
 
       if (stateName === "priestActivation") {
-        dojo.query(".boc_myClergy").removeClass("boc_selectableContainer");
+        dojo.query("[data-clergy]").removeClass("boc_selectableContainer");
+      }
+
+      if (stateName === "buyingPhase") {
+        dojo.query("[data-area]").removeClass("boc_selectableContainer");
       }
     },
 
@@ -900,23 +920,6 @@ define([
       }
     },
 
-    onPickMilitia: function (event) {
-      const stateName = this.gamedatas.gamestate.name;
-      if (stateName === "commanderActivation") {
-        const action = "activateCommander";
-
-        const idInfo = event.currentTarget.id.split("boc_")[1].split(":");
-        const militia = idInfo[0].toUpperCase();
-        const player_id = idInfo[1];
-
-        if (this.player_id != player_id) {
-          return;
-        }
-
-        this.sendAjaxCall(action, { militia });
-      }
-    },
-
     onPickSquare: function (event) {
       const stateName = this.gamedatas.gamestate.name;
       if (stateName === "priestActivation") {
@@ -938,6 +941,14 @@ define([
       const action = "cancelActivation";
 
       this.sendAjaxCall(action);
+    },
+
+    onPickArea: function (event) {
+      const action = "buyArea";
+
+      const area = event.currentTarget.dataset.area;
+
+      this.sendAjaxCall(action, { area });
     },
 
     ///////////////////////////////////////////////////
