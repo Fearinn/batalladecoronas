@@ -879,11 +879,58 @@ class BatallaDeCoronas extends Table
 
             if ($counselor_id != 4) {
                 if ($this->canActivate($counselor_id, $player_id)) {
-                    $noble_picks[$counselor_id] = true;
+                    $noble_picks[$card_id] = $counselor_id;
                 }
             }
         }
         return $noble_picks;
+    }
+
+    function getCommanderPicks($player_id): array
+    {
+        $commander_picks = array();
+
+        if ($this->getPlayerAttack($player_id) < 5) {
+            $commander_picks["attack"] = "attack";
+        }
+
+        if ($this->getPlayerDefense($player_id) < 5) {
+            $commander_picks["defense"] = "defense";
+        }
+
+        return $commander_picks;
+    }
+
+    function canPayDragon($player_id): bool
+    {
+        $level = $this->getPlayerDragon($player_id) + 1;
+
+        $price = $this->dragon_prices[$level];
+
+        return $this->getPlayerGold($player_id) >= $price;
+    }
+
+    function getBuyableAreas($player_id): array
+    {
+        $buyable_areas = array();
+
+        $commander_picks = $this->getCommanderPicks($player_id);
+
+        if ($this->getPlayerGold($player_id) >= 3) {
+            if (in_array("attack", $commander_picks)) {
+                $buyable_areas["attack"] = "attack";
+            }
+
+            if (in_array("defense", $commander_picks)) {
+                $buyable_areas["attack"] = "attack";
+            }
+        }
+
+        if ($this->getPlayerDragon($player_id) < 5 && $this->canPayDragon($player_id)) {
+            $buyable_areas["dragon"] = "dragon";
+        }
+
+        return $buyable_areas;
     }
 
     //////////////////////////////////////////////////////////////////////////////

@@ -85,3 +85,11 @@ $this->church_squares = array(
     "label_tr" => clienttranslate("RED")
   )
 );
+
+$this->dragon_prices = array(
+  1 => 2,
+  2 => 3,
+  3 => 4,
+  4 => 5,
+  5 => 6
+);
