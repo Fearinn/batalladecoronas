@@ -32,7 +32,11 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} must roll the dice to start a new turn'),
         "type" => "activeplayer",
         "possibleactions" => array("rollDice"),
-        "transitions" => array("decisionPhase" => 3, "counselorVesting" => 31, "couselorActivaction" => 32),
+        "transitions" => array(
+            "decisionPhase" => 3,
+            "counselorVesting" => 31,
+            "couselorActivaction" => 32
+        ),
     ),
 
     3 =>  array(
@@ -40,8 +44,13 @@ $machinestates = array(
         "description" => clienttranslate('${actplayer} must pick a die to activate a counselor. The other die shall generate gold'),
         "descriptionmyturn" => clienttranslate('${you} must pick a die to activate a counselor. The other die shall generate gold'),
         "type" => "activeplayer",
-        "possibleactions" => array("decideDice"),
-        "transitions" => array("counselorVesting" => 31, "couselorActivaction" => 32, "buyingPhase" => 4),
+        "possibleactions" => array("decideDice", "activateToken"),
+        "transitions" => array(
+            "counselorVesting" => 31,
+            "couselorActivaction" => 32,
+            "buyingPhase" => 4,
+            "tokenUsed" => 3
+        ),
     ),
 
     31 => array(
@@ -62,7 +71,9 @@ $machinestates = array(
         "args" => "argCounselorActivation",
         "possibleactions" => array("activateCounselor", "skipActivation"),
         "transitions" => array(
-            "nobleActivation" => 33, "commanderActivation" => 34, "priestActivation"  => 35,
+            "nobleActivation" => 33,
+            "commanderActivation" => 34,
+            "priestActivation"  => 35,
             "buyingPhase" => 4, "skip" => 4
         ),
     ),
@@ -100,35 +111,43 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may select an area to spend your gold with'),
         "type" => "activeplayer",
         "args" => "argBuyingPhase",
-        "possibleactions" => array("buyArea", "skipBuying"),
-        "transitions" => array("buyAgain" => 4, "battlePhase" => 5, "skip" => 5)
+        "possibleactions" => array("buyArea", "skipBuying", "activateToken"),
+        "transitions" => array("buyAgain" => 4, "battlePhase" => 5, "skip" => 5, "tokenUsed" => 5)
     ),
 
     5 => array(
+        "name" => "tokenActivation",
+        "description" => clienttranslate('${actplayer} may use a token'),
+        "descriptionmyturn" => clienttranslate('${you} may use a token'),
+        "type" => "activeplayer",
+        "possibleactions" => array("activateToken", "skip"),
+        "transitions" => array("tokenUsed" => 5, "battlePhase" => 6, "skip" => 6)
+    ),
+
+    6 => array(
         "name" => "battlePhase",
         "description" => clienttranslate('${actplayer} may start a battle'),
         "descriptionmyturn" => clienttranslate('${you} may start a battle'),
         "type" => "activeplayer",
         "possibleActions" => array("startBattle", "skip"),
-        "transitions" => array("battle" => 51, "skip" => 2),
+        "transitions" => array("battle" => 61, "skip" => 2),
     ),
 
-    51 => array(
+    61 => array(
         "name" => "battle",
         "description" => "",
         "descriptionmyturn" => "",
         "type" => "game",
         "action" => "stBattle",
-        "transitions" => array("destroyShields" => 52, "diceRoll" => 2),
-        "updateGameProgression" => true
+        "transitions" => array("destroyShields" => 62, "diceRoll" => 2),
     ),
 
-    52 => array(
-        "name" => "destroyShields",
+    62 => array(
+        "name" => "shieldDestruction",
         "description" => clienttranslate('${actplayer} may pick how many swords shall be used in the attack'),
         "descriptionmyturn" => clienttranslate('${you} may pick how many swords shall be used in the attack'),
         "type" => "activeplayer",
-        "possibleactions" => array("destroyShields", "skip"),
+        "possibleactions" => array("shieldDestruction", "skip"),
         "transitions" => array("diceRoll" => 2, "skip" => 2),
     ),
 

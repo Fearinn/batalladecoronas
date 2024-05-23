@@ -933,6 +933,25 @@ class BatallaDeCoronas extends Table
         return $buyable_areas;
     }
 
+    function getTokenPicks($player_id): array
+    {
+        $token_picks = array();
+
+        if ($this->getPlayerCrown($player_id) && $this->canActivate(2, $player_id)) {
+            $token_picks["CROWN"] = "CROWN";
+        }
+
+        if ($this->getPlayerCross($player_id)) {
+            $token_picks["CROSS"] = "CROSS";
+        }
+
+        if ($this->getPlayerSmith($player_id) && $this->canActivate(1, $player_id)) {
+            $token_picks["SMITH"] = "SMITH";
+        }
+
+        return $token_picks;
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //////////// Counselor effects
     ////////////
@@ -1051,6 +1070,55 @@ class BatallaDeCoronas extends Table
         );
 
         $this->moveClergy(3, $player_id);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    //////////// Token effects
+    ////////////
+
+    function activateCrown($player_id)
+    {
+        $this->notifyAllPlayers(
+            "activateCrown",
+            clienttranslate('${player_name} activates the ${token_label}'),
+            array(
+                "i18n" => array("token_label"),
+                "token_label" => $this->tokens_info[1]["label_tr"],
+                "player_name" => $this->getPlayerNameById($player_id),
+            )
+        );
+
+        $this->generateGold(3, $player_id);
+    }
+
+    function activateCross($player_id)
+    {
+        $this->notifyAllPlayers(
+            "activateCross",
+            clienttranslate('${player_name} activates the ${token_label}'),
+            array(
+                "i18n" => array("token_label"),
+                "token_label" => $this->tokens_info[2]["label_tr"],
+                "player_name" => $this->getPlayerNameById($player_id),
+            )
+        );
+
+        $this->gamestate->jumpToState(35);
+    }
+
+    function activateSmith($player_id)
+    {
+        $this->notifyAllPlayers(
+            "activateSmith",
+            clienttranslate('${player_name} activates the ${token_label}'),
+            array(
+                "i18n" => array("token_label"),
+                "token_label" => $this->tokens_info[3]["label_tr"],
+                "player_name" => $this->getPlayerNameById($player_id),
+            )
+        );
+
+        $this->gamestate->jumpToState(34);
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -1378,7 +1446,7 @@ class BatallaDeCoronas extends Table
         $player_id = $this->getActivePlayerId();
 
         if (!in_array($area, $this->getBuyableAreas($player_id))) {
-            throw new BgaVisibleSystemException("You can't buy this area");
+            throw new BgaUserException($this->_("You can't spend gold with this area now"));
         }
 
         if ($area === "ATTACK") {
@@ -1400,7 +1468,7 @@ class BatallaDeCoronas extends Table
         }
 
         if (!$this->getBuyableAreas($player_id)) {
-            $this->gamestate->nextState("battlePhase");
+            $this->gamestate->nextState("tokenActivation");
             return;
         }
 
@@ -1422,6 +1490,35 @@ class BatallaDeCoronas extends Table
         );
 
         $this->gamestate->nextState("skip");
+    }
+
+    function activateToken($token)
+    {
+        $this->checkAction("activateToken");
+
+        $player_id = $this->getActivePlayerId();
+
+        if (!in_array($token, $this->getTokenPicks($player_id))) {
+            throw new BgaUserException($this->_("You can't use this token now"));
+        }
+
+        if ($token === "CROWN") {
+            $this->activateCrown($player_id);
+        }
+
+        if ($token === "CROSS") {
+            $this->activateCross($player_id);
+        }
+
+        if ($token === "SMITH") {
+            $this->activateSmith($player_id);
+        }
+
+        if (!$this->getTokenPicks($player_id)) {
+            $this->gamestate->nextState("battlePhase");
+        }
+
+        $this->gamestate->nextState("tokenUsed");
     }
 
     //////////////////////////////////////////////////////////////////////////////
