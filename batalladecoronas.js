@@ -691,6 +691,15 @@ define([
               dojo.addClass(element, "boc_selectableContainer");
             }
           });
+
+          this.addActionButton(
+            "boc_skip_btn",
+            _("Skip"),
+            "onSkipBuying",
+            null,
+            null,
+            "red"
+          );
         }
       }
     },
@@ -949,6 +958,12 @@ define([
       const area = event.currentTarget.dataset.area;
 
       this.sendAjaxCall(action, { area });
+    },
+
+    onSkipBuying: function () {
+      const action = "skipBuying";
+
+      this.sendAjaxCall(action);
     },
 
     ///////////////////////////////////////////////////

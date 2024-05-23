@@ -1407,6 +1407,23 @@ class BatallaDeCoronas extends Table
         $this->gamestate->nextState("buyAgain");
     }
 
+    function skipBuying()
+    {
+        $this->checkAction("skipBuying");
+
+        $player_id = $this->getActivePlayerId();
+
+        $this->notifyAllPlayers(
+            "skipBuying",
+            clienttranslate('${player_name} skips the buying phase'),
+            array(
+                "player_name" => $this->getPlayerNameById($player_id)
+            )
+        );
+
+        $this->gamestate->nextState("skip");
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //////////// Game state arguments
     ////////////
