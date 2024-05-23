@@ -483,7 +483,7 @@ class BatallaDeCoronas extends Table
         $max_gold = $this->getPlayerMaxGold($player_id);
 
         if ($prev_gold == $max_gold) {
-            throw new BgaUserException($this->_("You can't generate more gold"));
+            return $max_gold;
         }
 
         $total_gold = $prev_gold + $value;
@@ -663,14 +663,14 @@ class BatallaDeCoronas extends Table
     {
         $prev_level = $this->getPlayerDragon($player_id);
 
-        if ($prev_level == 6) {
+        if ($prev_level == 5) {
             throw new BgaUserException($this->_("The level of the dragon can't be further increased"));
         }
 
         $total_level = $prev_level + $value;
 
-        if ($total_level > 6) {
-            $total_level = 6;
+        if ($total_level > 5) {
+            $total_level = 5;
         }
 
         $this->setPlayerDragon($total_level, $player_id);
@@ -842,9 +842,49 @@ class BatallaDeCoronas extends Table
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    //////////// Verifications
+    //////////// Checks and possible picks
     ////////////
 
+    function canActivate(int $counselor_id, $player_id): bool
+    {
+        $can_activate = true;
+
+        if ($counselor_id == 1) {
+            $can_activate = $this->getPlayerAttack($player_id) + $this->getPlayerDefense($player_id) < 10;
+        }
+
+        if ($counselor_id == 2) {
+            $can_activate = $this->getPlayerGold($player_id) < $this->getPlayerMaxGold($player_id);
+        }
+
+        if ($counselor_id == 3) {
+            $can_activate = $this->getPlayerDragon($player_id) < 5;
+        }
+
+        if ($counselor_id == 4) {
+            $can_activate = !!$this->getNoblePicks($player_id);
+        }
+
+        return $can_activate;
+    }
+
+    function getNoblePicks($player_id): array
+    {
+        $noble_picks = array();
+
+        $council = $this->council->getCardsInLocation("vested:" . $player_id);
+
+        foreach ($council as $card_id => $card) {
+            $counselor_id = $card["type_arg"];
+
+            if ($counselor_id != 4) {
+                if ($this->canActivate($counselor_id, $player_id)) {
+                    $noble_picks[$counselor_id] = true;
+                }
+            }
+        }
+        return $noble_picks;
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Counselor actions
@@ -1055,6 +1095,12 @@ class BatallaDeCoronas extends Table
         $counselor_id = $counselor["type_arg"];
 
         $this->setGameStateValue("active_counselor", $counselor_id);
+
+        if (!$this->canActivate($counselor_id, $player_id)) {
+            $this->gamestate->nextState("buyingPhase");
+            return;
+        }
+
         $this->gamestate->nextState("counselorActivation");
     }
 
@@ -1104,6 +1150,11 @@ class BatallaDeCoronas extends Table
 
         $this->setGameStateValue("active_counselor", $counselor_id);
 
+        if (!$this->canActivate($counselor_id, $player_id)) {
+            $this->gamestate->nextState("buyingPhase");
+            return;
+        }
+
         $this->gamestate->nextState("counselorActivation");
     }
 
@@ -1147,7 +1198,7 @@ class BatallaDeCoronas extends Table
 
     function activateNoble($card_id)
     {
-        $this->checkAction("activateNoble");
+        // $this->checkAction("activateNoble");
 
         $player_id = $this->getActivePlayerId();
 
@@ -1168,6 +1219,10 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} activates the Noble. The effect of other counselor is activated'),
             array("player_name" => $this->getPlayerNameById($player_id))
         );
+
+        if (!in_array($active_counselor, $this->getNoblePicks($player_id))) {
+            throw new BgaUserException($this->_("You can't activate this counselor now"));
+        }
 
         if ($active_counselor == 2) {
             $this->masterOfCoin($player_id);
