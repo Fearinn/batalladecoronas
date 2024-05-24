@@ -112,24 +112,42 @@ $machinestates = array(
         "type" => "activeplayer",
         "args" => "argBuyingPhase",
         "possibleactions" => array("buyArea", "skipBuying", "activateToken", "activateSmithToken"),
-        "transitions" => array("buyAgain" => 4, "battlePhase" => 5, "skip" => 5)
+        "transitions" => array("buyAgain" => 4, "smithTokenActivation" => 42, "preBattle" => 5, "skip" => 5)
+    ),
+
+    42 => array(
+        "name" => "smithTokenActivation",
+        "description" => clienttranslate('${actplayer} may obtain an extra equipment for free with the Smith token'),
+        "descriptionmyturn" => clienttranslate('Do ${you} wish to obtain an extra equipment for free with the Smith token?'),
+        "type" => "activeplayer",
+        "possibleactions" => array("activateSmithToken", "skipToken"),
+        "transitions" => array("buyAgain" => 4, "preBattle" => 5, "battlePhase" => 6)
     ),
 
     5 => array(
-        "name" => "tokenActivation",
-        "description" => clienttranslate('${actplayer} may use a token'),
-        "descriptionmyturn" => clienttranslate('${you} may use a token'),
-        "type" => "activeplayer",
-        "possibleactions" => array("activateToken", "skipTokenActivation"),
-        "transitions" => array("tokenUsed" => 5, "battlePhase" => 6, "skip" => 6)
+        "name" => "preBattle",
+        "description" => "",
+        "descriptionmyturn" => "",
+        "type" => "game",
+        "action" => "stPreBattle",
+        "transitions" => array("preBattleToken" => 51, "battlePhase" => 6)
     ),
 
     51 => array(
+        "name" => "preBattleToken",
+        "description" => clienttranslate('${actplayer} may use a token'),
+        "descriptionmyturn" => clienttranslate('${you} may use a token'),
+        "type" => "activeplayer",
+        "possibleactions" => array("activateToken", "skipToken"),
+        "transitions" => array("tokenAgain" => 5, "battlePhase" => 6, "skip" => 6)
+    ),
+
+    52 => array(
         "name" => "crossTokenActivation",
         "description" => clienttranslate('${actplayer} may pick a square to move the Clergy to with the Cross token'),
         "descriptionmyturn" => clienttranslate('${you} may pick a square to move the Clergy to with the Cross token'),
         "type" => "activeplayer",
-        "possibleactions" => array("activateCrossToken", "cancelTokenActivation"),
+        "possibleactions" => array("activateCrossToken", "cancelToken"),
         "transitions" => array()
     ),
 

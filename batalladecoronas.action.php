@@ -123,7 +123,7 @@ class action_batalladecoronas extends APP_GameAction
   public function activateToken()
   {
     $this->setAjaxMode();
-    $token = $this->getArg("token", AT_enum, true, null, array("CROWN", "CROSS", "SMITH"));
+    $token = $this->getArg("token", AT_enum, true, null, array("CROWN", "CROSS"));
     $this->game->activateToken($token);
     $this->ajaxResponse();
   }
@@ -133,6 +133,20 @@ class action_batalladecoronas extends APP_GameAction
     $this->setAjaxMode();
     $square = $this->getArg("square", AT_enum, true, null, array(1, 2, 3));
     $this->game->activateCrossToken($square);
+    $this->ajaxResponse();
+  }
+
+  public function activateSmithToken()
+  {
+    $this->setAjaxMode();
+    $this->game->activateSmithToken();
+    $this->ajaxResponse();
+  }
+
+  public function skipToken()
+  {
+    $this->setAjaxMode();
+    $this->game->skipToken();
     $this->ajaxResponse();
   }
 }

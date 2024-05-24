@@ -588,6 +588,7 @@ define([
 
       if (stateName === "diceRoll") {
         if (this.isCurrentPlayerActive()) {
+          console.log("rollDice");
           this.addActionButton("boc_rollDice", _("Roll dice"), "onRollDice");
         }
       }
@@ -707,29 +708,33 @@ define([
         if (this.isCurrentPlayerActive()) {
           dojo.query("[data-clergy]").addClass("boc_selectableContainer");
 
-          // this.addActionButton(
-          //   "boc_cancel",
-          //   _("Cancel"),
-          //   "onCancelTokenActivation",
-          //   null,
-          //   null,
-          //   "red"
-          // );
+          this.addActionButton(
+            "boc_cancel_btn",
+            _("Cancel"),
+            "onCancelToken",
+            null,
+            null,
+            "red"
+          );
         }
       }
 
       if (stateName === "smithTokenActivation") {
         if (this.isCurrentPlayerActive()) {
-          dojo.query("[data-militia]").addClass("boc_selectableContainer");
+          this.addActionButton(
+            "boc_activateToken_btn",
+            _("Yes"),
+            "onActivateSmithToken"
+          );
 
-          // this.addActionButton(
-          //   "boc_cancel",
-          //   _("Cancel"),
-          //   "onCancelTokenActivation",
-          //   null,
-          //   null,
-          //   "red"
-          // );
+          this.addActionButton(
+            "boc_skip_btn",
+            _("No"),
+            "onSkipToken",
+            null,
+            null,
+            "red"
+          );
         }
       }
     },
@@ -1004,14 +1009,20 @@ define([
       this.sendAjaxCall(action);
     },
 
-    onSkipTokenActivation: function () {
-      const action = "skipTokenActivation";
+    onActivateSmithToken() {
+      const action = "activateSmithToken";
 
       this.sendAjaxCall(action);
     },
 
-    onCancelTokenActivation: function () {
-      const action = "cancelTokenActivation";
+    onSkipToken: function () {
+      const action = "skipToken";
+
+      this.sendAjaxCall(action);
+    },
+
+    onCancelToken: function () {
+      const action = "cancelToken";
 
       this.sendAjaxCall(action);
     },

@@ -34,7 +34,7 @@ class BatallaDeCoronas extends Table
             "active_chair" => 12,
             "active_counselor" => 13,
             "token_state" => 14,
-            "smith_buying" => 15,
+            "active_equipment" => 15,
 
             "highest_gems" => 80
         ));
@@ -75,7 +75,7 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue("active_chair", 0);
         $this->setGameStateInitialValue("active_counselor", 0);
         $this->setGameStateInitialValue("token_state", 0);
-        $this->setGameStateInitialValue("smith_buying", 0);
+        $this->setGameStateInitialValue("active_equipment", 0);
 
         $this->setGameStateInitialValue("highest_gems", 0);
 
@@ -150,10 +150,9 @@ class BatallaDeCoronas extends Table
         return !!$this->getUniqueValueFromDB("SELECT crown from player WHERE player_id='$player_id'");
     }
 
-    function setPlayerCrown(bool $value, $player_id): void
+    function setPlayerCrown(int $value, $player_id): void
     {
-        $owned = $value ? 1 : 0;
-        $this->DbQuery("UPDATE player SET crown=$owned WHERE player_id='$player_id'");
+        $this->DbQuery("UPDATE player SET crown=$value WHERE player_id='$player_id'");
     }
 
     function getPlayerCross($player_id): int
@@ -161,21 +160,19 @@ class BatallaDeCoronas extends Table
         return !!$this->getUniqueValueFromDB("SELECT sacredcross from player WHERE player_id='$player_id'");
     }
 
+    function setPlayerCross(int $value, $player_id): void
+    {
+        $this->DbQuery("UPDATE player SET sacredcross=$value WHERE player_id='$player_id'");
+    }
+
     function getPlayerSmith($player_id): int
     {
         return !!$this->getUniqueValueFromDB("SELECT smith from player WHERE player_id='$player_id'");
     }
 
-    function setPlayerCross(bool $value, $player_id): void
+    function setPlayerSmith(int $value, $player_id): void
     {
-        $owned = $value ? 1 : 0;
-        $this->DbQuery("UPDATE player SET sacredcross=$owned WHERE player_id='$player_id'");
-    }
-
-    function setPlayerSmith(bool $value, $player_id): void
-    {
-        $owned = $value ? 1 : 0;
-        $this->DbQuery("UPDATE player SET smith=$owned WHERE player_id='$player_id'");
+        $this->DbQuery("UPDATE player SET smith=$value WHERE player_id='$player_id'");
     }
 
     function getPlayerAttack($player_id): int
@@ -956,10 +953,6 @@ class BatallaDeCoronas extends Table
             $token_picks["CROSS"] = "CROSS";
         }
 
-        if ($this->getPlayerSmith($player_id) && $this->canActivate(1, $player_id)) {
-            $token_picks["SMITH"] = "SMITH";
-        }
-
         return $token_picks;
     }
 
@@ -1411,34 +1404,26 @@ class BatallaDeCoronas extends Table
             throw new BgaUserException($this->_("You can't spend gold with this area now"));
         }
 
-        $militiaBoost = 1;
-
-        $smith_buying = $this->getGameStateValue("smith_buying");
-
-        if ($smith_buying && ($area === "ATTACK" || $area === "DEFENSE")) {
-            $this->notifyAllPlayers(
-                "activateSmithToken",
-                clienttranslate('${player_name} activates the ${token_label} token'),
-                array(
-                    "i18n" => array("token_label"),
-                    "token_label" => $this->tokens_info[3]["label_tr"],
-                    "player_name" => $this->getPlayerNameById($player_id),
-                )
-            );
-
-            $militiaBoost = 2;
-
-            $this->setGameStateValue("smith_buying", 0);
-        }
-
         if ($area === "ATTACK") {
             $this->spendGold(3, $player_id, true);
-            $this->increaseAttack($militiaBoost, $player_id);
+            $this->increaseAttack(1, $player_id);
+
+            if ($this->getPlayerSmith($player_id)) {
+                $this->setGameStateValue("active_equipment", 1);
+                $this->gamestate->nextState("smithTokenActivation");
+                return;
+            }
         }
 
         if ($area === "DEFENSE") {
             $this->spendGold(3, $player_id, true);
-            $this->increaseDefense($militiaBoost, $player_id);
+            $this->increaseDefense(1, $player_id);
+
+            if ($this->getPlayerSmith($player_id)) {
+                $this->setGameStateValue("active_equipment", 2);
+                $this->gamestate->nextState("smithTokenActivation");
+                return;
+            }
         }
 
         if ($area === "DRAGON") {
@@ -1449,12 +1434,12 @@ class BatallaDeCoronas extends Table
             $this->levelUpDragon(1, $player_id);
         }
 
-        if (!$this->getBuyableAreas($player_id)) {
-            $this->gamestate->nextState("tokenActivation");
+        if ($this->getBuyableAreas($player_id)) {
+            $this->gamestate->nextState("buyAgain");
             return;
         }
 
-        $this->gamestate->nextState("buyAgain");
+        $this->gamestate->nextState("preBattle");
     }
 
     function skipBuying()
@@ -1504,20 +1489,14 @@ class BatallaDeCoronas extends Table
 
             $this->generateGold(3, $player_id);
 
+            $this->setPlayerCrown(0, $player_id);
+
             $this->gamestate->jumpToState($state_id);
             return;
         }
 
-        if ($token === "SMITH") {
-            $this->checkAction("activateSmithToken");
-
-            $this->setGameStateValue("smith_buying", 1);
-
-            return;
-        }
-
         if ($token === "CROSS") {
-            $this->gamestate->jumpToState(51);
+            $this->gamestate->jumpToState(52);
             return;
         }
     }
@@ -1540,9 +1519,53 @@ class BatallaDeCoronas extends Table
 
         $this->moveClergy($square_id, $player_id);
 
+        $this->setPlayerCross(0, $player_id);
+
         $prev_state = $this->getGameStateValue("token_state");
 
         $this->gamestate->jumpToState($prev_state);
+    }
+
+    function activateSmithToken()
+    {
+        $this->checkAction("activateSmithToken");
+
+        $player_id = $this->getActivePlayerId();
+
+        if ($this->getBuyableAreas($player_id)) {
+            $this->gamestate->nextState("buyAgain");
+        }
+
+        $this->notifyAllPlayers(
+            "activateSmithToken",
+            clienttranslate('${player_name} activates the ${token_label} token'),
+            array(
+                "i18n" => array("token_label"),
+                "token_label" => $this->tokens_info[3]["label_tr"],
+                "player_name" => $this->getPlayerNameById($player_id),
+            )
+        );
+
+        $equipment = $this->getGameStateValue("active_equipment");
+
+        if ($equipment == 1) {
+            $this->increaseAttack(1, $player_id);
+        }
+
+        if ($equipment == 2) {
+            $this->increaseDefense(1, $player_id);
+        }
+
+        $this->setPlayerSmith(0, $player_id);
+
+        $this->gamestate->nextState("preBattle");
+    }
+
+    function skipToken()
+    {
+        $this->checkAction("skipToken");
+
+        $this->gamestate->nextState("preBattle");
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -1575,6 +1598,21 @@ class BatallaDeCoronas extends Table
     //////////////////////////////////////////////////////////////////////////////
     //////////// Game state actions
     ////////////
+
+    function stPreBattle()
+    {
+        $player_id = $this->getActivePlayerId();
+        $other_player_id = $this->getPlayerAfter($player_id);
+
+        if ($this->getTokenPicks($other_player_id)) {
+            $this->activeNextPlayer();
+
+            $this->gamestate->nextState("preBattleToken");
+            return;
+        }
+
+        $this->gamestate->nextState("battlePhase");
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Zombie
