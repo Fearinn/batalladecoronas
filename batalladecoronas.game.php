@@ -33,6 +33,8 @@ class BatallaDeCoronas extends Table
             "die_2" => 11,
             "active_chair" => 12,
             "active_counselor" => 13,
+            "token_state" => 14,
+
             "highest_gems" => 80
         ));
 
@@ -71,6 +73,8 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue('die_2', 0);
         $this->setGameStateInitialValue("active_chair", 0);
         $this->setGameStateInitialValue("active_counselor", 0);
+        $this->setGameStateInitialValue("token_state", 0);
+
         $this->setGameStateInitialValue("highest_gems", 0);
 
         foreach ($players as $player_id => $player) {
@@ -129,6 +133,11 @@ class BatallaDeCoronas extends Table
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
     //////////// 
+
+    function getStateName(): string
+    {
+        return $this->gamestate->state()["name"];
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// DB manipulation
@@ -1073,55 +1082,6 @@ class BatallaDeCoronas extends Table
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    //////////// Token effects
-    ////////////
-
-    function activateCrown($player_id)
-    {
-        $this->notifyAllPlayers(
-            "activateCrown",
-            clienttranslate('${player_name} activates the ${token_label}'),
-            array(
-                "i18n" => array("token_label"),
-                "token_label" => $this->tokens_info[1]["label_tr"],
-                "player_name" => $this->getPlayerNameById($player_id),
-            )
-        );
-
-        $this->generateGold(3, $player_id);
-    }
-
-    function activateCross($player_id)
-    {
-        $this->notifyAllPlayers(
-            "activateCross",
-            clienttranslate('${player_name} activates the ${token_label}'),
-            array(
-                "i18n" => array("token_label"),
-                "token_label" => $this->tokens_info[2]["label_tr"],
-                "player_name" => $this->getPlayerNameById($player_id),
-            )
-        );
-
-        $this->gamestate->jumpToState(35);
-    }
-
-    function activateSmith($player_id)
-    {
-        $this->notifyAllPlayers(
-            "activateSmith",
-            clienttranslate('${player_name} activates the ${token_label}'),
-            array(
-                "i18n" => array("token_label"),
-                "token_label" => $this->tokens_info[3]["label_tr"],
-                "player_name" => $this->getPlayerNameById($player_id),
-            )
-        );
-
-        $this->gamestate->jumpToState(34);
-    }
-
-    //////////////////////////////////////////////////////////////////////////////
     //////////// Player actions
     ////////////
 
@@ -1313,7 +1273,7 @@ class BatallaDeCoronas extends Table
 
     function activateNoble($card_id)
     {
-        // $this->checkAction("activateNoble");
+        $this->checkAction("activateNoble");
 
         $player_id = $this->getActivePlayerId();
 
@@ -1498,27 +1458,110 @@ class BatallaDeCoronas extends Table
 
         $player_id = $this->getActivePlayerId();
 
+        $this->setGameStateValue("token_state",  $this->gamestate->state_id);
+
         if (!in_array($token, $this->getTokenPicks($player_id))) {
             throw new BgaUserException($this->_("You can't use this token now"));
         }
 
         if ($token === "CROWN") {
-            $this->activateCrown($player_id);
+            $this->notifyAllPlayers(
+                "activateCrownToken",
+                clienttranslate('${player_name} activates the ${token_label} token'),
+                array(
+                    "i18n" => array("token_label"),
+                    "token_label" => $this->tokens_info[1]["label_tr"],
+                    "player_name" => $this->getPlayerNameById($player_id),
+                )
+            );
+
+            $this->generateGold(3, $player_id);
         }
 
         if ($token === "CROSS") {
-            $this->activateCross($player_id);
+            $this->gamestate->nextState("crossTokenActivation");
+            return;
         }
 
         if ($token === "SMITH") {
-            $this->activateSmith($player_id);
+            $this->notifyAllPlayers(
+                "activateSmithToken",
+                clienttranslate('${player_name} activates the ${token_label} token'),
+                array(
+                    "i18n" => array("token_label"),
+                    "token_label" => $this->tokens_info[3]["label_tr"],
+                    "player_name" => $this->getPlayerNameById($player_id),
+                )
+            );
+
+            $this->gamestate->nextState("smithTokenActivation");
+            return;
         }
 
         if (!$this->getTokenPicks($player_id)) {
             $this->gamestate->nextState("battlePhase");
+            return;
         }
 
         $this->gamestate->nextState("tokenUsed");
+    }
+
+    function activateCrossToken($square_id)
+    {
+        $this->checkAction("activateCrossToken");
+
+        $player_id = $this->getActivePlayerId();
+
+        $this->notifyAllPlayers(
+            "activateCrossToken",
+            clienttranslate('${player_name} activates the ${token_label} token'),
+            array(
+                "i18n" => array("token_label"),
+                "token_label" => $this->tokens_info[2]["label_tr"],
+                "player_name" => $this->getPlayerNameById($player_id),
+            )
+        );
+
+        $this->moveClergy($square_id, $player_id);
+
+        $prev_state = $this->getGameStateValue("token_state");
+
+        $this->gamestate->jumpToState($prev_state);
+    }
+
+    function activateSmithToken($miltia)
+    {
+        $this->checkAction("activateSmithToken");
+
+        $player_id = $this->getActivePlayerId();
+
+        $this->notifyAllPlayers(
+            "activateSmithToken",
+            clienttranslate('${player_name} activates the ${token_label} token'),
+            array(
+                "i18n" => array("token_label"),
+                "token_label" => $this->tokens_info[2]["label_tr"],
+                "player_name" => $this->getPlayerNameById($player_id),
+            )
+        );
+
+        $this->spendGold(3, $player_id);
+
+        if (!in_array($miltia, $this->getCommanderPicks($player_id))) {
+            throw new BgaUserException("You can't improve this militia now");
+        }
+
+        if ($miltia === "ATTACK") {
+            $this->increaseAttack(2, $player_id);
+        }
+
+        if ($miltia === "DEFENSE") {
+            $this->increaseDefense(2, $player_id);
+        }
+
+        $prev_state = $this->getGameStateValue("token_state");
+
+        $this->gamestate->jumpToState($prev_state);
     }
 
     //////////////////////////////////////////////////////////////////////////////

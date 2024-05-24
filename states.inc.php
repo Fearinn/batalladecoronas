@@ -31,11 +31,11 @@ $machinestates = array(
         "description" => clienttranslate('${actplayer} must roll the dice to start a new turn'),
         "descriptionmyturn" => clienttranslate('${you} must roll the dice to start a new turn'),
         "type" => "activeplayer",
-        "possibleactions" => array("rollDice"),
+        "possibleactions" => array("rollDice", "activateToken"),
         "transitions" => array(
             "decisionPhase" => 3,
             "counselorVesting" => 31,
-            "couselorActivaction" => 32
+            "couselorActivaction" => 32,
         ),
     ),
 
@@ -48,8 +48,7 @@ $machinestates = array(
         "transitions" => array(
             "counselorVesting" => 31,
             "couselorActivaction" => 32,
-            "buyingPhase" => 4,
-            "tokenUsed" => 3
+            "buyingPhase" => 4
         ),
     ),
 
@@ -69,12 +68,13 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may activate the ${counselor_name}'),
         "type" => "activeplayer",
         "args" => "argCounselorActivation",
-        "possibleactions" => array("activateCounselor", "skipActivation"),
+        "possibleactions" => array("activateCounselor", "skipActivation", "activateToken"),
         "transitions" => array(
             "nobleActivation" => 33,
             "commanderActivation" => 34,
             "priestActivation"  => 35,
-            "buyingPhase" => 4, "skip" => 4
+            "buyingPhase" => 4,
+            "skip" => 4,
         ),
     ),
 
@@ -112,7 +112,7 @@ $machinestates = array(
         "type" => "activeplayer",
         "args" => "argBuyingPhase",
         "possibleactions" => array("buyArea", "skipBuying", "activateToken"),
-        "transitions" => array("buyAgain" => 4, "battlePhase" => 5, "skip" => 5, "tokenUsed" => 5)
+        "transitions" => array("buyAgain" => 4, "battlePhase" => 5, "skip" => 5)
     ),
 
     5 => array(
@@ -120,8 +120,26 @@ $machinestates = array(
         "description" => clienttranslate('${actplayer} may use a token'),
         "descriptionmyturn" => clienttranslate('${you} may use a token'),
         "type" => "activeplayer",
-        "possibleactions" => array("activateToken", "skip"),
+        "possibleactions" => array("activateToken", "skipTokenActivation"),
         "transitions" => array("tokenUsed" => 5, "battlePhase" => 6, "skip" => 6)
+    ),
+
+    51 => array(
+        "name" => "crossTokenActivation",
+        "description" => clienttranslate('${actplayer} may pick a square to move the Clergy to with the Cross token'),
+        "descriptionmyturn" => clienttranslate('${you} may pick a square to move the Clergy to with the Cross token'),
+        "type" => "activeplayer",
+        "possibleactions" => array("activateCrossToken", "cancelTokenActivation"),
+        "transitions" => array()
+    ),
+
+    52 => array(
+        "name" => "smithTokenActivation",
+        "description" => clienttranslate('${actplayer} may pick a militia to improve with the Smith token'),
+        "descriptionmyturn" => clienttranslate('${you} may pick a militia to improve with the Smith token'),
+        "type" => "activeplayer",
+        "possibleactions" => array("activateSmithToken", "cancelTokenActivation"),
+        "transitions" => array()
     ),
 
     6 => array(
