@@ -242,14 +242,14 @@ define([
         };
 
         this[crossTowerStock].addItemType(
-          "sacredcross",
+          "cross",
           0,
           g_gamethemeurl + "img/supply.png",
           1
         );
 
-        if (claimedSupply["sacredcross"]) {
-          this[crossTowerStock].addToStock("sacredcross");
+        if (claimedSupply["cross"]) {
+          this[crossTowerStock].addToStock("cross");
         }
 
         //anvil
@@ -702,6 +702,36 @@ define([
           );
         }
       }
+
+      if (stateName === "crossTokenActivation") {
+        if (this.isCurrentPlayerActive()) {
+          dojo.query("[data-clergy]").addClass("boc_selectableContainer");
+
+          // this.addActionButton(
+          //   "boc_cancel",
+          //   _("Cancel"),
+          //   "onCancelTokenActivation",
+          //   null,
+          //   null,
+          //   "red"
+          // );
+        }
+      }
+
+      if (stateName === "smithTokenActivation") {
+        if (this.isCurrentPlayerActive()) {
+          dojo.query("[data-militia]").addClass("boc_selectableContainer");
+
+          // this.addActionButton(
+          //   "boc_cancel",
+          //   _("Cancel"),
+          //   "onCancelTokenActivation",
+          //   null,
+          //   null,
+          //   "red"
+          // );
+        }
+      }
     },
 
     onLeavingState: function (stateName) {
@@ -749,7 +779,7 @@ define([
     sendAjaxCall: function (action, args = {}) {
       args.lock = true;
 
-      if (this.checkAction(action)) {
+      if (this.checkAction(action, true)) {
         this.ajaxcall(
           "/" + this.game_name + "/" + this.game_name + "/" + action + ".html",
           args,
@@ -934,7 +964,15 @@ define([
       if (stateName === "priestActivation") {
         const action = "activatePriest";
 
-        const square = event.currentTarget.id.split(":")[1];
+        const square = parseInt(event.currentTarget.dataset.clergy);
+
+        this.sendAjaxCall(action, { square });
+      }
+
+      if (stateName === "crossTokenActivation") {
+        const action = "activateCrossToken";
+
+        const square = parseInt(event.currentTarget.dataset.clergy);
 
         this.sendAjaxCall(action, { square });
       }
@@ -962,6 +1000,18 @@ define([
 
     onSkipBuying: function () {
       const action = "skipBuying";
+
+      this.sendAjaxCall(action);
+    },
+
+    onSkipTokenActivation: function () {
+      const action = "skipTokenActivation";
+
+      this.sendAjaxCall(action);
+    },
+
+    onCancelTokenActivation: function () {
+      const action = "cancelTokenActivation";
 
       this.sendAjaxCall(action);
     },
@@ -1160,8 +1210,8 @@ define([
         : `boc_supply`;
       const destinationStock = `crossTowerStock:${player_id}`;
 
-      this[destinationStock].addToStock("sacredcross", originElement);
-      this[originStock].removeFromStock("sacredcross");
+      this[destinationStock].addToStock("cross", originElement);
+      this[originStock].removeFromStock("cross");
 
       this.supply = notif.args.supply;
     },

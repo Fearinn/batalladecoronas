@@ -119,4 +119,20 @@ class action_batalladecoronas extends APP_GameAction
     $this->game->skipBuying();
     $this->ajaxResponse();
   }
+
+  public function activateToken()
+  {
+    $this->setAjaxMode();
+    $token = $this->getArg("token", AT_enum, true, null, array("CROWN", "CROSS", "SMITH"));
+    $this->game->activateToken($token);
+    $this->ajaxResponse();
+  }
+
+  public function activateCrossToken()
+  {
+    $this->setAjaxMode();
+    $square = $this->getArg("square", AT_enum, true, null, array(1, 2, 3));
+    $this->game->activateCrossToken($square);
+    $this->ajaxResponse();
+  }
 }

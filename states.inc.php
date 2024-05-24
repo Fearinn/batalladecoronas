@@ -111,7 +111,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may select an area to spend your gold with'),
         "type" => "activeplayer",
         "args" => "argBuyingPhase",
-        "possibleactions" => array("buyArea", "skipBuying", "activateToken"),
+        "possibleactions" => array("buyArea", "skipBuying", "activateToken", "activateSmithToken"),
         "transitions" => array("buyAgain" => 4, "battlePhase" => 5, "skip" => 5)
     ),
 
@@ -130,15 +130,6 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may pick a square to move the Clergy to with the Cross token'),
         "type" => "activeplayer",
         "possibleactions" => array("activateCrossToken", "cancelTokenActivation"),
-        "transitions" => array()
-    ),
-
-    52 => array(
-        "name" => "smithTokenActivation",
-        "description" => clienttranslate('${actplayer} may pick a militia to improve with the Smith token'),
-        "descriptionmyturn" => clienttranslate('${you} may pick a militia to improve with the Smith token'),
-        "type" => "activeplayer",
-        "possibleactions" => array("activateSmithToken", "cancelTokenActivation"),
         "transitions" => array()
     ),
 

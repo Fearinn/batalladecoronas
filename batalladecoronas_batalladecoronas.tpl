@@ -78,17 +78,17 @@
           <div
             id="boc_clergy${MY_ID}:1"
             class="boc_clergy_GOLDEN"
-            data-clergy
+            data-clergy="1"
           ></div>
           <div
             id="boc_clergy${MY_ID}:2"
             class="boc_clergy_BLUE"
-            data-clergy
+            data-clergy="2"
           ></div>
           <div
             id="boc_clergy${MY_ID}:3"
             class="boc_clergy_RED"
-            data-clergy
+            data-clergy="3"
           ></div>
         </div>
         <div id="boc_treasure:{MY_ID}" class="boc_treasure">
