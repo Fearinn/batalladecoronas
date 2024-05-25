@@ -31,7 +31,7 @@ $machinestates = array(
         "description" => clienttranslate('${actplayer} must roll the dice to start a new turn'),
         "descriptionmyturn" => clienttranslate('${you} must roll the dice to start a new turn'),
         "type" => "activeplayer",
-        "possibleactions" => array("rollDice", "activateToken"),
+        "possibleactions" => array("rollDice"),
         "transitions" => array(
             "decisionPhase" => 3,
             "counselorVesting" => 31,
@@ -139,7 +139,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may use a token'),
         "type" => "activeplayer",
         "possibleactions" => array("activateToken", "skipToken"),
-        "transitions" => array("tokenAgain" => 5, "battlePhase" => 6, "skip" => 6)
+        "transitions" => array("afterToken" => 53, "skip" => 53)
     ),
 
     52 => array(
@@ -148,7 +148,16 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may pick a square to move the Clergy to with the Cross token'),
         "type" => "activeplayer",
         "possibleactions" => array("activateCrossToken", "cancelToken"),
-        "transitions" => array()
+        "transitions" => array("afterToken" => 53)
+    ),
+
+    53 => array(
+        "name" => "afterToken",
+        "description" => "",
+        "descriptionmyturn" => "",
+        "type" => "game",
+        "action" => "stAfterToken",
+        "transitions" => array("battlePhase" => 6)
     ),
 
     6 => array(

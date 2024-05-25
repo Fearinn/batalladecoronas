@@ -72,7 +72,7 @@ define([
         const player = gamedatas.players[player_id];
         const castleTitle = $(`boc_castle_title:${player_id}`);
 
-        if (player_id != this.player_id) {
+        if (player_id != currentPlayerId) {
           castleTitle.textContent = this.format_string_recursive(
             _("${player_name}'s castle"),
             { player_name: player.name }
@@ -206,7 +206,7 @@ define([
           this.supplyItemSize
         );
         this[crownTowerStock].image_items_per_row = 3;
-        this[crownTowerStock].setSelectionMode(0);
+        this[crownTowerStock].setSelectionMode(1);
 
         this[crownTowerStock].onItemCreate = (element, type, id) => {
           this.addTooltip(element.id, _("Crown token"), "");
@@ -235,7 +235,7 @@ define([
           this.supplyItemSize
         );
         this[crossTowerStock].image_items_per_row = 3;
-        this[crossTowerStock].setSelectionMode(0);
+        this[crossTowerStock].setSelectionMode(1);
 
         this[crossTowerStock].onItemCreate = (element, type, id) => {
           this.addTooltip(element.id, _("Cross token"), "");
@@ -264,7 +264,7 @@ define([
           this.supplyItemSize
         );
         this[anvilStock].image_items_per_row = 3;
-        this[anvilStock].setSelectionMode(0);
+        this[anvilStock].setSelectionMode(1);
 
         this[anvilStock].onItemCreate = (element, type, id) => {
           this.addTooltip(element.id, _("Smith token"), "");
@@ -546,13 +546,21 @@ define([
         });
       }
 
-      for (const player_id in gamedatas.players) {
-        for (let chair = 1; chair <= 6; chair++) {
-          const chairStock = `chairStock$${player_id}:${chair}`;
-          dojo.connect(this[chairStock], "onChangeSelection", this, () => {
-            this.onSelectCounselor(this[chairStock]);
-          });
-        }
+      const crownTowerStock = `crownTowerStock:${currentPlayerId}`;
+      dojo.connect(this[crownTowerStock], "onChangeSelection", this, () => {
+        this.onSelectCrownToken(this[crownTowerStock]);
+      });
+
+      const crossTowerStock = `crossTowerStock:${currentPlayerId}`;
+      dojo.connect(this[crossTowerStock], "onChangeSelection", this, () => {
+        this.onSelectCrossToken(this[crossTowerStock]);
+      });
+
+      for (let chair = 1; chair <= 6; chair++) {
+        const chairStock = `chairStock$${currentPlayerId}:${chair}`;
+        dojo.connect(this[chairStock], "onChangeSelection", this, () => {
+          this.onSelectCounselor(this[chairStock]);
+        });
       }
 
       dojo.connect(
@@ -774,6 +782,10 @@ define([
       if (stateName === "buyingPhase") {
         dojo.query("[data-area]").removeClass("boc_selectableContainer");
       }
+
+      if (stateName === "crossTokenActivation") {
+        dojo.query("[data-clergy]").removeClass("boc_selectableContainer");
+      }
     },
 
     onUpdateActionButtons: function (stateName, args) {},
@@ -917,6 +929,52 @@ define([
       }
     },
 
+    onSelectCrownToken: function (stock) {
+      this.unselectOtherStocks(stock);
+
+      const selectedItemsNbr = stock.getSelectedItems().length;
+
+      if (
+        this.isCurrentPlayerActive() &&
+        this.checkAction("activateToken", true)
+      ) {
+        this.removeActionButtons();
+        if (selectedItemsNbr == 1) {
+          this.addActionButton(
+            "boc_tokenActivation_btn",
+            _("Activate Crown"),
+            () => {
+              this.onActivateCrownToken();
+            }
+          );
+          return;
+        }
+      }
+    },
+
+    onSelectCrossToken: function (stock) {
+      this.unselectOtherStocks(stock);
+
+      const selectedItemsNbr = stock.getSelectedItems().length;
+
+      if (
+        this.isCurrentPlayerActive() &&
+        this.checkAction("activateToken", true)
+      ) {
+        this.removeActionButtons();
+        if (selectedItemsNbr == 1) {
+          this.addActionButton(
+            "boc_tokenActivation_btn",
+            _("Activate Cross"),
+            () => {
+              this.onActivateCrossToken();
+            }
+          );
+          return;
+        }
+      }
+    },
+
     //actions
     onRollDice: function () {
       const action = "rollDice";
@@ -1009,6 +1067,18 @@ define([
       this.sendAjaxCall(action);
     },
 
+    onActivateCrownToken() {
+      const action = "activateToken";
+
+      this.sendAjaxCall(action, { token: "CROWN" });
+    },
+
+    onActivateCrossToken() {
+      const action = "activateToken";
+
+      this.sendAjaxCall(action, { token: "CROSS" });
+    },
+
     onActivateSmithToken() {
       const action = "activateSmithToken";
 
@@ -1049,6 +1119,13 @@ define([
       dojo.subscribe("claimCross", this, "notif_claimCross");
       dojo.subscribe("claimSmith", this, "notif_claimSmith");
       dojo.subscribe("claimGem", this, "notif_claimGem");
+      dojo.subscribe("activateCrownToken", this, "notif_activateCrownToken");
+      dojo.subscribe("activateCrossToken", this, "notif_activateCrossToken");
+      dojo.subscribe(
+        "activatSmithCrownToken",
+        this,
+        "notif_activateSmithToken"
+      );
     },
 
     notif_dieRoll: function (notif) {
@@ -1075,8 +1152,6 @@ define([
       const originStock = `treasureStock$${player_id}:${prevGold}`;
       const originElement = `boc_treasure$${player_id}:${prevGold}`;
       const destinationStock = `treasureStock$${player_id}:${totalGold}`;
-
-      console.log(destinationStock);
 
       this[destinationStock].addToStock("gold", originElement);
       this[originStock].removeFromStock("gold");
@@ -1267,6 +1342,39 @@ define([
       this[originStock].removeFromStockById(4 - totalGems);
 
       this.gems = notif.args.gemsByLocations;
+    },
+
+    notif_activateCrownToken: function (notif) {
+      const player_id = notif.args.player_id;
+
+      originStock = `crownTowerStock:${player_id}`;
+      originElement = $(`boc_crownTower:${player_id}`);
+      destinationStock = "supplyStock";
+
+      this[destinationStock].addToStock("crown", originElement);
+      this[originStock].removeFromStock("crown");
+    },
+
+    notif_activateCrossToken: function (notif) {
+      const player_id = notif.args.player_id;
+
+      originStock = `crossTowerStock:${player_id}`;
+      originElement = $(`boc_crossTower:${player_id}`);
+      destinationStock = "supplyStock";
+
+      this[destinationStock].addToStock("cross", originElement);
+      this[originStock].removeFromStock("cross");
+    },
+
+    notif_activateSmithToken: function (notif) {
+      const player_id = notif.args.player_id;
+
+      originStock = `anvilStock:${player_id}`;
+      originElement = $(`boc_anvil:${player_id}`);
+      destinationStock = "supplyStock";
+
+      this[destinationStock].addToStock("smith", originElement);
+      this[originStock].removeFromStock("smith");
     },
   });
 });

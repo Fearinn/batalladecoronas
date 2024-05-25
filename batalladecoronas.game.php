@@ -1469,6 +1469,7 @@ class BatallaDeCoronas extends Table
          * @disregard P1009 Undefined type
          */
         $state_id = $this->gamestate->state_id();
+        $state_name = $this->getStateName();
 
         $this->setGameStateValue("token_state",  $state_id);
 
@@ -1483,6 +1484,7 @@ class BatallaDeCoronas extends Table
                 array(
                     "i18n" => array("token_label"),
                     "token_label" => $this->tokens_info[1]["label_tr"],
+                    "player_id" => $player_id,
                     "player_name" => $this->getPlayerNameById($player_id),
                 )
             );
@@ -1490,6 +1492,11 @@ class BatallaDeCoronas extends Table
             $this->generateGold(3, $player_id);
 
             $this->setPlayerCrown(0, $player_id);
+
+            if ($state_name === "preBattleToken") {
+                $this->game->nextState("afterToken");
+                return;
+            }
 
             $this->gamestate->jumpToState($state_id);
             return;
@@ -1513,6 +1520,7 @@ class BatallaDeCoronas extends Table
             array(
                 "i18n" => array("token_label"),
                 "token_label" => $this->tokens_info[2]["label_tr"],
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
             )
         );
@@ -1522,6 +1530,11 @@ class BatallaDeCoronas extends Table
         $this->setPlayerCross(0, $player_id);
 
         $prev_state = $this->getGameStateValue("token_state");
+
+        if ($prev_state == 51 && !$this->getNoblePicks($player_id)) {
+            $this->gamestate->nextState("afterToken");
+            return;
+        }
 
         $this->gamestate->jumpToState($prev_state);
     }
@@ -1542,6 +1555,7 @@ class BatallaDeCoronas extends Table
             array(
                 "i18n" => array("token_label"),
                 "token_label" => $this->tokens_info[3]["label_tr"],
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
             )
         );
@@ -1559,6 +1573,15 @@ class BatallaDeCoronas extends Table
         $this->setPlayerSmith(0, $player_id);
 
         $this->gamestate->nextState("preBattle");
+    }
+
+    function cancelToken()
+    {
+        $this->checkAction("cancelToken");
+
+        $prev_state = $this->getGameStateValue("token_state");
+
+        $this->gamestate->jumpToState($prev_state);
     }
 
     function skipToken()
@@ -1610,6 +1633,13 @@ class BatallaDeCoronas extends Table
             $this->gamestate->nextState("preBattleToken");
             return;
         }
+
+        $this->gamestate->nextState("battlePhase");
+    }
+
+    function stAfterToken()
+    {
+        $this->activeNextPlayer();
 
         $this->gamestate->nextState("battlePhase");
     }

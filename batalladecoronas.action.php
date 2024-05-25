@@ -143,6 +143,13 @@ class action_batalladecoronas extends APP_GameAction
     $this->ajaxResponse();
   }
 
+  public function cancelToken()
+  {
+    $this->setAjaxMode();
+    $this->game->cancelToken();
+    $this->ajaxResponse();
+  }
+
   public function skipToken()
   {
     $this->setAjaxMode();
