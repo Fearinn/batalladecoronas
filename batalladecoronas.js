@@ -755,6 +755,18 @@ define([
           );
         }
       }
+
+      if (stateName === "battlePhase") {
+        if (this.isCurrentPlayerActive()) {
+          this.addActionButton("boc_battle_btn", _("Battle"), "onStartBattle");
+
+          this.addActionButton(
+            "boc_skipBattle_btn",
+            _("Skip and pass"),
+            "onSkipBattle"
+          );
+        }
+      }
     },
 
     onLeavingState: function (stateName) {
@@ -1103,6 +1115,18 @@ define([
 
     onCancelToken: function () {
       const action = "cancelToken";
+
+      this.sendAjaxCall(action);
+    },
+
+    onStartBattle: function () {
+      const action = "startBattle";
+
+      this.sendAjaxCall(action);
+    },
+
+    onSkipBattle: function () {
+      const action = "skipBattle";
 
       this.sendAjaxCall(action);
     },

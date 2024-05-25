@@ -39,6 +39,19 @@ $machinestates = array(
         ),
     ),
 
+    21 => array(
+        "name" => "autoDiceRoll",
+        "description" => "",
+        "descriptionmyturn" => "",
+        "type" => "game",
+        "action" => "stAutoDiceRoll",
+        "transitions" => array(
+            "decisionPhase" => 3,
+            "counselorVesting" => 31,
+            "couselorActivaction" => 32
+        ),
+    ),
+
     3 =>  array(
         "name" => "decisionPhase",
         "description" => clienttranslate('${actplayer} must pick a die to activate a counselor. The other die shall generate gold'),
@@ -175,16 +188,34 @@ $machinestates = array(
         "descriptionmyturn" => "",
         "type" => "game",
         "action" => "stBattle",
-        "transitions" => array("destroyShields" => 62, "diceRoll" => 2),
+        "transitions" => array("resultDispute" => 62, "shieldDestruction" => 63, "betweenTurns" => 2),
     ),
 
     62 => array(
+        "name" => "resultDispute",
+        "description" => clienttranslate('${actplayer} may reroll the dice'),
+        "descriptionmyturn" => clienttranslate('${you} may pick how many swords shall be used in the attack'),
+        "type" => "activeplayer",
+        "possibleactions" => array("disputeResult", "skipResultDispute"),
+        "transitions" => array("shieldDestruction" => 63, "betweenTurns" => 7),
+    ),
+
+    63 => array(
         "name" => "shieldDestruction",
         "description" => clienttranslate('${actplayer} may pick how many swords shall be used in the attack'),
         "descriptionmyturn" => clienttranslate('${you} may pick how many swords shall be used in the attack'),
         "type" => "activeplayer",
-        "possibleactions" => array("shieldDestruction", "skip"),
-        "transitions" => array("diceRoll" => 2, "skip" => 2),
+        "possibleactions" => array("destroyShields", "skipShieldDestruction"),
+        "transitions" => array("betweenTurns" => 7, "skip" => 7),
+    ),
+
+    7 => array(
+        "name" => "betweenTurns",
+        "description" => "",
+        "descriptionmyturn" => "",
+        "type" => "game",
+        "action" => "stBetweenTurns",
+        "transitions" => array("nextTurn" => 21),
     ),
 
     // Final state.

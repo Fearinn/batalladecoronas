@@ -1591,6 +1591,26 @@ class BatallaDeCoronas extends Table
         $this->gamestate->nextState("preBattle");
     }
 
+    function startBattle()
+    {
+        $this->checkAction("startBattle");
+
+        $die_1 = bga_rand(1, 6);
+        $die_2 = bga_rand(1, 6);
+
+        $this->setGameStateValue("die_1", $die_1);
+        $this->setGameStateValue("die_2", $die_2);
+
+        $this->gamestate->nextState("battle");
+    }
+
+    function skipBattle()
+    {
+        $this->checkAction("skipBattle");
+
+        $this->gamestate->nextState("betweenTurns");
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //////////// Game state arguments
     ////////////
@@ -1642,6 +1662,73 @@ class BatallaDeCoronas extends Table
         $this->activeNextPlayer();
 
         $this->gamestate->nextState("battlePhase");
+    }
+
+    function stBattle()
+    {
+        $attacker_id = $this->getActivePlayerId();
+
+        $defender_id = $this->getPlayerAfter($attacker_id);
+
+        $attacking_die = $this->getGameStateValue("die_1");
+        $defending_die = $this->getGameStateValue("die_2");
+
+        if ($attacking_die == $defending_die) {
+            $this->notifyAllPlayers(
+                "battleTie",
+                clienttranslate("It's a tie. No shields or swords are destroyed"),
+                array()
+            );
+
+            $this->gamestate->nextState("resultDispute");
+            return;
+        }
+
+        $attack_wins = $attacking_die > $defending_die;
+
+        $winner_id = $attack_wins ? $attacker_id : $defender_id;
+        $loser_id = $attack_wins ? $defender_id : $attacker_id;
+
+        $margin = abs($attacking_die - $defending_die);
+
+        $this->notifyAllPlayers(
+            "battleResult",
+            clienttranslate('${player_name} wins the battle'),
+            array(
+                "player_id" => $winner_id,
+                "player_name" => $this->getPlayerNameById($winner_id)
+            )
+        );
+
+        if ($this->getPlayerGold($loser_id) > 0) {
+            if ($attacker_id != $loser_id) {
+                $this->gamestate->changeActivePlayer($loser_id);
+            }
+
+            $this->gamestate->nextState("resultDispute");
+            return;
+        }
+
+        if ($attack_wins) {
+            $this->gamestate->nextState("destroyShields");
+            return;
+        }
+
+        $this->decreaseAttack($margin, $loser_id, true);
+
+        $this->gamestate->nextState("betweenTurns");
+    }
+
+    function stBetweenTurns()
+    {
+        $player_id = $this->getActivePlayerId();
+
+        $other_player_id = $this->getPlayerAfter($player_id);
+
+        $this->giveExtraTime($other_player_id);
+        $this->activeNextPlayer();
+
+        $this->gamestate->nextState("nextTurn");
     }
 
     //////////////////////////////////////////////////////////////////////////////
