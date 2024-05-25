@@ -178,8 +178,8 @@ $machinestates = array(
         "description" => clienttranslate('${actplayer} may start a battle'),
         "descriptionmyturn" => clienttranslate('${you} may start a battle'),
         "type" => "activeplayer",
-        "possibleActions" => array("startBattle", "skip"),
-        "transitions" => array("battle" => 61, "skip" => 2),
+        "possibleactions" => array("startBattle", "skipBattle"),
+        "transitions" => array("battle" => 61, "skip" => 7),
     ),
 
     61 => array(
@@ -194,13 +194,22 @@ $machinestates = array(
     62 => array(
         "name" => "resultDispute",
         "description" => clienttranslate('${actplayer} may reroll the dice'),
-        "descriptionmyturn" => clienttranslate('${you} may pick how many swords shall be used in the attack'),
+        "descriptionmyturn" => clienttranslate('${you} may reroll the dice'),
         "type" => "activeplayer",
-        "possibleactions" => array("disputeResult", "skipResultDispute"),
-        "transitions" => array("shieldDestruction" => 63, "betweenTurns" => 7),
+        "possibleactions" => array("disputeResult", "skipDispute"),
+        "transitions" => array("betweenDisputes" => 63),
     ),
 
     63 => array(
+        "name" => "betweenDisputes",
+        "description" => "",
+        "descriptionmyturn" => "",
+        "type" => "game",
+        "action" => "stBetweenDisputes",
+        "transitions" => array("resultDispute" => 62, "shieldDestruction" => 63, "betweenTurns" => 7),
+    ),
+
+    64 => array(
         "name" => "shieldDestruction",
         "description" => clienttranslate('${actplayer} may pick how many swords shall be used in the attack'),
         "descriptionmyturn" => clienttranslate('${you} may pick how many swords shall be used in the attack'),

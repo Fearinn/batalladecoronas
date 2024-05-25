@@ -400,7 +400,6 @@ define([
         const activeClergyStock = `clergyStock$${player_id}:${activeSquare}`;
         const initialClergy = $(`boc_clergy$${player_id}:0`);
 
-        console.log(this[activeClergyStock]);
         this[activeClergyStock].addToStock("clergy", initialClergy);
 
         //attack
@@ -606,7 +605,6 @@ define([
 
       if (stateName === "diceRoll") {
         if (this.isCurrentPlayerActive()) {
-          console.log("rollDice");
           this.addActionButton("boc_rollDice", _("Roll dice"), "onRollDice");
         }
       }
@@ -763,8 +761,23 @@ define([
           this.addActionButton(
             "boc_skipBattle_btn",
             _("Skip and pass"),
-            "onSkipBattle"
+            "onSkipBattle",
+            null,
+            null,
+            "red"
           );
+        }
+      }
+
+      if (stateName === "resultDispute") {
+        if (this.isCurrentPlayerActive()) {
+          this.addActionButton(
+            "boc_dispute_btn",
+            _("Dispute (pay and reroll)"),
+            "onDisputeResult"
+          );
+
+          this.addActionButton("boc_accept_btn", _("Accept"), "onSkipDispute");
         }
       }
     },
@@ -818,7 +831,7 @@ define([
     sendAjaxCall: function (action, args = {}) {
       args.lock = true;
 
-      if (this.checkAction(action, true)) {
+      if (this.checkAction(action)) {
         this.ajaxcall(
           "/" + this.game_name + "/" + this.game_name + "/" + action + ".html",
           args,
@@ -1131,6 +1144,18 @@ define([
       this.sendAjaxCall(action);
     },
 
+    onDisputeResult: function () {
+      const action = "disputeResult";
+
+      this.sendAjaxCall(action);
+    },
+
+    onSkipDispute: function () {
+      const action = "skipDispute";
+
+      this.sendAjaxCall(action);
+    },
+
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
 
@@ -1165,11 +1190,15 @@ define([
     notif_dieRoll: function (notif) {
       const die = notif.args.die;
       const result = notif.args.result;
+      console.log(result, "result");
       const dieElement = $(`boc_die:${die}`);
 
       dojo.addClass(dieElement, "boc_die_rolled");
 
       setTimeout(() => {
+        for (let face = 1; face <= 6; face++) {
+          dojo.removeClass(dieElement, `boc_face_${face}`);
+        }
         dojo.addClass(dieElement, `boc_face_${result}`);
       }, 500);
 

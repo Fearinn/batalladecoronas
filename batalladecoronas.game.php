@@ -35,6 +35,7 @@ class BatallaDeCoronas extends Table
             "active_counselor" => 13,
             "token_state" => 14,
             "active_equipment" => 15,
+            "attacker" => 16,
 
             "highest_gems" => 80
         ));
@@ -76,6 +77,7 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue("active_counselor", 0);
         $this->setGameStateInitialValue("token_state", 0);
         $this->setGameStateInitialValue("active_equipment", 0);
+        $this->setGameStateInitialValue("attacker", 0);
 
         $this->setGameStateInitialValue("highest_gems", 0);
 
@@ -257,6 +259,16 @@ class BatallaDeCoronas extends Table
     function setPlayerMaxGold(int $value, $player_id): void
     {
         $this->DbQuery("UPDATE player SET max_gold=$value WHERE player_id='$player_id'");
+    }
+
+    function getPlayerReroll($player_id): int
+    {
+        return $this->getUniqueValueFromDB("SELECT reroll from player WHERE player_id='$player_id'");
+    }
+
+    function setPlayerReroll(int $value, $player_id): void
+    {
+        $this->DbQuery("UPDATE player SET reroll=$value WHERE player_id='$player_id'");
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -563,7 +575,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "increaseAttack",
-            $message ? clienttranslate('${newSwords} swords of ${player_name} are destroyed') : "",
+            $message ? clienttranslate('${newSwords} sword(s) of ${player_name} are destroyed') : "",
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
@@ -1080,9 +1092,11 @@ class BatallaDeCoronas extends Table
     //////////// Player actions
     ////////////
 
-    function rollDice()
+    function rollDice($auto = false)
     {
-        $this->checkAction("rollDice");
+        if (!$auto) {
+            $this->checkAction("rollDice");
+        }
 
         $player_id = $this->getActivePlayerId();
 
@@ -1138,6 +1152,7 @@ class BatallaDeCoronas extends Table
 
         $chair_die = 0;
         $gold_die = 0;
+
         if ($die == 1) {
             $chair_die = $this->getGameStateValue("die_1");
             $gold_die = $this->getGameStateValue("die_2");
@@ -1595,11 +1610,37 @@ class BatallaDeCoronas extends Table
     {
         $this->checkAction("startBattle");
 
+        $player_id = $this->getActivePlayerId();
+
+        $this->setGameStateValue("attacker", $player_id);
+
+        $other_player_id = $this->getPlayerAfter($player_id);
+
         $die_1 = bga_rand(1, 6);
         $die_2 = bga_rand(1, 6);
 
         $this->setGameStateValue("die_1", $die_1);
         $this->setGameStateValue("die_2", $die_2);
+
+        $this->notifyAllPlayers(
+            "dieRoll",
+            clienttranslate('${player_name} rolls the first die. The result is ${result}'),
+            array(
+                "player_name" => $this->getPlayerNameById($player_id),
+                "die" => 1,
+                "result" => $die_1
+            )
+        );
+
+        $this->notifyAllPlayers(
+            "dieRoll",
+            clienttranslate('${player_name} rolls the second die. The result is ${result}'),
+            array(
+                "player_name" => $this->getPlayerNameById($other_player_id),
+                "die" => 2,
+                "result" => $die_2
+            )
+        );
 
         $this->gamestate->nextState("battle");
     }
@@ -1608,7 +1649,54 @@ class BatallaDeCoronas extends Table
     {
         $this->checkAction("skipBattle");
 
-        $this->gamestate->nextState("betweenTurns");
+        $this->gamestate->nextState("skip");
+    }
+
+    function disputeResult()
+    {
+        $this->checkAction("disputeResult");
+
+        $player_id = $this->getActivePlayerId();
+
+        $attacker_id = $this->getGameStateValue("attacker");
+
+        $is_attacker = $attacker_id == $player_id;
+
+        $die = bga_rand(1, 6);
+
+        $this->notifyAllPlayers(
+            "dieRoll",
+            clienttranslate('${player_name} rerolls his die. The result is ${result}'),
+            array(
+                "player_name" => $this->getPlayerNameById($player_id),
+                "die" => $is_attacker ? 1 : 2,
+                "result" => $die
+            )
+        );
+
+        $reroll = $this->getPlayerReroll($player_id);
+        $this->setPlayerReroll($reroll + 1, $player_id);
+
+        $this->spendGold($reroll, $player_id, true);
+
+        if ($is_attacker) {
+            $this->setGameStateValue("die_1", $die);
+        } else {
+            $this->setGameStateValue("die_2", $die);
+        }
+
+        $this->gamestate->nextState("betweenDisputes");
+    }
+
+    function skipDispute()
+    {
+        $this->checkAction("skipDispute");
+
+        $player_id = $this->getActivePlayerId();
+
+        $this->setPlayerReroll(0, $player_id);
+
+        $this->gamestate->nextState("betweenDisputes");
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -1673,17 +1761,6 @@ class BatallaDeCoronas extends Table
         $attacking_die = $this->getGameStateValue("die_1");
         $defending_die = $this->getGameStateValue("die_2");
 
-        if ($attacking_die == $defending_die) {
-            $this->notifyAllPlayers(
-                "battleTie",
-                clienttranslate("It's a tie. No shields or swords are destroyed"),
-                array()
-            );
-
-            $this->gamestate->nextState("resultDispute");
-            return;
-        }
-
         $attack_wins = $attacking_die > $defending_die;
 
         $winner_id = $attack_wins ? $attacker_id : $defender_id;
@@ -1691,26 +1768,38 @@ class BatallaDeCoronas extends Table
 
         $margin = abs($attacking_die - $defending_die);
 
-        $this->notifyAllPlayers(
-            "battleResult",
-            clienttranslate('${player_name} wins the battle'),
-            array(
-                "player_id" => $winner_id,
-                "player_name" => $this->getPlayerNameById($winner_id)
-            )
-        );
+        if ($margin > 0) {
+            $this->notifyAllPlayers(
+                "battleResult",
+                clienttranslate('${player_name} wins the battle'),
+                array(
+                    "player_id" => $winner_id,
+                    "player_name" => $this->getPlayerNameById($winner_id)
+                )
+            );
+        }
 
-        if ($this->getPlayerGold($loser_id) > 0) {
-            if ($attacker_id != $loser_id) {
-                $this->gamestate->changeActivePlayer($loser_id);
-            }
+        if ($margin == 0) {
+            $this->notifyAllPlayers(
+                "battleTie",
+                clienttranslate("It's a tie. No shields or swords are destroyed"),
+                array()
+            );
+        }
 
+        if ($this->getPlayerReroll($attacker_id) && $this->getPlayerGold($attacker_id) >= $this->getPlayerReroll($attacker_id)) {
+            $this->gamestate->nextState("resultDispute");
+            return;
+        }
+
+        if ($this->getPlayerReroll($defender_id) && $this->getPlayerGold($defender_id) >= $this->getPlayerReroll($defender_id)) {
+            $this->activeNextPlayer();
             $this->gamestate->nextState("resultDispute");
             return;
         }
 
         if ($attack_wins) {
-            $this->gamestate->nextState("destroyShields");
+            $this->gamestate->nextState("shieldDestruction");
             return;
         }
 
@@ -1719,16 +1808,38 @@ class BatallaDeCoronas extends Table
         $this->gamestate->nextState("betweenTurns");
     }
 
+    function stBetweenDisputes()
+    {
+        $this->stBattle();
+    }
+
     function stBetweenTurns()
     {
         $player_id = $this->getActivePlayerId();
 
         $other_player_id = $this->getPlayerAfter($player_id);
 
+        $this->setPlayerReroll(1, $player_id);
+        $this->setPlayerReroll(1, $other_player_id);
+
+        $this->setGameStateValue("attacker", 0);
+        $this->setGameStateValue("active_equipment", 0);
+
+        $this->notifyAllPlayers(
+            "nextTurn",
+            clienttranslate('${player_name} finishes his turn and passes'),
+            array("player_name" => $this->getPlayerNameById($player_id))
+        );
+
         $this->giveExtraTime($other_player_id);
         $this->activeNextPlayer();
 
         $this->gamestate->nextState("nextTurn");
+    }
+
+    function stAutoDiceRoll()
+    {
+        $this->rollDice(true);
     }
 
     //////////////////////////////////////////////////////////////////////////////
