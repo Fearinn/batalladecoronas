@@ -206,7 +206,12 @@ define([
           this.supplyItemSize
         );
         this[crownTowerStock].image_items_per_row = 3;
-        this[crownTowerStock].setSelectionMode(1);
+
+        if (player_id == currentPlayerId) {
+          this[crownTowerStock].setSelectionMode(1);
+        } else {
+          this[crownTowerStock].setSelectionMode(0);
+        }
 
         this[crownTowerStock].onItemCreate = (element, type, id) => {
           this.addTooltip(element.id, _("Crown token"), "");
@@ -235,7 +240,12 @@ define([
           this.supplyItemSize
         );
         this[crossTowerStock].image_items_per_row = 3;
-        this[crossTowerStock].setSelectionMode(1);
+
+        if (player_id == currentPlayerId) {
+          this[crossTowerStock].setSelectionMode(1);
+        } else {
+          this[crownTowerStock].setSelectionMode(0);
+        }
 
         this[crossTowerStock].onItemCreate = (element, type, id) => {
           this.addTooltip(element.id, _("Cross token"), "");
@@ -264,7 +274,7 @@ define([
           this.supplyItemSize
         );
         this[anvilStock].image_items_per_row = 3;
-        this[anvilStock].setSelectionMode(1);
+        this[anvilStock].setSelectionMode(0);
 
         this[anvilStock].onItemCreate = (element, type, id) => {
           this.addTooltip(element.id, _("Smith token"), "");
