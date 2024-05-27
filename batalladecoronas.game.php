@@ -143,6 +143,32 @@ class BatallaDeCoronas extends Table
         return $this->gamestate->state()["name"];
     }
 
+    function dragonRage($player_id): int
+    {
+        $target_id = $this->getPlayerAfter($player_id);
+
+        if ($this->getPlayerDefense($target_id) > 0) {
+            $this->decreaseDefense(4, $target_id, true);
+
+            $this->notifyAllPlayers(
+                "dragonRage",
+                clienttranslate('${target_name} is attacked by the dragon of ${player_name}'),
+                array(
+                    "player_id" => $player_id,
+                    "target_id" => $target_id,
+                    "player_name" => $this->getPlayerNameById($player_id),
+                    "target_name" => $this->getPlayerNameById($target_id),
+                )
+            );
+
+            $this->setPlayerDragon(0, $player_id);
+        } else {
+            $this->levelDownDragon(5, $player_id);
+        }
+
+        return $this->getPlayerDefense($target_id);
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //////////// DB manipulation
     ////////////
@@ -582,7 +608,6 @@ class BatallaDeCoronas extends Table
                 "prevSwords" => $prev_swords,
                 "newSwords" => $value,
                 "totalSwords" => $total_swords,
-                "attack" => $this->getAttack()
             )
         );
 
@@ -614,9 +639,37 @@ class BatallaDeCoronas extends Table
                 "prevShields" => $prev_shields,
                 "newShields" => $value,
                 "totalShields" => $total_shields,
-                "attack" => $this->getDefense()
             )
         );
+
+        return $total_shields;
+    }
+
+    function decreaseDefense(int $value, $player_id, $message = false)
+    {
+        $prev_shields = $this->getPlayerDefense($player_id);
+
+        $total_shields = $prev_shields - $value;
+
+        if ($value > $prev_shields) {
+            $total_shields = 0;
+        }
+
+        $this->setPlayerDefense($total_shields, $player_id);
+
+        if ($prev_shields > 0) {
+            $this->notifyAllPlayers(
+                "increaseDefense",
+                $message ? clienttranslate('${newShields} shield(s) of ${player_name} are destroyed') : "",
+                array(
+                    "player_id" => $player_id,
+                    "player_name" => $this->getPlayerNameById($player_id),
+                    "prevShields" => $prev_shields,
+                    "newShields" => $prev_shields - $total_shields,
+                    "totalShields" => $total_shields,
+                )
+            );
+        }
 
         return $total_shields;
     }
@@ -706,6 +759,10 @@ class BatallaDeCoronas extends Table
                 "dragon" => $this->getDragon()
             ),
         );
+
+        if ($total_level == 5) {
+            $this->dragonRage($player_id);
+        }
 
         return $total_level;
     }

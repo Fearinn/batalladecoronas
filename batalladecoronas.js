@@ -529,7 +529,7 @@ define([
             this.dragonSize
           );
           this[dragonStock].image_items_per_row = 1;
-          this[dragonStock].extraClasses = `boc_bg_contain boc_dragon_level`;
+          this[dragonStock].extraClasses = `boc_bgContain boc_dragon_level`;
           this[dragonStock].setSelectionMode(0);
 
           this[dragonStock].addItemType(
@@ -544,6 +544,28 @@ define([
         const currentDragonStock = `dragonStock$${player_id}:${currentDragon}`;
         const initialDragon = $(`boc_dragon$${player_id}:0`);
         this[currentDragonStock].addToStock("dragon", initialDragon);
+
+        const rageStock = `rageStock:${player_id}`;
+        const rageElement = $(`boc_rage:${player_id}`);
+
+        this[rageStock] = new ebg.stock();
+        this[rageStock].create(
+          this,
+          rageElement,
+          this.dragonSize,
+          this.dragonSize
+        );
+        this[rageStock].image_items_per_row = 1;
+        this[rageStock].centerItems = true;
+        this[rageStock].extraClasses = `boc_bgContain`;
+        this[rageStock].setSelectionMode(0);
+
+        this[rageStock].addItemType(
+          "dragon",
+          0,
+          g_gamethemeurl + "img/dragon.png",
+          0
+        );
       }
 
       //connections
@@ -831,7 +853,7 @@ define([
     sendAjaxCall: function (action, args = {}) {
       args.lock = true;
 
-      if (this.checkAction(action)) {
+      if (this.checkAction(action, true)) {
         this.ajaxcall(
           "/" + this.game_name + "/" + this.game_name + "/" + action + ".html",
           args,
@@ -1174,6 +1196,7 @@ define([
       dojo.subscribe("increaseDefense", this, "notif_increaseDefense");
       dojo.subscribe("moveClergy", this, "notif_moveClergy");
       dojo.subscribe("levelUpDragon", this, "notif_levelUpDragon");
+      this.notifqueue.setSynchronous("levelUpDragon", 1000);
       dojo.subscribe("claimCrown", this, "notif_claimCrown");
       dojo.subscribe("claimCross", this, "notif_claimCross");
       dojo.subscribe("claimSmith", this, "notif_claimSmith");
@@ -1185,6 +1208,8 @@ define([
         this,
         "notif_activateSmithToken"
       );
+      dojo.subscribe("dragonRage", this, "notif_dragonRage");
+      this.notifqueue.setSynchronous("dragonRage", 3000);
     },
 
     notif_dieRoll: function (notif) {
@@ -1275,6 +1300,7 @@ define([
 
       this.attack = notif.args.attack;
     },
+
     notif_increaseDefense: function (notif) {
       const player_id = notif.args.player_id;
 
@@ -1438,6 +1464,31 @@ define([
 
       this[destinationStock].addToStock("smith", originElement);
       this[originStock].removeFromStock("smith");
+    },
+
+    notif_dragonRage: function (notif) {
+      const player_id = notif.args.player_id;
+      const target_id = notif.args.target_id;
+
+      const maxLevelStock = `dragonStock$${player_id}:5`;
+      const levelElement = `boc_dragon$${player_id}:5`;
+
+      const rageStock = `rageStock:${target_id}`;
+      const rageElement = `boc_rage:${target_id}`;
+
+      this[maxLevelStock].removeFromStock("dragon");
+      this[rageStock].addToStock("dragon", levelElement);
+
+      dojo.addClass(rageElement, "boc_flame");
+
+      setTimeout(() => {
+        this[rageStock].removeFromStock("dragon");
+
+        const minLevelStock = `dragonStock$${player_id}:0`;
+        this[minLevelStock].addToStock("dragon", rageElement);
+
+        dojo.removeClass(rageElement, "boc_flame");
+      }, 3000);
     },
   });
 });
