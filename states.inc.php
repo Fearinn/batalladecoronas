@@ -143,7 +143,7 @@ $machinestates = array(
         "descriptionmyturn" => "",
         "type" => "game",
         "action" => "stPreBattle",
-        "transitions" => array("preBattleToken" => 51, "battlePhase" => 6)
+        "transitions" => array("preBattleToken" => 51, "battlePhase" => 6, "betweenTurns" => 7)
     ),
 
     51 => array(

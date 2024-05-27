@@ -38,7 +38,8 @@ class BatallaDeCoronas extends Table
             "attacker" => 16,
             "damaged_shields" => 17,
 
-            "highest_gems" => 80
+            "highest_gems" => 80,
+            "first_turn" => 81
         ));
 
         $this->tokens = $this->getNew("module.common.deck");
@@ -82,6 +83,7 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue("damaged_shields", 0);
 
         $this->setGameStateInitialValue("highest_gems", 0);
+        $this->setGameStateInitialValue("first_turn", 1);
 
         foreach ($players as $player_id => $player) {
             $counselors = array();
@@ -1827,6 +1829,11 @@ class BatallaDeCoronas extends Table
 
     function stPreBattle()
     {
+        if ($this->getGameStateValue("first_turn")) {
+            $this->gamestate->nextState("betweenTurns");
+            return;
+        }
+
         $player_id = $this->getActivePlayerId();
         $other_player_id = $this->getPlayerAfter($player_id);
 
@@ -1938,6 +1945,10 @@ class BatallaDeCoronas extends Table
 
         $this->giveExtraTime($other_player_id);
         $this->activeNextPlayer();
+
+        if ($this->getGameStateValue("first_turn")) {
+            $this->setGameStateValue("first_turn", 0);
+        }
 
         $this->gamestate->nextState("nextTurn");
     }
