@@ -796,10 +796,6 @@ class BatallaDeCoronas extends Table
 
     function claimCrown($player_id): void
     {
-        if ($this->getPlayerCrown($player_id)) {
-            throw new BgaVisibleSystemException("The Crown is already in your castle");
-        }
-
         $other_player_id = $this->getPlayerAfter($player_id);
 
         $owned = $this->getPlayerCrown($other_player_id);
@@ -824,10 +820,6 @@ class BatallaDeCoronas extends Table
 
     function claimCross($player_id): void
     {
-        if ($this->getPlayerCross($player_id)) {
-            throw new BgaVisibleSystemException("The Cross is already in your castle");
-        }
-
         $other_player_id = $this->getPlayerAfter($player_id);
 
         $owned = $this->getPlayerCross($other_player_id);
@@ -852,10 +844,6 @@ class BatallaDeCoronas extends Table
 
     function claimSmith($player_id): void
     {
-        if ($this->getPlayerSmith($player_id)) {
-            throw new BgaVisibleSystemException("The Smith is already in your castle");
-        }
-
         $other_player_id = $this->getPlayerAfter($player_id);
 
         $owned = $this->getPlayerSmith($other_player_id);
@@ -1825,6 +1813,17 @@ class BatallaDeCoronas extends Table
 
         $margin = abs($attacking_die - $defending_die);
 
+        if ($this->getPlayerReroll($attacker_id) && $this->getPlayerGold($attacker_id) >= $this->getPlayerReroll($attacker_id)) {
+            $this->gamestate->nextState("resultDispute");
+            return;
+        }
+
+        if ($this->getPlayerReroll($defender_id) && $this->getPlayerGold($defender_id) >= $this->getPlayerReroll($defender_id)) {
+            $this->activeNextPlayer();
+            $this->gamestate->nextState("resultDispute");
+            return;
+        }
+
         if ($margin > 0) {
             $this->notifyAllPlayers(
                 "battleResult",
@@ -1844,16 +1843,8 @@ class BatallaDeCoronas extends Table
             );
         }
 
-        if ($this->getPlayerReroll($attacker_id) && $this->getPlayerGold($attacker_id) >= $this->getPlayerReroll($attacker_id)) {
-            $this->gamestate->nextState("resultDispute");
-            return;
-        }
-
-        if ($this->getPlayerReroll($defender_id) && $this->getPlayerGold($defender_id) >= $this->getPlayerReroll($defender_id)) {
-            $this->activeNextPlayer();
-            $this->gamestate->nextState("resultDispute");
-            return;
-        }
+        $this->claimCrown($winner_id);
+        $this->claimCross($loser_id);
 
         if ($attack_wins) {
             $this->gamestate->nextState("shieldDestruction");
