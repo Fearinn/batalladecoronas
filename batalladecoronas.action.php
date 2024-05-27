@@ -131,7 +131,7 @@ class action_batalladecoronas extends APP_GameAction
   public function activateCrossToken()
   {
     $this->setAjaxMode();
-    $square = $this->getArg("square", AT_enum, true, null, array(1, 2, 3));
+    $square = $this->getArg("square", AT_enum, true, null, range(1, 3));
     $this->game->activateCrossToken($square);
     $this->ajaxResponse();
   }
@@ -182,6 +182,21 @@ class action_batalladecoronas extends APP_GameAction
   {
     $this->setAjaxMode();
     $this->game->skipDispute();
+    $this->ajaxResponse();
+  }
+
+  public function destroyShields()
+  {
+    $this->setAjaxMode();
+    $shield_nbr = $this->getArg("shield_nbr", AT_enum, true, null, range(1, 5));
+    $this->game->destroyShields($shield_nbr);
+    $this->ajaxResponse();
+  }
+
+  public function skipDestruction()
+  {
+    $this->setAjaxMode();
+    $this->game->skipDestruction();
     $this->ajaxResponse();
   }
 }

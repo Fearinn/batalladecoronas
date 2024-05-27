@@ -802,6 +802,31 @@ define([
           this.addActionButton("boc_accept_btn", _("Accept"), "onSkipDispute");
         }
       }
+
+      if (stateName === "shieldDestruction") {
+        if (this.isCurrentPlayerActive()) {
+          const damagedShields = args.args.damagedShields;
+
+          for (let option = 1; option <= damagedShields; option++) {
+            this.addActionButton(
+              `boc_destructiOption:${option}`,
+              option.toString(),
+              () => {
+                this.onDestroyShields(option);
+              }
+            );
+          }
+
+          this.addActionButton(
+            "boc_skipDestruction",
+            _("Skip"),
+            "onSkipDestruction",
+            null,
+            null,
+            "red"
+          );
+        }
+      }
     },
 
     onLeavingState: function (stateName) {
@@ -1178,6 +1203,18 @@ define([
       this.sendAjaxCall(action);
     },
 
+    onDestroyShields: function (shield_nbr) {
+      const action = "destroyShields";
+
+      this.sendAjaxCall(action, { shield_nbr });
+    },
+
+    onSkipDestruction: function () {
+      const action = "skipDestruction";
+
+      this.sendAjaxCall(action);
+    },
+
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
 
@@ -1210,12 +1247,16 @@ define([
       );
       dojo.subscribe("dragonRage", this, "notif_dragonRage");
       this.notifqueue.setSynchronous("dragonRage", 3000);
+      dojo.subscribe("battleResult", this, "notif_battleResult");
+      this.notifqueue.setSynchronous("battleResult", 1000);
+      dojo.subscribe("nextTurn", this, "notif_nextTurn");
+      this.notifqueue.setSynchronous("nextTurn", 1000);
     },
 
     notif_dieRoll: function (notif) {
       const die = notif.args.die;
       const result = notif.args.result;
-      console.log(result, "result");
+
       const dieElement = $(`boc_die:${die}`);
 
       dojo.addClass(dieElement, "boc_die_rolled");
@@ -1490,5 +1531,9 @@ define([
         dojo.removeClass(rageElement, "boc_flame");
       }, 3000);
     },
+
+    notif_battleResult: function (notif) {},
+
+    notif_nextTurn: function (notif) {},
   });
 });

@@ -134,7 +134,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('Do ${you} wish to obtain an extra equipment for free with the Smith token?'),
         "type" => "activeplayer",
         "possibleactions" => array("activateSmithToken", "skipToken"),
-        "transitions" => array("buyAgain" => 4, "preBattle" => 5, "battlePhase" => 6)
+        "transitions" => array("buyAgain" => 4, "preBattle" => 5, "battlePhase" => 6, "skip" => 5)
     ),
 
     5 => array(
@@ -197,7 +197,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may reroll the dice'),
         "type" => "activeplayer",
         "possibleactions" => array("disputeResult", "skipDispute"),
-        "transitions" => array("betweenDisputes" => 63),
+        "transitions" => array("betweenDisputes" => 63, "skip" => 63),
     ),
 
     63 => array(
@@ -206,15 +206,16 @@ $machinestates = array(
         "descriptionmyturn" => "",
         "type" => "game",
         "action" => "stBetweenDisputes",
-        "transitions" => array("resultDispute" => 62, "shieldDestruction" => 63, "betweenTurns" => 7),
+        "transitions" => array("resultDispute" => 62, "shieldDestruction" => 64, "betweenTurns" => 7),
     ),
 
     64 => array(
         "name" => "shieldDestruction",
-        "description" => clienttranslate('${actplayer} may pick how many swords shall be used in the attack'),
-        "descriptionmyturn" => clienttranslate('${you} may pick how many swords shall be used in the attack'),
+        "description" => clienttranslate('${actplayer} may destroy up to ${damagedShields} shield(s) of ${player_name}'),
+        "descriptionmyturn" => clienttranslate('${you} may destroy up to ${damagedShields} shield(s) of ${player_name}'),
         "type" => "activeplayer",
-        "possibleactions" => array("destroyShields", "skipShieldDestruction"),
+        "args" => "argShieldDestruction",
+        "possibleactions" => array("destroyShields", "skipDestruction"),
         "transitions" => array("betweenTurns" => 7, "skip" => 7),
     ),
 

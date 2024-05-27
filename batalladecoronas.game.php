@@ -36,6 +36,7 @@ class BatallaDeCoronas extends Table
             "token_state" => 14,
             "active_equipment" => 15,
             "attacker" => 16,
+            "damaged_shields" => 17,
 
             "highest_gems" => 80
         ));
@@ -78,6 +79,7 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue("token_state", 0);
         $this->setGameStateInitialValue("active_equipment", 0);
         $this->setGameStateInitialValue("attacker", 0);
+        $this->setGameStateInitialValue("damaged_shields", 0);
 
         $this->setGameStateInitialValue("highest_gems", 0);
 
@@ -547,7 +549,7 @@ class BatallaDeCoronas extends Table
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "prevGold" => $prev_gold,
-                "generatedGold" => $value,
+                "generatedGold" => $total_gold - $prev_gold,
                 "totalGold" => $total_gold
             )
         );
@@ -1648,7 +1650,7 @@ class BatallaDeCoronas extends Table
     {
         $this->checkAction("skipToken");
 
-        $this->gamestate->nextState("preBattle");
+        $this->gamestate->nextState("skip");
     }
 
     function startBattle()
@@ -1666,6 +1668,14 @@ class BatallaDeCoronas extends Table
 
         $this->setGameStateValue("die_1", $die_1);
         $this->setGameStateValue("die_2", $die_2);
+
+        $this->notifyAllPlayers(
+            "startBattle",
+            clienttranslate('${player_name} starts a battle'),
+            array(
+                "player_name" => $this->getPlayerNameById($player_id),
+            )
+        );
 
         $this->notifyAllPlayers(
             "dieRoll",
@@ -1741,7 +1751,36 @@ class BatallaDeCoronas extends Table
 
         $this->setPlayerReroll(0, $player_id);
 
-        $this->gamestate->nextState("betweenDisputes");
+        // if ($player_id === $this->getGameStateValue("attacker")) {
+        //     $this->gamestate->nextState("shieldDestruction");
+        //     return;
+        // }
+
+        $this->gamestate->nextState("skip");
+    }
+
+    function destroyShields($value)
+    {
+        $this->checkAction("destroyShields");
+
+        if ($value > $this->getGameStateValue("damaged_shields")) {
+            throw new BgaVisibleSystemException("You can't destroy more shields than what you've damaged");
+        }
+
+        $player_id = $this->getActivePlayerId();
+
+        $other_player_id = $this->getPlayerAfter($player_id);
+
+        $this->decreaseDefense($value, $other_player_id, true);
+
+        $this->gamestate->nextState("betweenTurns");
+    }
+
+    function skipDestruction()
+    {
+        $this->checkAction("skipDestruction");
+
+        $this->gamestate->nextState("skip");
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -1769,6 +1808,17 @@ class BatallaDeCoronas extends Table
         $player_id = $this->getActivePlayerId();
 
         return array("buyableAreas" => $this->getBuyableAreas($player_id));
+    }
+
+    function argShieldDestruction()
+    {
+        $player_id = $this->getActivePlayerId();
+
+        $other_player_id = $this->getPlayerAfter($player_id);
+        return array(
+            "player_name" => $this->getPlayerNameById($other_player_id),
+            "damagedShields" => $this->getGameStateValue("damaged_shields")
+        );
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -1847,6 +1897,13 @@ class BatallaDeCoronas extends Table
         $this->claimCross($loser_id);
 
         if ($attack_wins) {
+            $swords = $this->getPlayerAttack($attacker_id);
+
+            if ($margin > $this->getPlayerAttack($attacker_id)) {
+                $margin = $swords;
+            }
+
+            $this->setGameStateValue("damaged_shields", $margin);
             $this->gamestate->nextState("shieldDestruction");
             return;
         }
