@@ -55,7 +55,7 @@ class action_batalladecoronas extends APP_GameAction
   public function vestCounselor()
   {
     $this->setAjaxMode();
-    $card_id = $this->getArg("cardId", AT_enum, true, null, range(1, 6));
+    $card_id = $this->getArg("cardId", AT_enum, true, null, range(1, 12));
     $this->game->vestCounselor($card_id);
     $this->ajaxResponse();
   }
@@ -70,7 +70,7 @@ class action_batalladecoronas extends APP_GameAction
   public function activateNoble()
   {
     $this->setAjaxMode();
-    $card_id = $this->getArg("cardId", AT_enum, true, null, range(1, 6));
+    $card_id = $this->getArg("cardId", AT_enum, true, null, range(1, 12));
     $this->game->activateNoble($card_id);
     $this->ajaxResponse();
   }
@@ -86,7 +86,7 @@ class action_batalladecoronas extends APP_GameAction
   public function activatePriest()
   {
     $this->setAjaxMode();
-    $square = $this->getArg("square", AT_enum, true, null, array(1, 2, 3));
+    $square = $this->getArg("square", AT_enum, true, null, range(1, 3));
     $this->game->activatePriest($square);
     $this->ajaxResponse();
   }
