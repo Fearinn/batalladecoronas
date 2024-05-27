@@ -1231,6 +1231,11 @@ class BatallaDeCoronas extends Table
         $this->setGameStateValue("active_counselor", $counselor_id);
 
         if (!$this->canActivate($counselor_id, $player_id)) {
+            if (!$this->getBuyableAreas($player_id)) {
+                $this->gamestate->nextState("preBattle");
+                return;
+            }
+
             $this->gamestate->nextState("buyingPhase");
             return;
         }
@@ -1285,6 +1290,11 @@ class BatallaDeCoronas extends Table
         $this->setGameStateValue("active_counselor", $counselor_id);
 
         if (!$this->canActivate($counselor_id, $player_id)) {
+            if (!$this->getBuyableAreas($player_id)) {
+                $this->gamestate->nextState("preBattle");
+                return;
+            }
+
             $this->gamestate->nextState("buyingPhase");
             return;
         }
@@ -1326,6 +1336,12 @@ class BatallaDeCoronas extends Table
             $this->gamestate->nextState("priestActivation");
             return;
         }
+
+        if (!$this->getBuyableAreas($player_id)) {
+            $this->gamestate->nextState("preBattle");
+            return;
+        }
+
 
         $this->gamestate->nextState("buyingPhase");
     }
@@ -1380,6 +1396,11 @@ class BatallaDeCoronas extends Table
             return;
         }
 
+        if (!$this->getBuyableAreas($player_id)) {
+            $this->gamestate->nextState("preBattle");
+            return;
+        }
+
         $this->gamestate->nextState("buyingPhase");
     }
 
@@ -1395,6 +1416,11 @@ class BatallaDeCoronas extends Table
 
         if ($militia === "DEFENSE") {
             $this->commanderDefense($player_id);
+        }
+
+        if (!$this->getBuyableAreas($player_id)) {
+            $this->gamestate->nextState("preBattle");
+            return;
         }
 
         $this->gamestate->nextState("buyingPhase");
@@ -1416,6 +1442,11 @@ class BatallaDeCoronas extends Table
 
         if ($square == 3) {
             $this->priestRed($player_id);
+        }
+
+        if (!$this->getBuyableAreas($player_id)) {
+            $this->gamestate->nextState("preBattle");
+            return;
         }
 
         $this->gamestate->nextState("buyingPhase");
@@ -1652,6 +1683,14 @@ class BatallaDeCoronas extends Table
     {
         $this->checkAction("skipToken");
 
+        $player_id = $this->getActivePlayerId();
+
+        $this->notifyAllPlayers(
+            "skipToken",
+            clienttranslate('${player_name} decides to not use any token'),
+            array("player_name" => $this->getPlayerNameById($player_id))
+        );
+
         $this->gamestate->nextState("skip");
     }
 
@@ -1706,6 +1745,15 @@ class BatallaDeCoronas extends Table
     {
         $this->checkAction("skipBattle");
 
+        $player_id = $this->getActivePlayerId();
+
+        $this->notifyAllPlayers(
+            "skipBattle",
+            clienttranslate('${player_name} decides to not start a battle'),
+            array("player_name" => $this->getPlayerNameById($player_id))
+        );
+
+
         $this->gamestate->nextState("skip");
     }
 
@@ -1753,10 +1801,13 @@ class BatallaDeCoronas extends Table
 
         $this->setPlayerReroll(0, $player_id);
 
-        // if ($player_id === $this->getGameStateValue("attacker")) {
-        //     $this->gamestate->nextState("shieldDestruction");
-        //     return;
-        // }
+        $player_id = $this->getActivePlayerId();
+
+        $this->notifyAllPlayers(
+            "skipDispute",
+            clienttranslate('${player_name} accepts the result of his die'),
+            array("player_name" => $this->getPlayerNameById($player_id))
+        );
 
         $this->gamestate->nextState("skip");
     }
@@ -1781,6 +1832,14 @@ class BatallaDeCoronas extends Table
     function skipDestruction()
     {
         $this->checkAction("skipDestruction");
+
+        $player_id = $this->getActivePlayerId();
+
+        $this->notifyAllPlayers(
+            "skipDestruction",
+            clienttranslate('${player_name} skips the destruction of shields'),
+            array("player_name" => $this->getPlayerNameById($player_id))
+        );
 
         $this->gamestate->nextState("skip");
     }

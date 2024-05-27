@@ -61,7 +61,8 @@ $machinestates = array(
         "transitions" => array(
             "counselorVesting" => 31,
             "couselorActivaction" => 32,
-            "buyingPhase" => 4
+            "buyingPhase" => 4,
+            "preBattle" => 5
         ),
     ),
 
@@ -72,7 +73,7 @@ $machinestates = array(
         "type" => "activeplayer",
         "args" => "argCounselorVesting",
         "possibleactions" => array("vestCounselor"),
-        "transitions" => array("counselorActivation" => 32, "buyingPhase" => 4),
+        "transitions" => array("counselorActivation" => 32, "buyingPhase" => 4, "preBattle" => 5),
     ),
 
     32 => array(
@@ -87,6 +88,7 @@ $machinestates = array(
             "commanderActivation" => 34,
             "priestActivation"  => 35,
             "buyingPhase" => 4,
+            "preBattle" => 5,
             "skip" => 4,
         ),
     ),
@@ -97,7 +99,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} activated the Noble and must now pick other counselor to activate'),
         "type" => "activeplayer",
         "possibleactions" => array("activateNoble", "cancelActivation"),
-        "transitions" => array("buyingPhase" => 4, "commanderActivation" => 34, "cancel" => 32),
+        "transitions" => array("commanderActivation" => 34, "buyingPhase" => 4, "preBattle" => 5, "cancel" => 32),
     ),
 
     34 => array(
@@ -106,7 +108,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} activated the Commander and must now pick a militia to improve'),
         "type" => "activeplayer",
         "possibleactions" => array("activateCommander", "cancelActivation"),
-        "transitions" => array("buyingPhase" => 4, "cancel" => 32),
+        "transitions" => array("buyingPhase" => 4, "preBattle" => 5, "cancel" => 32),
     ),
 
     35 => array(
@@ -115,7 +117,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} activated the Priest and must now pick a square to move the Clergy to'),
         "type" => "activeplayer",
         "possibleactions" => array("activatePriest", "cancelActivation"),
-        "transitions" => array("buyingPhase" => 4, "cancel" => 32),
+        "transitions" => array("buyingPhase" => 4, "preBattle" => 5, "cancel" => 32),
     ),
 
     4 => array(
