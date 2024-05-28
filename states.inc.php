@@ -36,6 +36,8 @@ $machinestates = array(
             "decisionPhase" => 3,
             "counselorVesting" => 31,
             "couselorActivaction" => 32,
+            "buyingPhase" => 4,
+            "preBattle" => 5,
         ),
     ),
 
@@ -49,6 +51,8 @@ $machinestates = array(
             "decisionPhase" => 3,
             "counselorVesting" => 31,
             "couselorActivaction" => 32,
+            "buyingPhase" => 4,
+            "preBattle" => 5,
         ),
     ),
 

@@ -1712,7 +1712,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "startBattle",
-            clienttranslate('${player_name} starts a battle'),
+            clienttranslate('${player_name} declares an attack and starts a battle'),
             array(
                 "player_name" => $this->getPlayerNameById($player_id),
             )
