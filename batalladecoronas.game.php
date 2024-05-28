@@ -1180,7 +1180,7 @@ class BatallaDeCoronas extends Table
         if ($die_1 == $die_2) {
             $this->notifyAllPlayers(
                 "skipDecision",
-                clienttranslate('The dice have the same result. Decision phase skipped'),
+                clienttranslate('The dice have the same result. Decision phase automatically skipped'),
                 array()
             );
 
@@ -1933,12 +1933,18 @@ class BatallaDeCoronas extends Table
 
         $margin = abs($attacking_die - $defending_die);
 
-        if ($this->getPlayerReroll($attacker_id) && $this->getPlayerGold($attacker_id) >= $this->getPlayerReroll($attacker_id)) {
+        if (
+            $this->getPlayerReroll($attacker_id) &&
+            $this->getPlayerGold($attacker_id) >= $this->getPlayerReroll($attacker_id)
+        ) {
             $this->gamestate->nextState("resultDispute");
             return;
         }
 
-        if ($this->getPlayerReroll($defender_id) && $this->getPlayerGold($defender_id) >= $this->getPlayerReroll($defender_id)) {
+        if (
+            $this->getPlayerReroll($defender_id) &&
+            $this->getPlayerGold($defender_id) >= $this->getPlayerReroll($defender_id)
+        ) {
             $this->activeNextPlayer();
             $this->gamestate->nextState("resultDispute");
             return;
@@ -1964,12 +1970,12 @@ class BatallaDeCoronas extends Table
                     $margin = $swords;
                 }
 
-                $this->decreaseAttack($margin, $loser_id, true);
-
                 $this->setGameStateValue("damaged_shields", $margin);
                 $this->gamestate->nextState("shieldDestruction");
                 return;
             }
+
+            $this->decreaseAttack($margin, $loser_id, true);
         }
 
         if ($margin == 0) {
