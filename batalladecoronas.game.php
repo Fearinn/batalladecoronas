@@ -582,7 +582,7 @@ class BatallaDeCoronas extends Table
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "prevSwords" => $prev_swords,
-                "newSwords" => $value,
+                "newSwords" => abs($total_swords - $prev_swords),
                 "totalSwords" => $total_swords,
                 "attack" => $this->getAttack()
             )
@@ -610,7 +610,7 @@ class BatallaDeCoronas extends Table
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "prevSwords" => $prev_swords,
-                "newSwords" => $value,
+                "newSwords" => abs($total_swords - $prev_swords),
                 "totalSwords" => $total_swords,
             )
         );
@@ -618,7 +618,7 @@ class BatallaDeCoronas extends Table
         return $total_swords;
     }
 
-    function increaseDefense(int $value, $player_id): int
+    function increaseDefense(int $value, $player_id, $message = true): int
     {
         $prev_shields = $this->getPlayerDefense($player_id);
 
@@ -636,12 +636,12 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "increaseDefense",
-            clienttranslate('${player_name} obtains ${newShields} shield(s)'),
+            $message ? clienttranslate('${player_name} obtains ${newShields} shield(s)') : "",
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "prevShields" => $prev_shields,
-                "newShields" => $value,
+                "newShields" => abs($total_shields - $prev_shields),
                 "totalShields" => $total_shields,
             )
         );
@@ -669,7 +669,7 @@ class BatallaDeCoronas extends Table
                     "player_id" => $player_id,
                     "player_name" => $this->getPlayerNameById($player_id),
                     "prevShields" => $prev_shields,
-                    "newShields" => $prev_shields - $total_shields,
+                    "newShields" => abs($total_shields - $prev_shields),
                     "totalShields" => $total_shields,
                 )
             );
@@ -1767,6 +1767,11 @@ class BatallaDeCoronas extends Table
 
         $is_attacker = $attacker_id == $player_id;
 
+        $reroll = $this->getPlayerReroll($player_id);
+        $this->setPlayerReroll($reroll + 1, $player_id);
+
+        $this->spendGold($reroll, $player_id, true);
+
         $die = bga_rand(1, 6);
 
         $this->notifyAllPlayers(
@@ -1778,11 +1783,6 @@ class BatallaDeCoronas extends Table
                 "result" => $die
             )
         );
-
-        $reroll = $this->getPlayerReroll($player_id);
-        $this->setPlayerReroll($reroll + 1, $player_id);
-
-        $this->spendGold($reroll, $player_id, true);
 
         if ($is_attacker) {
             $this->setGameStateValue("die_1", $die);
@@ -1824,7 +1824,11 @@ class BatallaDeCoronas extends Table
 
         $other_player_id = $this->getPlayerAfter($player_id);
 
-        $this->decreaseDefense($value, $other_player_id, true);
+        $final_shields = $this->decreaseDefense($value, $other_player_id, true);
+
+        if ($final_shields == 0) {
+            $this->claimGem($player_id);
+        }
 
         $this->gamestate->nextState("betweenTurns");
     }
@@ -1949,6 +1953,23 @@ class BatallaDeCoronas extends Table
                     "player_name" => $this->getPlayerNameById($winner_id)
                 )
             );
+
+            $this->claimCrown($winner_id);
+            $this->claimCross($loser_id);
+
+            if ($attack_wins) {
+                $swords = $this->getPlayerAttack($attacker_id);
+
+                if ($margin > $this->getPlayerAttack($attacker_id)) {
+                    $margin = $swords;
+                }
+
+                $this->decreaseAttack($margin, $loser_id, true);
+
+                $this->setGameStateValue("damaged_shields", $margin);
+                $this->gamestate->nextState("shieldDestruction");
+                return;
+            }
         }
 
         if ($margin == 0) {
@@ -1958,23 +1979,6 @@ class BatallaDeCoronas extends Table
                 array()
             );
         }
-
-        $this->claimCrown($winner_id);
-        $this->claimCross($loser_id);
-
-        if ($attack_wins) {
-            $swords = $this->getPlayerAttack($attacker_id);
-
-            if ($margin > $this->getPlayerAttack($attacker_id)) {
-                $margin = $swords;
-            }
-
-            $this->setGameStateValue("damaged_shields", $margin);
-            $this->gamestate->nextState("shieldDestruction");
-            return;
-        }
-
-        $this->decreaseAttack($margin, $loser_id, true);
 
         $this->gamestate->nextState("betweenTurns");
     }
