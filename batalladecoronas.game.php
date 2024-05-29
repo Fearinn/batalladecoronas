@@ -900,6 +900,9 @@ class BatallaDeCoronas extends Table
             )
         );
 
+        $this->claimCrown($player_id);
+        $this->claimCross($other_player_id);
+
         $gold = $this->getPlayerGold($player_id);
         $max_gold = $this->getPlayerMaxGold($player_id);
 
@@ -1931,8 +1934,6 @@ class BatallaDeCoronas extends Table
         $winner_id = $attack_wins ? $attacker_id : $defender_id;
         $loser_id = $attack_wins ? $defender_id : $attacker_id;
 
-        $margin = abs($attacking_die - $defending_die);
-
         if (
             $this->getPlayerReroll($attacker_id) &&
             $this->getPlayerGold($attacker_id) >= $this->getPlayerReroll($attacker_id)
@@ -1950,6 +1951,8 @@ class BatallaDeCoronas extends Table
             return;
         }
 
+        $margin = abs($attacking_die - $defending_die);
+
         if ($margin > 0) {
             $this->notifyAllPlayers(
                 "battleResult",
@@ -1959,9 +1962,6 @@ class BatallaDeCoronas extends Table
                     "player_name" => $this->getPlayerNameById($winner_id)
                 )
             );
-
-            $this->claimCrown($winner_id);
-            $this->claimCross($loser_id);
 
             if ($attack_wins) {
                 $swords = $this->getPlayerAttack($attacker_id);
