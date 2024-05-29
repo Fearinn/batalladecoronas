@@ -34,7 +34,7 @@ class BatallaDeCoronas extends Table
             "active_chair" => 12,
             "active_counselor" => 13,
             "token_state" => 14,
-            "active_equipment" => 15,
+            "equipment" => 15,
             "attacker" => 16,
             "initial_loser" => 17,
             "damaged_shields" => 18,
@@ -79,7 +79,7 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue("active_chair", 0);
         $this->setGameStateInitialValue("active_counselor", 0);
         $this->setGameStateInitialValue("token_state", 0);
-        $this->setGameStateInitialValue("active_equipment", 0);
+        $this->setGameStateInitialValue("equipment", 0);
         $this->setGameStateInitialValue("attacker", 0);
         $this->setGameStateInitialValue("initial_loser", 0);
         $this->setGameStateInitialValue("damaged_shields", 0);
@@ -1509,7 +1509,7 @@ class BatallaDeCoronas extends Table
             $this->increaseAttack(1, $player_id);
 
             if ($this->getPlayerSmith($player_id)) {
-                $this->setGameStateValue("active_equipment", 1);
+                $this->setGameStateValue("equipment", 1);
                 $this->gamestate->nextState("smithTokenActivation");
                 return;
             }
@@ -1520,7 +1520,7 @@ class BatallaDeCoronas extends Table
             $this->increaseDefense(1, $player_id);
 
             if ($this->getPlayerSmith($player_id)) {
-                $this->setGameStateValue("active_equipment", 2);
+                $this->setGameStateValue("equipment", 2);
                 $this->gamestate->nextState("smithTokenActivation");
                 return;
             }
@@ -1550,7 +1550,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "skipBuying",
-            clienttranslate('${player_name} skips the buying phase'),
+            clienttranslate('${player_name} finishes his buying phase'),
             array(
                 "player_name" => $this->getPlayerNameById($player_id)
             )
@@ -1660,7 +1660,7 @@ class BatallaDeCoronas extends Table
             )
         );
 
-        $equipment = $this->getGameStateValue("active_equipment");
+        $equipment = $this->getGameStateValue("equipment");
 
         if ($equipment == 1) {
             $this->increaseAttack(1, $player_id);
@@ -2032,11 +2032,11 @@ class BatallaDeCoronas extends Table
         $this->setPlayerReroll(1, $other_player_id);
 
         $this->setGameStateValue("attacker", 0);
-        $this->setGameStateValue("active_equipment", 0);
+        $this->setGameStateValue("equipment", 0);
 
         $this->notifyAllPlayers(
             "nextTurn",
-            clienttranslate('${player_name} finishes his turn and passes'),
+            clienttranslate('${player_name} passes'),
             array("player_name" => $this->getPlayerNameById($player_id))
         );
 

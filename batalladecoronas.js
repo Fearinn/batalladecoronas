@@ -1240,11 +1240,7 @@ define([
       dojo.subscribe("claimGem", this, "notif_claimGem");
       dojo.subscribe("activateCrownToken", this, "notif_activateCrownToken");
       dojo.subscribe("activateCrossToken", this, "notif_activateCrossToken");
-      dojo.subscribe(
-        "activatSmithCrownToken",
-        this,
-        "notif_activateSmithToken"
-      );
+      dojo.subscribe("activateSmithToken", this, "notif_activateSmithToken");
       dojo.subscribe("dragonRage", this, "notif_dragonRage");
       this.notifqueue.setSynchronous("dragonRage", 3000);
       dojo.subscribe("battleResult", this, "notif_battleResult");
