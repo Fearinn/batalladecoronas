@@ -804,6 +804,10 @@ class BatallaDeCoronas extends Table
     {
         $other_player_id = $this->getPlayerAfter($player_id);
 
+        if ($this->getPlayerCrown($player_id)) {
+            return;
+        }
+
         $owned = $this->getPlayerCrown($other_player_id);
 
         $this->setPlayerCrown(1, $player_id);
@@ -830,6 +834,10 @@ class BatallaDeCoronas extends Table
     function claimCross($player_id): void
     {
         $other_player_id = $this->getPlayerAfter($player_id);
+
+        if ($this->getPlayerCross($player_id)) {
+            return;
+        }
 
         $owned = $this->getPlayerCross($other_player_id);
 
