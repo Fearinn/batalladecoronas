@@ -795,7 +795,7 @@ define([
         if (this.isCurrentPlayerActive()) {
           this.addActionButton(
             "boc_dispute_btn",
-            _("Dispute (pay and reroll)"),
+            _("Reroll (pay first)"),
             "onDisputeResult"
           );
 
@@ -887,6 +887,12 @@ define([
           (isError) => {}
         );
       }
+    },
+
+    addStateButtons: function () {
+      this.removeActionButtons();
+      const stateName = this.gamedatas.gamestate.name;
+      this.onEnteringState(stateName);
     },
 
     changeChairsSelection: function (player_id, enable = true) {
@@ -1031,6 +1037,8 @@ define([
           );
           return;
         }
+
+        this.addStateButtons();
       }
     },
 
@@ -1054,6 +1062,8 @@ define([
           );
           return;
         }
+
+        this.addStateButtons();
       }
     },
 

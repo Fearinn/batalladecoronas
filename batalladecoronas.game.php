@@ -179,7 +179,7 @@ class BatallaDeCoronas extends Table
     //////////// DB manipulation
     ////////////
 
-    function getPlayerCrown($player_id): int
+    function getPlayerCrown($player_id): bool
     {
         return !!$this->getUniqueValueFromDB("SELECT crown from player WHERE player_id='$player_id'");
     }
@@ -189,7 +189,7 @@ class BatallaDeCoronas extends Table
         $this->DbQuery("UPDATE player SET crown=$value WHERE player_id='$player_id'");
     }
 
-    function getPlayerCross($player_id): int
+    function getPlayerCross($player_id): bool
     {
         return !!$this->getUniqueValueFromDB("SELECT sacredcross from player WHERE player_id='$player_id'");
     }
@@ -199,7 +199,7 @@ class BatallaDeCoronas extends Table
         $this->DbQuery("UPDATE player SET sacredcross=$value WHERE player_id='$player_id'");
     }
 
-    function getPlayerSmith($player_id): int
+    function getPlayerSmith($player_id): bool
     {
         return !!$this->getUniqueValueFromDB("SELECT smith from player WHERE player_id='$player_id'");
     }
@@ -807,7 +807,10 @@ class BatallaDeCoronas extends Table
         $owned = $this->getPlayerCrown($other_player_id);
 
         $this->setPlayerCrown(1, $player_id);
-        $this->setPlayerCrown(0, $other_player_id);
+
+        if ($owned) {
+            $this->setPlayerCrown(0, $other_player_id);
+        }
 
         $this->notifyAllPlayers(
             "claimCrown",
@@ -916,7 +919,7 @@ class BatallaDeCoronas extends Table
     }
 
     //////////////////////////////////////////////////////////////////////////////
-    //////////// Checks and possible picks
+    //////////// Checkers and possible picks
     ////////////
 
     function canActivate(int $counselor_id, $player_id): bool
@@ -924,11 +927,11 @@ class BatallaDeCoronas extends Table
         $can_activate = true;
 
         if ($counselor_id == 1) {
-            $can_activate = $this->getPlayerAttack($player_id) + $this->getPlayerDefense($player_id) < 10;
+            $can_activate = !!$this->getPlayerAttack($player_id) + $this->getPlayerDefense($player_id) < 10;
         }
 
         if ($counselor_id == 2) {
-            $can_activate = $this->getPlayerGold($player_id) < $this->getPlayerMaxGold($player_id);
+            $can_activate = !!$this->getPlayerGold($player_id) < $this->getPlayerMaxGold($player_id);
         }
 
         if ($counselor_id == 3) {
@@ -1020,6 +1023,19 @@ class BatallaDeCoronas extends Table
         }
 
         return $token_picks;
+    }
+
+    function canReroll($player_id): bool
+    {
+        $reroll = $this->getPlayerReroll($player_id);
+        $gold = $this->getPlayerGold($player_id);
+        $max_gold = $this->getPlayerMaxGold($player_id);
+        $crown = $this->getPlayerCrown($player_id);
+        $gold_with_crown = $gold + 3;
+
+        $reroll_with_crown = $crown && $reroll <= $gold_with_crown && $gold_with_crown <= $max_gold;
+
+        return $reroll && ($reroll <= $gold || $reroll_with_crown);
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -1593,17 +1609,12 @@ class BatallaDeCoronas extends Table
 
             $this->setPlayerCrown(0, $player_id);
 
-            if ($state_name === "preBattleToken") {
-                $this->game->nextState("afterToken");
-                return;
-            }
-
             $this->gamestate->jumpToState($state_id);
             return;
         }
 
         if ($token === "CROSS") {
-            $this->gamestate->jumpToState(52);
+            $this->gamestate->jumpToState(65);
             return;
         }
     }
@@ -1906,16 +1917,6 @@ class BatallaDeCoronas extends Table
             return;
         }
 
-        $player_id = $this->getActivePlayerId();
-        $other_player_id = $this->getPlayerAfter($player_id);
-
-        if ($this->getTokenPicks($other_player_id)) {
-            $this->activeNextPlayer();
-
-            $this->gamestate->nextState("preBattleToken");
-            return;
-        }
-
         $this->gamestate->nextState("battlePhase");
     }
 
@@ -1946,19 +1947,10 @@ class BatallaDeCoronas extends Table
             $this->setGameStateValue("initial_loser", $loser_id);
         }
 
-        $this->dump("initial_loser", $loser_id);
-
         $initial_winner = $this->getPlayerAfter($initial_loser);
 
-        $winner_reroll = $this->getPlayerReroll($initial_winner);
-        $loser_reroll = $this->getPlayerReroll($initial_loser);
-
-        $this->dump("winner_reroll", $winner_reroll);
-        $this->dump("loser_reroll", $loser_reroll);
-
         if (
-            $loser_reroll &&
-            $this->getPlayerGold($initial_loser) >= $loser_reroll
+            $this->canReroll($initial_loser)
         ) {
             $this->gamestate->changeActivePlayer($initial_loser);
 
@@ -1967,8 +1959,7 @@ class BatallaDeCoronas extends Table
         }
 
         if (
-            $winner_reroll &&
-            $this->getPlayerGold($initial_winner) >= $winner_reroll
+            $this->canReroll($initial_winner)
         ) {
             $this->gamestate->changeActivePlayer($initial_winner);
 
