@@ -36,7 +36,8 @@ class BatallaDeCoronas extends Table
             "token_state" => 14,
             "active_equipment" => 15,
             "attacker" => 16,
-            "damaged_shields" => 17,
+            "initial_loser" => 17,
+            "damaged_shields" => 18,
 
             "highest_gems" => 80,
             "first_turn" => 81
@@ -80,6 +81,7 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue("token_state", 0);
         $this->setGameStateInitialValue("active_equipment", 0);
         $this->setGameStateInitialValue("attacker", 0);
+        $this->setGameStateInitialValue("initial_loser", 0);
         $this->setGameStateInitialValue("damaged_shields", 0);
 
         $this->setGameStateInitialValue("highest_gems", 0);
@@ -1793,6 +1795,10 @@ class BatallaDeCoronas extends Table
             $this->setGameStateValue("die_2", $die);
         }
 
+        if ($this->getPlayerGold($player_id) < $reroll) {
+            $this->setPlayerReroll(0, $player_id);
+        }
+
         $this->gamestate->nextState("betweenDisputes");
     }
 
@@ -1923,7 +1929,6 @@ class BatallaDeCoronas extends Table
     function stBattle()
     {
         $attacker_id = $this->getActivePlayerId();
-
         $defender_id = $this->getPlayerAfter($attacker_id);
 
         $attacking_die = $this->getGameStateValue("die_1");
@@ -1931,22 +1936,42 @@ class BatallaDeCoronas extends Table
 
         $attack_wins = $attacking_die > $defending_die;
 
-        $winner_id = $attack_wins ? $attacker_id : $defender_id;
         $loser_id = $attack_wins ? $defender_id : $attacker_id;
+        $winner_id = $this->getPlayerAfter($loser_id);
+
+        $initial_loser = $this->getGameStateValue("initial_loser");
+
+        if (!$initial_loser) {
+            $initial_loser = $loser_id;
+            $this->setGameStateValue("initial_loser", $loser_id);
+        }
+
+        $this->dump("initial_loser", $loser_id);
+
+        $initial_winner = $this->getPlayerAfter($initial_loser);
+
+        $winner_reroll = $this->getPlayerReroll($initial_winner);
+        $loser_reroll = $this->getPlayerReroll($initial_loser);
+
+        $this->dump("winner_reroll", $winner_reroll);
+        $this->dump("loser_reroll", $loser_reroll);
 
         if (
-            $this->getPlayerReroll($attacker_id) &&
-            $this->getPlayerGold($attacker_id) >= $this->getPlayerReroll($attacker_id)
+            $loser_reroll &&
+            $this->getPlayerGold($initial_loser) >= $loser_reroll
         ) {
+            $this->gamestate->changeActivePlayer($initial_loser);
+
             $this->gamestate->nextState("resultDispute");
             return;
         }
 
         if (
-            $this->getPlayerReroll($defender_id) &&
-            $this->getPlayerGold($defender_id) >= $this->getPlayerReroll($defender_id)
+            $winner_reroll &&
+            $this->getPlayerGold($initial_winner) >= $winner_reroll
         ) {
-            $this->activeNextPlayer();
+            $this->gamestate->changeActivePlayer($initial_winner);
+
             $this->gamestate->nextState("resultDispute");
             return;
         }
@@ -1971,6 +1996,9 @@ class BatallaDeCoronas extends Table
                 }
 
                 $this->setGameStateValue("damaged_shields", $margin);
+
+                $this->gamestate->changeActivePlayer($attacker_id);
+
                 $this->gamestate->nextState("shieldDestruction");
                 return;
             }
