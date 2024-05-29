@@ -50,7 +50,7 @@ $machinestates = array(
         "transitions" => array(
             "decisionPhase" => 3,
             "counselorVesting" => 31,
-            "couselorActivaction" => 32,
+            "counselorActivation" => 32,
             "buyingPhase" => 4,
             "preBattle" => 5,
         ),
@@ -64,7 +64,7 @@ $machinestates = array(
         "possibleactions" => array("decideDice", "activateToken"),
         "transitions" => array(
             "counselorVesting" => 31,
-            "couselorActivaction" => 32,
+            "counselorActivation" => 32,
             "buyingPhase" => 4,
             "preBattle" => 5
         ),
@@ -199,12 +199,22 @@ $machinestates = array(
     ),
 
     65 => array(
+        "name" => "preDisputeToken",
+        "description" => clienttranslate('${actplayer} may activate a token'),
+        "descriptionmyturn" => clienttranslate('${you} may activate a token'),
+        "type" => "activeplayer",
+        "possibleactions" => array("activateToken"),
+        "transitions" => array("crossTokenActivation" => 66)
+    ),
+
+    66 => array(
         "name" => "crossTokenActivation",
         "description" => clienttranslate('${actplayer} may pick a square to move the Clergy to with the Cross token'),
         "descriptionmyturn" => clienttranslate('${you} may pick a square to move the Clergy to with the Cross token'),
         "type" => "activeplayer",
         "possibleactions" => array("activateCrossToken", "cancelToken"),
-        "transitions" => array()
+        "transitions" => array("betweenDisputes" => 63
+        )
     ),
 
     7 => array(

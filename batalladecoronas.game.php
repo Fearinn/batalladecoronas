@@ -855,6 +855,10 @@ class BatallaDeCoronas extends Table
     {
         $other_player_id = $this->getPlayerAfter($player_id);
 
+        if ($this->getPlayerSmith($player_id)) {
+            return;
+        }
+
         $owned = $this->getPlayerSmith($other_player_id);
 
         $this->setPlayerSmith(1, $player_id);
@@ -1614,7 +1618,7 @@ class BatallaDeCoronas extends Table
         }
 
         if ($token === "CROSS") {
-            $this->gamestate->jumpToState(65);
+            $this->gamestate->jumpToState(66);
             return;
         }
     }
@@ -1642,8 +1646,10 @@ class BatallaDeCoronas extends Table
 
         $prev_state = $this->getGameStateValue("token_state");
 
-        if ($prev_state == 51 && !$this->getNoblePicks($player_id)) {
-            $this->gamestate->nextState("afterToken");
+        if ($prev_state == 65) {
+            $this->activeNextPlayer();
+
+            $this->gamestate->nextState("betweenDisputes");
             return;
         }
 
