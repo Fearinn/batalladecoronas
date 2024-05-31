@@ -1283,6 +1283,7 @@ define([
       this.notifqueue.setSynchronous("battleResult", 1000);
       dojo.subscribe("nextTurn", this, "notif_nextTurn");
       this.notifqueue.setSynchronous("nextTurn", 1000);
+      dojo.subscribe("newScore", this, "notif_newScore");
     },
 
     notif_dieRoll: function (notif) {
@@ -1567,5 +1568,12 @@ define([
     notif_battleResult: function (notif) {},
 
     notif_nextTurn: function (notif) {},
+
+    notif_newScore: function (notif) {
+      const player_id = notif.args.player_id;
+      const score = notif.args.score;
+
+      this.scoreCtrl[player_id].toValue(score);
+    },
   });
 });

@@ -66,7 +66,7 @@ $machinestates = array(
             "counselorVesting" => 31,
             "counselorActivation" => 32,
             "buyingPhase" => 4,
-            "preBattle" => 5
+            "preBattle" => 5,
         ),
     ),
 
@@ -207,7 +207,7 @@ $machinestates = array(
         "type" => "activeplayer",
         "args" => "argShieldDestruction",
         "possibleactions" => array("destroyShields", "skipDestruction"),
-        "transitions" => array("betweenTurns" => 7, "skip" => 7),
+        "transitions" => array("betweenTurns" => 7, "skip" => 7, "gameEnd" => 99),
     ),
 
     65 => array(

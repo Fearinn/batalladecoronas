@@ -160,32 +160,6 @@ class BatallaDeCoronas extends Table
         return $state_id = $this->gamestate->state_id();
     }
 
-    function dragonRage($player_id): int
-    {
-        $target_id = $this->getPlayerAfter($player_id);
-
-        if ($this->getPlayerDefense($target_id) > 0) {
-            $this->decreaseDefense(4, $target_id, true);
-
-            $this->notifyAllPlayers(
-                "dragonRage",
-                clienttranslate('${target_name} is attacked by the dragon of ${player_name}'),
-                array(
-                    "player_id" => $player_id,
-                    "target_id" => $target_id,
-                    "player_name" => $this->getPlayerNameById($player_id),
-                    "target_name" => $this->getPlayerNameById($target_id),
-                )
-            );
-
-            $this->setPlayerDragon(0, $player_id);
-        } else {
-            $this->levelDownDragon(5, $player_id);
-        }
-
-        return $this->getPlayerDefense($target_id);
-    }
-
     //////////////////////////////////////////////////////////////////////////////
     //////////// DB manipulation
     ////////////
@@ -274,14 +248,19 @@ class BatallaDeCoronas extends Table
         $this->DbQuery("UPDATE player SET gem_power=$value WHERE player_id='$player_id'");
     }
 
-    function getPlayerGems($player_id): int
+    function getPlayerScore($player_id): int
     {
-        return $this->getUniqueValueFromDB("SELECT gem_treasure from player WHERE player_id='$player_id'");
+        return $this->getUniqueValueFromDB("SELECT player_score score from player WHERE player_id='$player_id'");
     }
 
-    function setPlayerGems(int $value, $player_id): void
+    function setPlayerScore(int $value, $player_id): void
     {
-        $this->DbQuery("UPDATE player SET gem_treasure=$value WHERE player_id='$player_id'");
+        $this->DbQuery("UPDATE player SET player_score=$value WHERE player_id='$player_id'");
+
+        $this->notifyAllPlayers("newScore", "", array(
+            "player_id" => $player_id,
+            "score" => $value
+        ));
     }
 
     function getPlayerGold($player_id): int
@@ -411,7 +390,7 @@ class BatallaDeCoronas extends Table
 
         foreach ($players as $player_id => $player) {
             $power = $this->getPlayerPower($player_id);
-            $treasure = $this->getPlayerGems($player_id);
+            $treasure = $this->getPlayerScore($player_id);
 
             $gems[$player_id]["power"] = $power;
             $gems[$player_id]["treasure"] = $treasure;
@@ -811,6 +790,32 @@ class BatallaDeCoronas extends Table
         return $total_level;
     }
 
+    function dragonRage($player_id): int
+    {
+        $target_id = $this->getPlayerAfter($player_id);
+
+        if ($this->getPlayerDefense($target_id) > 0) {
+            $this->decreaseDefense(4, $target_id, true);
+
+            $this->notifyAllPlayers(
+                "dragonRage",
+                clienttranslate('${target_name} is attacked by the dragon of ${player_name}'),
+                array(
+                    "player_id" => $player_id,
+                    "target_id" => $target_id,
+                    "player_name" => $this->getPlayerNameById($player_id),
+                    "target_name" => $this->getPlayerNameById($target_id),
+                )
+            );
+
+            $this->setPlayerDragon(0, $player_id);
+        } else {
+            $this->levelDownDragon(5, $player_id);
+        }
+
+        return $this->getPlayerDefense($target_id);
+    }
+
     function claimCrown($player_id): void
     {
         $other_player_id = $this->getPlayerAfter($player_id);
@@ -902,19 +907,15 @@ class BatallaDeCoronas extends Table
     {
         $other_player_id = $this->getPlayerAfter($player_id);
 
-        $total_gems = $this->getPlayerGems($player_id) + 1;
+        $total_gems = $this->getPlayerScore($player_id) + 1;
 
         $this->setPlayerMaxGold(7 - $total_gems, $player_id);
-        $this->setPlayerGems($total_gems, $player_id);
+        $this->setPlayerScore($total_gems, $player_id);
 
         $prev_power = $this->getPlayerPower($other_player_id);
         $this->setPlayerPower($prev_power - 1, $other_player_id);
 
         $prev_highest_gems = $this->getGameStateValue("highest_gems");
-
-        if ($total_gems > $prev_highest_gems) {
-            $this->setGameStateValue("highest_gems", $total_gems);
-        }
 
         $this->notifyAllPlayers(
             "claimGem",
@@ -936,6 +937,14 @@ class BatallaDeCoronas extends Table
 
         if ($gold >= $max_gold) {
             $this->spendGold(1, $player_id);
+        }
+
+        if ($total_gems > $prev_highest_gems) {
+            $this->setGameStateValue("highest_gems", $total_gems);
+        }
+
+        if ($total_gems == 3) {
+            $this->gamestate->nextState("gameEnd");
         }
 
         return $total_gems;
