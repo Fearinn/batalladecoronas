@@ -38,6 +38,7 @@ class BatallaDeCoronas extends Table
             "attacker" => 16,
             "initial_loser" => 17,
             "damaged_shields" => 18,
+            "after_token" => 19,
 
             "highest_gems" => 80,
             "first_turn" => 81
@@ -83,6 +84,8 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue("attacker", 0);
         $this->setGameStateInitialValue("initial_loser", 0);
         $this->setGameStateInitialValue("damaged_shields", 0);
+        $this->setGameStateInitialValue("after_token", 0);
+
 
         $this->setGameStateInitialValue("highest_gems", 0);
         $this->setGameStateInitialValue("first_turn", 1);
@@ -147,6 +150,14 @@ class BatallaDeCoronas extends Table
     function getStateName(): string
     {
         return $this->gamestate->state()["name"];
+    }
+
+    function getStateId(): int
+    {
+        /**
+         * @disregard P1009 Undefined type
+         */
+        return $state_id = $this->gamestate->state_id();
     }
 
     function dragonRage($player_id): int
@@ -1593,11 +1604,9 @@ class BatallaDeCoronas extends Table
 
         $player_id = $this->getActivePlayerId();
 
-        /**
-         * @disregard P1009 Undefined type
-         */
-        $state_id = $this->gamestate->state_id();
         $state_name = $this->getStateName();
+
+        $state_id = $this->getStateId();
 
         $this->setGameStateValue("token_state",  $state_id);
 
@@ -1621,12 +1630,17 @@ class BatallaDeCoronas extends Table
 
             $this->setPlayerCrown(0, $player_id);
 
+            if ($state_name === "resultDispute") {
+                $this->gamestate->nextState("betweenDisputes");
+                return;
+            }
+
             $this->gamestate->jumpToState($state_id);
             return;
         }
 
         if ($token === "CROSS") {
-            $this->gamestate->jumpToState(66);
+            $this->gamestate->jumpToState(67);
             return;
         }
     }
@@ -1654,7 +1668,7 @@ class BatallaDeCoronas extends Table
 
         $prev_state = $this->getGameStateValue("token_state");
 
-        if ($prev_state == 65) {
+        if ($prev_state == 65 || $prev_state == 66) {
             $this->gamestate->nextState("betweenDisputes");
             return;
         }
@@ -1712,6 +1726,10 @@ class BatallaDeCoronas extends Table
         $this->checkAction("skipToken");
 
         $player_id = $this->getActivePlayerId();
+
+        $state_id = $this->getStateId();
+
+        $this->setGameStateValue("token_state", $state_id);
 
         $this->notifyAllPlayers(
             "skipToken",
@@ -1932,13 +1950,6 @@ class BatallaDeCoronas extends Table
         $this->gamestate->nextState("battlePhase");
     }
 
-    function stAfterToken()
-    {
-        $this->activeNextPlayer();
-
-        $this->gamestate->nextState("battlePhase");
-    }
-
     function stBattle()
     {
         $attacker_id = $this->getActivePlayerId();
@@ -1961,10 +1972,13 @@ class BatallaDeCoronas extends Table
 
         $initial_winner = $this->getPlayerAfter($initial_loser);
 
+        $after_token = $this->getGameStateValue("after_token");
+        $this->setGameStateValue("after_token", 0);
+
         if (
             $this->canReroll($initial_loser)
         ) {
-            if ($this->getTokenPicks($initial_winner)) {
+            if (!$after_token && $this->getTokenPicks($initial_winner)) {
                 $this->gamestate->changeActivePlayer($initial_winner);
                 $this->gamestate->nextState("disputeToken");
                 return;
@@ -1978,7 +1992,7 @@ class BatallaDeCoronas extends Table
         if (
             $this->canReroll($initial_winner)
         ) {
-            if ($this->getTokenPicks($initial_loser)) {
+            if (!$after_token && $this->getTokenPicks($initial_loser)) {
                 $this->gamestate->changeActivePlayer($initial_loser);
                 $this->gamestate->nextState("disputeToken");
                 return;
@@ -2032,6 +2046,30 @@ class BatallaDeCoronas extends Table
 
     function stBetweenDisputes()
     {
+        $prev_state = $this->getGameStateValue("token_state");
+        $this->setGameStateValue("token_state", 0);
+
+        $player_id = $this->getActivePlayerId();
+        $other_player_id = $this->getPlayerAfter($player_id);
+
+        if (
+            $prev_state == 62 &&
+            in_array("CROSS", $this->getTokenPicks($other_player_id))
+        ) {
+            $this->gamestate->changeActivePlayer($other_player_id);
+
+            $this->gamestate->nextState("responseToCrown");
+            return;
+        }
+
+        if ($prev_state == 65 || $prev_state == 66) {
+            $this->gamestate->changeActivePlayer($other_player_id);
+
+            $this->setGameStateValue("after_token", 1);
+            $this->gamestate->nextState("betweenDisputes");
+            return;
+        }
+
         $this->stBattle();
     }
 

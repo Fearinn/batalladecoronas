@@ -809,7 +809,7 @@ define([
 
           for (let option = 1; option <= damagedShields; option++) {
             this.addActionButton(
-              `boc_destructiOption:${option}`,
+              `boc_destructiOption:${option}_btn`,
               option.toString(),
               () => {
                 this.onDestroyShields(option);
@@ -821,6 +821,32 @@ define([
             "boc_skipDestruction",
             _("Skip"),
             "onSkipDestruction",
+            null,
+            null,
+            "red"
+          );
+        }
+      }
+
+      if (stateName === "disputeToken") {
+        if (this.isCurrentPlayerActive()) {
+          this.addActionButton(
+            "boc_skip_btn",
+            _("Skip"),
+            "onSkipToken",
+            null,
+            null,
+            "red"
+          );
+        }
+      }
+
+      if (stateName === "responseToCrown") {
+        if (this.isCurrentPlayerActive()) {
+          this.addActionButton(
+            "boc_skip_btn",
+            _("Skip"),
+            "onSkipToken",
             null,
             null,
             "red"
