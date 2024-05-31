@@ -939,11 +939,11 @@ class BatallaDeCoronas extends Table
         $can_activate = true;
 
         if ($counselor_id == 1) {
-            $can_activate = !!$this->getPlayerAttack($player_id) + $this->getPlayerDefense($player_id) < 10;
+            $can_activate = !!(($this->getPlayerAttack($player_id) + $this->getPlayerDefense($player_id)) < 10);
         }
 
         if ($counselor_id == 2) {
-            $can_activate = !!$this->getPlayerGold($player_id) < $this->getPlayerMaxGold($player_id);
+            $can_activate = !!($this->getPlayerGold($player_id) < $this->getPlayerMaxGold($player_id));
         }
 
         if ($counselor_id == 3) {
@@ -1655,8 +1655,6 @@ class BatallaDeCoronas extends Table
         $prev_state = $this->getGameStateValue("token_state");
 
         if ($prev_state == 65) {
-            $this->activeNextPlayer();
-
             $this->gamestate->nextState("betweenDisputes");
             return;
         }
@@ -1966,8 +1964,13 @@ class BatallaDeCoronas extends Table
         if (
             $this->canReroll($initial_loser)
         ) {
-            $this->gamestate->changeActivePlayer($initial_loser);
+            if ($this->getTokenPicks($initial_winner)) {
+                $this->gamestate->changeActivePlayer($initial_winner);
+                $this->gamestate->nextState("disputeToken");
+                return;
+            }
 
+            $this->gamestate->changeActivePlayer($initial_loser);
             $this->gamestate->nextState("resultDispute");
             return;
         }
@@ -1975,8 +1978,13 @@ class BatallaDeCoronas extends Table
         if (
             $this->canReroll($initial_winner)
         ) {
-            $this->gamestate->changeActivePlayer($initial_winner);
+            if ($this->getTokenPicks($initial_loser)) {
+                $this->gamestate->changeActivePlayer($initial_loser);
+                $this->gamestate->nextState("disputeToken");
+                return;
+            }
 
+            $this->gamestate->changeActivePlayer($initial_winner);
             $this->gamestate->nextState("resultDispute");
             return;
         }

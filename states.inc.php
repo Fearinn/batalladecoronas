@@ -167,13 +167,18 @@ $machinestates = array(
         "descriptionmyturn" => "",
         "type" => "game",
         "action" => "stBattle",
-        "transitions" => array("resultDispute" => 62, "shieldDestruction" => 64, "betweenTurns" => 2),
+        "transitions" => array(
+            "resultDispute" => 62,
+            "shieldDestruction" => 64,
+            "disputeToken" => 65,
+            "betweenTurns" => 7
+        ),
     ),
 
     62 => array(
         "name" => "resultDispute",
-        "description" => clienttranslate('${actplayer} may reroll the dice'),
-        "descriptionmyturn" => clienttranslate('${you} may reroll the dice'),
+        "description" => clienttranslate('${actplayer} may spend gold to reroll the dice'),
+        "descriptionmyturn" => clienttranslate('${you} may spend gold reroll the dice'),
         "type" => "activeplayer",
         "possibleactions" => array("disputeResult", "skipDispute", "activateToken"),
         "transitions" => array("betweenDisputes" => 63, "skip" => 63),
@@ -185,7 +190,7 @@ $machinestates = array(
         "descriptionmyturn" => "",
         "type" => "game",
         "action" => "stBetweenDisputes",
-        "transitions" => array("resultDispute" => 62, "shieldDestruction" => 64, "betweenTurns" => 7),
+        "transitions" => array("resultDispute" => 62, "shieldDestruction" => 64, "disputeToken" => 65, "betweenTurns" => 7),
     ),
 
     64 => array(
@@ -199,9 +204,9 @@ $machinestates = array(
     ),
 
     65 => array(
-        "name" => "preDisputeToken",
-        "description" => clienttranslate('${actplayer} may activate a token'),
-        "descriptionmyturn" => clienttranslate('${you} may activate a token'),
+        "name" => "disputeToken",
+        "description" => clienttranslate('${actplayer} may activate a token before you have the chance to reroll the die'),
+        "descriptionmyturn" => clienttranslate('${you} may activate a token before your opponent has the chance to reroll the die'),
         "type" => "activeplayer",
         "possibleactions" => array("activateToken"),
         "transitions" => array("crossTokenActivation" => 66)
@@ -213,7 +218,8 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may pick a square to move the Clergy to with the Cross token'),
         "type" => "activeplayer",
         "possibleactions" => array("activateCrossToken", "cancelToken"),
-        "transitions" => array("betweenDisputes" => 63
+        "transitions" => array(
+            "betweenDisputes" => 63
         )
     ),
 
