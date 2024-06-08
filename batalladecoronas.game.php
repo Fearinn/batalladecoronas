@@ -615,9 +615,13 @@ class BatallaDeCoronas extends Table
         return $total_swords;
     }
 
-    function decreaseAttack(int $value, $player_id, $message = false)
+    function decreaseAttack(int $value, $player_id, $message = false): int
     {
         $prev_swords = $this->getPlayerAttack($player_id);
+
+        if ($prev_swords == 0) {
+            return 0;
+        }
 
         $total_swords = $prev_swords - $value;
 
@@ -2056,7 +2060,7 @@ class BatallaDeCoronas extends Table
 
     function stBattle()
     {
-        $attacker_id = $this->getActivePlayerId();
+        $attacker_id = $this->getGameStateValue("attacker");
         $defender_id = $this->getPlayerAfter($attacker_id);
 
         $attacking_die = $this->getGameStateValue("die_1");
@@ -2138,7 +2142,7 @@ class BatallaDeCoronas extends Table
                 return;
             }
 
-            $this->decreaseAttack($margin, $loser_id, true);
+            $this->decreaseAttack($margin, $attacker_id, true);
         }
 
         if ($margin == 0) {
@@ -2148,6 +2152,8 @@ class BatallaDeCoronas extends Table
                 array()
             );
         }
+
+        $this->gamestate->changeActivePlayer($attacker_id);
 
         $this->gamestate->nextState("betweenTurns");
     }
