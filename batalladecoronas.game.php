@@ -90,6 +90,27 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue("highest_gems", 0);
         $this->setGameStateInitialValue("first_turn", 1);
 
+        $this->initStat("player", "goldSpent", 0);
+        $this->initStat("player", "battlesWon", 0);
+        $this->initStat("player", "successfulAttacks", 0);
+        $this->initStat("player", "dragonRage", 0);
+        $this->initStat("player", "crownToken", 0);
+        $this->initStat("player", "crossToken", 0);
+        $this->initStat("player", "smithToken", 0);
+        $this->initStat("player", "commander", 0);
+        $this->initStat("player", "master", 0);
+        $this->initStat("player", "sorcerer", 0);
+        $this->initStat("player", "noble", 0);
+        $this->initStat("player", "smith", 0);
+        $this->initStat("player", "priest", 0);
+        $this->initStat("player", "rolled1", 0);
+        $this->initStat("player", "rolled2", 0);
+        $this->initStat("player", "rolled3", 0);
+        $this->initStat("player", "rolled4", 0);
+        $this->initStat("player", "rolled5", 0);
+        $this->initStat("player", "rolled6", 0);
+        $this->initStat("player", "rerolls", 0);
+
         foreach ($players as $player_id => $player) {
             $counselors = array();
             foreach ($this->counselors_info as $counselor_id => $counselor) {
@@ -158,6 +179,15 @@ class BatallaDeCoronas extends Table
          * @disregard P1009 Undefined type
          */
         return $state_id = $this->gamestate->state_id();
+    }
+
+    function roll($player_id): int
+    {
+        $value = bga_rand(1, 6);
+
+        $this->incStat(1, "rolled" . $value, $player_id);
+
+        return $value;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -511,6 +541,8 @@ class BatallaDeCoronas extends Table
             )
         );
 
+        $this->incStat($value, "goldSpent", $player_id);
+
         return $total_gold;
     }
 
@@ -808,6 +840,8 @@ class BatallaDeCoronas extends Table
                 )
             );
 
+            $this->incStat(1, "dragonRage", $player_id);
+
             $this->setPlayerDragon(0, $player_id);
         } else {
             $this->levelDownDragon(5, $player_id);
@@ -1081,10 +1115,14 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} activates the ${counselor_name}'),
             array(
                 "i18n" => array("counselor_name"),
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "counselor_name" => clienttranslate("Militia Commander")
             )
         );
+
+        $this->incStat(1, "commander", $player_id);
+
         return $this->increaseAttack(1, $player_id);
     }
     function commanderDefense($player_id): int
@@ -1094,10 +1132,13 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} activates the ${counselor_name}'),
             array(
                 "i18n" => array("counselor_name"),
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "counselor_name" => clienttranslate("Militia Commander")
             )
         );
+
+        $this->incStat(1, "commander", $player_id);
 
         return $this->increaseDefense(1, $player_id);
     }
@@ -1109,10 +1150,13 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} activates the ${counselor_name}'),
             array(
                 "i18n" => array("counselor_name"),
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "counselor_name" => clienttranslate("Master of Coin")
             )
         );
+
+        $this->incStat(1, "master", $player_id);
 
         return $this->generateGold(3, $player_id);
     }
@@ -1124,10 +1168,13 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} activates the ${counselor_name}'),
             array(
                 "i18n" => array("counselor_name"),
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "counselor_name" => clienttranslate("Sorcerer")
             )
         );
+
+        $this->incStat(1, "sorcerer", $player_id);
 
         return $this->levelUpDragon(1, $player_id);
     }
@@ -1139,10 +1186,13 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} activates the ${counselor_name}'),
             array(
                 "i18n" => array("counselor_name"),
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "counselor_name" => clienttranslate("Smith")
             )
         );
+
+        $this->incStat(1, "smith", $player_id);
 
         $this->claimSmith($player_id);
     }
@@ -1154,10 +1204,13 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} activates the ${counselor_name}'),
             array(
                 "i18n" => array("counselor_name"),
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "counselor_name" => clienttranslate("Priest"),
             )
         );
+
+        $this->incStat(1, "priest", $player_id);
 
         $this->moveClergy(1, $player_id);
     }
@@ -1168,10 +1221,13 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} activates the ${counselor_name}'),
             array(
                 "i18n" => array("counselor_name"),
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "counselor_name" => clienttranslate("Priest")
             )
         );
+
+        $this->incStat(1, "priest", $player_id);
 
         $this->moveClergy(2, $player_id);
     }
@@ -1182,10 +1238,13 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} activates the ${counselor_name}'),
             array(
                 "i18n" => array("counselor_name"),
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "counselor_name" => clienttranslate("Priest")
             )
         );
+
+        $this->incStat(1, "priest", $player_id);
 
         $this->moveClergy(3, $player_id);
     }
@@ -1202,8 +1261,8 @@ class BatallaDeCoronas extends Table
 
         $player_id = $this->getActivePlayerId();
 
-        $die_1 = bga_rand(1, 6);
-        $die_2 = bga_rand(1, 6);
+        $die_1 = $this->roll($player_id);
+        $die_2 = $this->roll($player_id);
 
         $this->setGameStateValue("die_1", $die_1);
         $this->setGameStateValue("die_2", $die_2);
@@ -1427,7 +1486,8 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} activates the Noble. The effect of other counselor is activated'),
             array(
                 "player_id" => $player_id,
-                "player_name" => $this->getPlayerNameById($player_id))
+                "player_name" => $this->getPlayerNameById($player_id)
+            )
         );
 
         if (!in_array($active_counselor, $this->getNoblePicks($player_id))) {
@@ -1644,6 +1704,8 @@ class BatallaDeCoronas extends Table
                 )
             );
 
+            $this->incStat(1, "crownToken", $player_id);
+
             $this->generateGold(3, $player_id);
 
             $this->setPlayerCrown(0, $player_id);
@@ -1680,6 +1742,8 @@ class BatallaDeCoronas extends Table
             )
         );
 
+        $this->incStat(1, "crossToken", $player_id);
+
         $this->moveClergy($square_id, $player_id);
 
         $this->setPlayerCross(0, $player_id);
@@ -1700,10 +1764,6 @@ class BatallaDeCoronas extends Table
 
         $player_id = $this->getActivePlayerId();
 
-        if ($this->getBuyableAreas($player_id)) {
-            $this->gamestate->nextState("buyAgain");
-        }
-
         $this->notifyAllPlayers(
             "activateSmithToken",
             clienttranslate('${player_name} activates the ${token_label} token'),
@@ -1714,6 +1774,8 @@ class BatallaDeCoronas extends Table
                 "player_name" => $this->getPlayerNameById($player_id),
             )
         );
+
+        $this->incStat(1, "smithToken", $player_id);
 
         $equipment = $this->getGameStateValue("equipment");
 
@@ -1726,6 +1788,11 @@ class BatallaDeCoronas extends Table
         }
 
         $this->setPlayerSmith(0, $player_id);
+
+        if ($this->getBuyableAreas($player_id)) {
+            $this->gamestate->nextState("buyAgain");
+            return;
+        }
 
         $this->gamestate->nextState("preBattle");
     }
@@ -1754,7 +1821,8 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} decides to not use any token'),
             array(
                 "player_id" => $player_id,
-                "player_name" => $this->getPlayerNameById($player_id))
+                "player_name" => $this->getPlayerNameById($player_id)
+            )
         );
 
         $this->gamestate->nextState("skip");
@@ -1770,8 +1838,8 @@ class BatallaDeCoronas extends Table
 
         $other_player_id = $this->getPlayerAfter($player_id);
 
-        $die_1 = bga_rand(1, 6);
-        $die_2 = bga_rand(1, 6);
+        $die_1 = $this->roll($player_id);
+        $die_2 = $this->roll($player_id);
 
         $this->setGameStateValue("die_1", $die_1);
         $this->setGameStateValue("die_2", $die_2);
@@ -1821,7 +1889,8 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} decides to not start a battle'),
             array(
                 "player_id" => $player_id,
-                "player_name" => $this->getPlayerNameById($player_id))
+                "player_name" => $this->getPlayerNameById($player_id)
+            )
         );
 
 
@@ -1843,7 +1912,7 @@ class BatallaDeCoronas extends Table
 
         $this->spendGold($reroll, $player_id, true);
 
-        $die = bga_rand(1, 6);
+        $die = $this->roll($player_id);
 
         $this->notifyAllPlayers(
             "dieRoll",
@@ -1855,6 +1924,8 @@ class BatallaDeCoronas extends Table
                 "result" => $die
             )
         );
+
+        $this->incStat(1, "rerolls", $player_id);
 
         if ($is_attacker) {
             $this->setGameStateValue("die_1", $die);
@@ -1884,7 +1955,8 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} accepts the result of his die'),
             array(
                 "player_id" => $player_id,
-                "player_name" => $this->getPlayerNameById($player_id))
+                "player_name" => $this->getPlayerNameById($player_id)
+            )
         );
 
         $this->gamestate->nextState("skip");
@@ -1922,7 +1994,8 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} skips the destruction of shields'),
             array(
                 "player_id" => $player_id,
-                "player_name" => $this->getPlayerNameById($player_id))
+                "player_name" => $this->getPlayerNameById($player_id)
+            )
         );
 
         $this->gamestate->nextState("skip");
@@ -2046,7 +2119,11 @@ class BatallaDeCoronas extends Table
                 )
             );
 
+            $this->incStat(1, "battlesWon", $winner_id);
+
             if ($attack_wins) {
+                $this->incStat(1, "successfulAttacks", $attacker_id);
+
                 $swords = $this->getPlayerAttack($attacker_id);
 
                 if ($margin > $this->getPlayerAttack($attacker_id)) {
@@ -2121,7 +2198,8 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} passes'),
             array(
                 "player_id" => $player_id,
-                "player_name" => $this->getPlayerNameById($player_id))
+                "player_name" => $this->getPlayerNameById($player_id)
+            )
         );
 
         $this->giveExtraTime($other_player_id);

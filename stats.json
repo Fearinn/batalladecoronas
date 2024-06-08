@@ -1,1 +1,105 @@
-{}
+{
+  "table": {},
+  "player": {
+    "goldSpent": {
+      "id": 10,
+      "type": "int",
+      "name": "Gold spent"
+    },
+    "battlesWon": {
+      "id": 11,
+      "type": "int",
+      "name": "Battles won"
+    },
+    "successfulAttacks": {
+      "id": 12,
+      "type": "int",
+      "name": "Successful attacks"
+    },
+    "dragonRage": {
+      "id": 13,
+      "type": "int",
+      "name": "Dragon rages (level 5)"
+    },
+    "crownToken": {
+      "id": 14,
+      "type": "int",
+      "name": "Crown token used"
+    },
+    "crossToken": {
+      "id": 15,
+      "type": "int",
+      "name": "Cross token used"
+    },
+    "smithToken": {
+      "id": 16,
+      "type": "int",
+      "name": "Smith token used"
+    },
+    "commander": {
+      "id": 17,
+      "type": "int",
+      "name": "Miltia Commander activated"
+    },
+    "master": {
+      "id": 18,
+      "type": "int",
+      "name": "Master of Coin activated"
+    },
+    "sorcerer": {
+      "id": 19,
+      "type": "int",
+      "name": "Sorcerer activated"
+    },
+    "noble": {
+      "id": 20,
+      "type": "int",
+      "name": "Noble activated"
+    },
+    "smith": {
+      "id": 21,
+      "type": "int",
+      "name": "Smith activated"
+    },
+    "priest": {
+      "id": 22,
+      "type": "int",
+      "name": "Priest activated"
+    },
+    "rolled1": {
+      "id": 23,
+      "type": "int",
+      "name": "1s rolled"
+    },
+    "rolled2": {
+      "id": 24,
+      "type": "int",
+      "name": "2s rolled"
+    },
+    "rolled3": {
+      "id": 25,
+      "type": "int",
+      "name": "3s rolled"
+    },
+    "rolled4": {
+      "id": 26,
+      "type": "int",
+      "name": "4s rolled"
+    },
+    "rolled5": {
+      "id": 27,
+      "type": "int",
+      "name": "5s rolled"
+    },
+    "rolled6": {
+      "id": 28,
+      "type": "int",
+      "name": "6s rolled"
+    },
+    "rerolls": {
+      "id": 29,
+      "type": "int",
+      "name": "rerolls"
+    }
+  }
+}
