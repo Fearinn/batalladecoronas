@@ -799,12 +799,12 @@ class BatallaDeCoronas extends Table
 
             $this->notifyAllPlayers(
                 "dragonRage",
-                clienttranslate('${target_name} is attacked by the dragon of ${player_name}'),
+                clienttranslate('${player_name2} is attacked by the dragon of ${player_name}'),
                 array(
                     "player_id" => $player_id,
-                    "target_id" => $target_id,
+                    "player_id2" => $target_id,
                     "player_name" => $this->getPlayerNameById($player_id),
-                    "target_name" => $this->getPlayerNameById($target_id),
+                    "player_name2" => $this->getPlayerNameById($target_id),
                 )
             );
 
@@ -1263,10 +1263,15 @@ class BatallaDeCoronas extends Table
             $gold_die = $this->getGameStateValue("die_1");
         }
 
-        $this->notifyAllPlayers("decideDice", clienttranslate('${player_name} activates the chair ${chair_die}'), array(
-            "player_name" => $this->getActivePlayerName(),
-            "chair_die" => $chair_die,
-        ));
+        $this->notifyAllPlayers(
+            "decideDice",
+            clienttranslate('${player_name} activates the chair ${chair_die}'),
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getActivePlayerName(),
+                "chair_die" => $chair_die,
+            )
+        );
 
         $this->generateGold($gold_die, $player_id);
 
@@ -1420,7 +1425,9 @@ class BatallaDeCoronas extends Table
         $this->notifyAllPlayers(
             "activateNoble",
             clienttranslate('${player_name} activates the Noble. The effect of other counselor is activated'),
-            array("player_name" => $this->getPlayerNameById($player_id))
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id))
         );
 
         if (!in_array($active_counselor, $this->getNoblePicks($player_id))) {
@@ -1531,6 +1538,7 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} skips the activation of the ${counselor_name}'),
             array(
                 "i18n" => array("counselor_name"),
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "counselor_name" => $this->counselors_info[$counselor_id]["name"]
             )
@@ -1600,6 +1608,7 @@ class BatallaDeCoronas extends Table
             "skipBuying",
             clienttranslate('${player_name} finishes his buying phase'),
             array(
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id)
             )
         );
@@ -1743,7 +1752,9 @@ class BatallaDeCoronas extends Table
         $this->notifyAllPlayers(
             "skipToken",
             clienttranslate('${player_name} decides to not use any token'),
-            array("player_name" => $this->getPlayerNameById($player_id))
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id))
         );
 
         $this->gamestate->nextState("skip");
@@ -1769,6 +1780,7 @@ class BatallaDeCoronas extends Table
             "startBattle",
             clienttranslate('${player_name} declares an attack and starts a battle'),
             array(
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
             )
         );
@@ -1777,6 +1789,7 @@ class BatallaDeCoronas extends Table
             "dieRoll",
             clienttranslate('${player_name} rolls the first die. The result is ${result}'),
             array(
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "die" => 1,
                 "result" => $die_1
@@ -1787,6 +1800,7 @@ class BatallaDeCoronas extends Table
             "dieRoll",
             clienttranslate('${player_name} rolls the second die. The result is ${result}'),
             array(
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($other_player_id),
                 "die" => 2,
                 "result" => $die_2
@@ -1805,7 +1819,9 @@ class BatallaDeCoronas extends Table
         $this->notifyAllPlayers(
             "skipBattle",
             clienttranslate('${player_name} decides to not start a battle'),
-            array("player_name" => $this->getPlayerNameById($player_id))
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id))
         );
 
 
@@ -1833,6 +1849,7 @@ class BatallaDeCoronas extends Table
             "dieRoll",
             clienttranslate('${player_name} rerolls his die. The result is ${result}'),
             array(
+                "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
                 "die" => $is_attacker ? 1 : 2,
                 "result" => $die
@@ -1865,7 +1882,9 @@ class BatallaDeCoronas extends Table
         $this->notifyAllPlayers(
             "skipDispute",
             clienttranslate('${player_name} accepts the result of his die'),
-            array("player_name" => $this->getPlayerNameById($player_id))
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id))
         );
 
         $this->gamestate->nextState("skip");
@@ -1901,7 +1920,9 @@ class BatallaDeCoronas extends Table
         $this->notifyAllPlayers(
             "skipDestruction",
             clienttranslate('${player_name} skips the destruction of shields'),
-            array("player_name" => $this->getPlayerNameById($player_id))
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id))
         );
 
         $this->gamestate->nextState("skip");
@@ -1940,6 +1961,7 @@ class BatallaDeCoronas extends Table
 
         $other_player_id = $this->getPlayerAfter($player_id);
         return array(
+            "player_id" => $player_id,
             "player_name" => $this->getPlayerNameById($other_player_id),
             "damagedShields" => $this->getGameStateValue("damaged_shields")
         );
@@ -2097,7 +2119,9 @@ class BatallaDeCoronas extends Table
         $this->notifyAllPlayers(
             "nextTurn",
             clienttranslate('${player_name} passes'),
-            array("player_name" => $this->getPlayerNameById($player_id))
+            array(
+                "player_id" => $player_id,
+                "player_name" => $this->getPlayerNameById($player_id))
         );
 
         $this->giveExtraTime($other_player_id);

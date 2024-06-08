@@ -1542,7 +1542,7 @@ define([
 
     notif_dragonRage: function (notif) {
       const player_id = notif.args.player_id;
-      const target_id = notif.args.target_id;
+      const target_id = notif.args.player_id2;
 
       const maxLevelStock = `dragonStock$${player_id}:5`;
       const levelElement = `boc_dragon$${player_id}:5`;
