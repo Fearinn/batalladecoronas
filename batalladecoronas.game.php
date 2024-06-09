@@ -141,6 +141,7 @@ class BatallaDeCoronas extends Table
 
         $result["counselorsInfo"] = $this->counselors_info;
         $result["churchSquares"] = $this->church_squares;
+        $result["tokensInfo"] = $this->tokens_info;
 
         $result["players"] = $this->getCollectionFromDb($sql);
         $result["dice"] = $this->getDice();
@@ -252,7 +253,7 @@ class BatallaDeCoronas extends Table
     function setPlayerClergy(int $value, $player_id): void
     {
         if ($value < 1 || $value > 3) {
-            throw new BgaVisibleSystemException("Invalid value for Clergy");
+            throw new BgaVisibleSystemException("Invalid value for clergy");
         }
 
         $this->DbQuery("UPDATE player SET clergy=$value WHERE player_id='$player_id'");
@@ -739,7 +740,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "moveClergy",
-            clienttranslate('${player_name} moves the Clergy to the ${square_label} square and activates its effect'),
+            clienttranslate('${player_name} moves the clergy to the ${square_label} square and activates its effect'),
             array(
                 "i18n" => array("square_label"),
                 "player_id" => $player_id,

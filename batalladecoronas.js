@@ -54,6 +54,7 @@ define([
 
       this.counselorsInfo = gamedatas.counselorsInfo;
       this.churchSquares = gamedatas.churchSquares;
+      this.tokensInfo = gamedatas.tokensInfo;
 
       this.dice = gamedatas.dice;
       this.supply = gamedatas.supply;
@@ -115,13 +116,18 @@ define([
       this[supplyStock].setSelectionMode(0);
 
       this[supplyStock].onItemCreate = (element, type, id) => {
-        const possibleTitles = {
-          crown: _("Crown token"),
-          cross: _("Cross token"),
-          smith: _("Smith token"),
-        };
+        let description = "";
+        for (let token_id in this.tokensInfo) {
+          const token = this.tokensInfo[token_id];
+          console.log(token, type);
 
-        this.addTooltip(element.id, possibleTitles[type], "");
+          if (token.label === type) {
+            description = token.description;
+            break;
+          }
+        }
+
+        this.addTooltip(element.id, _(description), "");
       };
 
       this[supplyStock].addItemType(
@@ -170,8 +176,8 @@ define([
       this[inactiveCouncilStock].setSelectionMode(0);
 
       this[inactiveCouncilStock].onItemCreate = (element, type, id) => {
-        const counselorName = this.counselorsInfo[type].name;
-        this.addTooltip(element.id, counselorName, "");
+        const description = this.counselorsInfo[type].description;
+        this.addTooltip(element.id, _(description), "");
       };
 
       const inactiveCouncil = this.inactiveCouncil[currentPlayerId];
@@ -213,7 +219,8 @@ define([
         }
 
         this[crownTowerStock].onItemCreate = (element, type, id) => {
-          this.addTooltip(element.id, _("Crown token"), "");
+          const description = this.tokensInfo[1].description;
+          this.addTooltip(element.id, _(description), "");
         };
 
         this[crownTowerStock].addItemType(
@@ -247,7 +254,8 @@ define([
         }
 
         this[crossTowerStock].onItemCreate = (element, type, id) => {
-          this.addTooltip(element.id, _("Cross token"), "");
+          const description = this.tokensInfo[2].description;
+          this.addTooltip(element.id, _(description), "");
         };
 
         this[crossTowerStock].addItemType(
@@ -276,7 +284,8 @@ define([
         this[anvilStock].setSelectionMode(0);
 
         this[anvilStock].onItemCreate = (element, type, id) => {
-          this.addTooltip(element.id, _("Smith token"), "");
+          const description = this.tokensInfo[3].description;
+          this.addTooltip(element.id, _(description), "");
         };
 
         this[anvilStock].addItemType(
@@ -307,8 +316,8 @@ define([
           this[chairStock].setSelectionMode(0);
 
           this[chairStock].onItemCreate = (element, type, id) => {
-            const counselorName = this.counselorsInfo[type].name;
-            this.addTooltip(element.id, counselorName, "");
+            const description = this.counselorsInfo[type].description;
+            this.addTooltip(element.id, _(description), "");
           };
 
           for (const counselorId in this.counselorsInfo) {

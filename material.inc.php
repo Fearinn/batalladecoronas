@@ -23,66 +23,75 @@ $this->counselors_info = array(
   1 => array(
     "name" => clienttranslate("Militia Commander"),
     "color" => "blue",
-    "spritePos" => 0
+    "spritePos" => 0,
+    "description" => clienttranslate("Militia Commander: gets 1 shield/sword"),
   ),
   2 => array(
     "name" => clienttranslate("Master of Coin"),
     "color" => "yellow",
-    "spritePos" => 1
+    "spritePos" => 1,
+    "description" => clienttranslate("Master of Coin: generates 3 of gold")
   ),
   3 => array(
     "name" => clienttranslate("Sorcerer"),
     "color" => "red",
-    "spritePos" => 2
+    "spritePos" => 2,
+    "description" => clienttranslate("Sorcerer: levels up the dragon")
   ),
   4 => array(
     "name" => clienttranslate("Noble"),
     "color" => "purple",
-    "spritePos" => 3
+    "spritePos" => 3,
+    "description" => clienttranslate("Noble: activates other counselor")
   ),
   5 => array(
     "name" => clienttranslate("Smith"),
     "color" => "black",
-    "spritePos" => 4
+    "spritePos" => 4,
+    "description" => clienttranslate("Smith: obtains the Smith token")
   ),
   6 => array(
     "name" => clienttranslate("Priest"),
     "color" => "white",
-    "spritePos" => 5
+    "spritePos" => 5,
+    "description" => clienttranslate("Priest: moves the clergy")
   )
 );
 
 $this->tokens_info = array(
   1 => array(
     "label" => "crown",
-    "label_tr" => clienttranslate("Crown")
+    "label_tr" => clienttranslate("Crown"),
+    "description" => clienttranslate("Crown: generates 3 of gold"),
   ),
   2 => array(
-    "label" => "sacredcross",
-    "label_tr" => clienttranslate("Cross")
+    "label" => "cross",
+    "label_tr" => clienttranslate("Cross"),
+    "description" => clienttranslate("Cross: moves the clergy")
   ),
   3 => array(
     "label" => "smith",
-    "label_tr" => clienttranslate("Smith")
+    "label_tr" => clienttranslate("Smith"),
+    "description" => clienttranslate("Smith: gets an extra shield/sword for free")
   ),
 );
 
 $this->church_squares = array(
   0 => array(
     "label" => "DOOR",
-    "label_tr" => clienttranslate("DOOR")
+    "label_tr" => clienttranslate("door")
   ),
   1 => array(
     "label" => "GOLDEN",
-    "label_tr" => clienttranslate("GOLDEN")
+    "label_tr" => clienttranslate("golden")
   ),
   2 => array(
     "label" => "BLUE",
-    "label_tr" => clienttranslate("BLUE")
+    "label_tr" => clienttranslate("blue")
   ),
   3 => array(
     "label" => "RED",
-    "label_tr" => clienttranslate("RED")
+    "label_tr" => clienttranslate("red")
   )
 );
 
