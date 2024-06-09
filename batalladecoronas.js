@@ -36,6 +36,7 @@ define([
       this.counselorsInfo = {};
       this.churchSquares = {};
 
+      this.dice = {};
       this.supply = {};
       this.claimedSupply = {};
       this.inactiveCouncil = {};
@@ -54,6 +55,7 @@ define([
       this.counselorsInfo = gamedatas.counselorsInfo;
       this.churchSquares = gamedatas.churchSquares;
 
+      this.dice = gamedatas.dice;
       this.supply = gamedatas.supply;
       this.claimedSupply = gamedatas.claimedSupply;
       this.inactiveCouncil = gamedatas.inactiveCouncil;
@@ -85,7 +87,7 @@ define([
         this[dieStock] = new ebg.stock();
         this[dieStock].create(
           this,
-          $(`boc_die:${die}`),
+          $(`boc_dieStock:${die}`),
           this.dieSize,
           this.dieSize
         );
@@ -93,6 +95,10 @@ define([
 
         this[dieStock].addItemType(0, 0, g_gamethemeurl + "img/dice.png", 0);
         this[dieStock].addToStock(0);
+
+        const face = this.dice[die];
+
+        dojo.addClass($(`boc_dieAnimation:${die}`), `roll-${face}`);
       }
 
       //supply
@@ -627,7 +633,7 @@ define([
       if (stateName === "decisionPhase") {
         if (this.isCurrentPlayerActive()) {
           for (let die = 1; die <= 2; die++) {
-            console.log($(`dieStock:${die}`));
+            dojo.addClass(`boc_dieStock:${die}_item_1`, "boc_selectableItem");
             this[`dieStock:${die}`].setSelectionMode(1);
           }
         }
@@ -853,7 +859,9 @@ define([
       const player_id = this.getActivePlayerId();
 
       if (stateName === "decisionPhase") {
-        dojo.query(".boc_die > *").removeClass("boc_selectableItem");
+        dojo
+          .query(".boc_dieStock > .stockitem")
+          .removeClass("boc_selectableItem");
 
         for (let die = 1; die <= 2; die++) {
           this[`dieStock:${die}`].setSelectionMode(0);
@@ -959,9 +967,6 @@ define([
           this.removeActionButtons();
 
           if (selectedItemsNbr == 1) {
-            const otherStock = die == 1 ? `dieStock:2` : `dieStock:1`;
-            this[otherStock].unselectAll();
-
             this.addActionButton(
               "boc_decideDice",
               _("Confirm selection"),
@@ -1282,11 +1287,21 @@ define([
       const die = notif.args.die;
       const result = notif.args.result;
 
-      const dieElement = $(`boc_die:${die}`);
+      const dieAnimationElement = $(`boc_dieAnimation:${die}`);
+      const dieContainerElement = $(`boc_die:${die}`);
+
+      dojo.removeClass(dieAnimationElement, `roll-${result}`);
+      dojo.addClass(dieAnimationElement, "roll-1");
 
       setTimeout(() => {
-        dojo.addClass(dieElement, "roll-" + result);
+        dojo.addClass(dieAnimationElement, `roll-${result}`);
+        dojo.addClass(dieContainerElement, "roll");
       }, 1);
+
+      setTimeout(() => {
+        dojo.removeClass(dieAnimationElement, "roll-1");
+        dojo.removeClass(dieContainerElement, "roll");
+      }, 1000);
     },
 
     notif_generateGold: function (notif) {
