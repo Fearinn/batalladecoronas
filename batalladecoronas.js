@@ -91,7 +91,7 @@ define([
         );
         this[dieStock].setSelectionMode(0);
 
-        this[dieStock].addItemType(0, 0, g_gamethemeurl + "img/dice.png", 5);
+        this[dieStock].addItemType(0, 0, g_gamethemeurl + "img/dice.png", 0);
         this[dieStock].addToStock(0);
       }
 
@@ -143,13 +143,6 @@ define([
         if (this.supply[item]) {
           this[supplyStock].addToStockWithId(item, item);
         }
-      }
-
-      for (const die in gamedatas.dice) {
-        const value = gamedatas.dice[die];
-        const dieElement = $(`boc_die:${die}`);
-
-        dojo.addClass(dieElement, `boc_face_${value}`);
       }
 
       //inactive council
@@ -633,9 +626,8 @@ define([
 
       if (stateName === "decisionPhase") {
         if (this.isCurrentPlayerActive()) {
-          dojo.query(".boc_die > *").addClass("boc_selectableItem");
-
           for (let die = 1; die <= 2; die++) {
+            console.log($(`dieStock:${die}`));
             this[`dieStock:${die}`].setSelectionMode(1);
           }
         }
@@ -1292,18 +1284,9 @@ define([
 
       const dieElement = $(`boc_die:${die}`);
 
-      dojo.addClass(dieElement, "boc_die_rolled");
-
       setTimeout(() => {
-        for (let face = 1; face <= 6; face++) {
-          dojo.removeClass(dieElement, `boc_face_${face}`);
-        }
-        dojo.addClass(dieElement, `boc_face_${result}`);
-      }, 500);
-
-      setTimeout(() => {
-        dojo.removeClass(dieElement, "boc_die_rolled");
-      }, 1000);
+        dojo.addClass(dieElement, "roll-" + result);
+      }, 1);
     },
 
     notif_generateGold: function (notif) {

@@ -53,12 +53,16 @@
 }
 
 .boc_dice {
-  gap: 8px;
+  position: relative;
+  padding: 0 !important;
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
+  gap: 24px;
+  height: 60px;
+  width: 144px;
 }
 
 .boc_die {
-  background-image: url("img/dice.png");
-  background-position: -500% 0;
   border-radius: 12px;
   height: 60px !important;
   width: 60px;
@@ -68,27 +72,10 @@
   animation: diceRoll ease 1s;
 }
 
-.boc_die > * {
+.boc_die .stockitem {
   background: none !important;
-}
-
-.boc_face_1 {
-  background-position: 0 0;
-}
-.boc_face_2 {
-  background-position: -100% 0;
-}
-.boc_face_3 {
-  background-position: -200% 0;
-}
-.boc_face_4 {
-  background-position: -300% 0;
-}
-.boc_face_5 {
-  background-position: -400% 0;
-}
-.boc_face_6 {
-  background-position: -500% 0;
+  position: absolute;
+  z-index: 9999;
 }
 
 .boc_supply-dice {
@@ -342,7 +329,7 @@
 
 /* animations */
 
-@keyframes diceRoll {
+/* @keyframes diceRoll {
   0% {
     opacity: 1;
   }
@@ -351,6 +338,198 @@
   }
   100% {
     opacity: 1;
+  }
+} */
+
+.boc_die {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: translateZ(-30px) rotateX(0deg) rotateY(0deg);
+  transform: translateZ(-30px) rotateX(0deg) rotateY(0deg);
+}
+
+.boc_die > div:not(.stockitem) {
+  backface-visibility: hidden;
+  height: 60px;
+  width: 60px;
+  position: absolute;
+  background: #fff;
+  border-radius: 1.2px;
+  pointer-events: none;
+}
+
+.boc_dot {
+  position: absolute;
+  background: #000;
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  transform: translate3d(-50%, -50%, 0);
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+
+.boc_one {
+  transform: rotateY(0deg) translateZ(30px);
+  transform: rotateY(0deg) translateZ(30px);
+}
+
+.boc_two {
+  transform: rotateX(180deg) translateZ(30px);
+  transform: rotateX(180deg) translateZ(30px);
+}
+
+.boc_three {
+  transform: rotateY(90deg) translateZ(30px);
+  transform: rotateY(90deg) translateZ(30px);
+}
+
+.boc_four {
+  transform: rotateY(-90deg) translateZ(30px);
+  transform: rotateY(-90deg) translateZ(30px);
+}
+
+.boc_five {
+  transform: rotateX(90deg) translateZ(30px);
+  transform: rotateX(90deg) translateZ(30px);
+}
+
+.boc_six {
+  transform: rotateX(-90deg) translateZ(30px);
+  transform: rotateX(-90deg) translateZ(30px);
+}
+
+.boc_one .boc_dot,
+.boc_three .boc_dot:nth-child(2),
+.boc_five .boc_dot:nth-child(5) {
+  top: 50%;
+  left: 50%;
+}
+
+.boc_two .boc_dot:nth-child(1),
+.boc_three .boc_dot:nth-child(1),
+.boc_four .boc_dot:nth-child(1),
+.boc_five .boc_dot:nth-child(1),
+.boc_six .boc_dot:nth-child(1) {
+  top: 25%;
+  left: 25%;
+}
+
+.boc_two .boc_dot:nth-child(2),
+.boc_three .boc_dot:nth-child(3),
+.boc_four .boc_dot:nth-child(4),
+.boc_five .boc_dot:nth-child(4),
+.boc_six .boc_dot:nth-child(6) {
+  top: 75%;
+  left: 75%;
+}
+
+.boc_four .boc_dot:nth-child(2),
+.boc_five .boc_dot:nth-child(2),
+.boc_six .boc_dot:nth-child(2) {
+  top: 25%;
+  left: 75%;
+}
+
+.boc_four .boc_dot:nth-child(3),
+.boc_five .boc_dot:nth-child(3),
+.boc_six .boc_dot:nth-child(5) {
+  top: 75%;
+  left: 25%;
+}
+
+.boc_six .boc_dot:nth-child(3) {
+  top: 50%;
+  left: 25%;
+}
+
+.boc_six .boc_dot:nth-child(4) {
+  top: 50%;
+  left: 75%;
+}
+
+.boc_die.roll-1 {
+  animation: roll-one 2s 1 linear forwards;
+  -webkit-animation: roll-one 2s 1 linear forwards;
+}
+
+.boc_die.roll-2 {
+  animation: roll-two 2s 1 linear forwards;
+  -webkit-animation: roll-two 2s 1 linear forwards;
+}
+
+.boc_die.roll-3 {
+  animation: roll-three 2s 1 linear forwards;
+  -webkit-animation: roll-three 2s 1 linear forwards;
+}
+
+.boc_die.roll-4 {
+  animation: roll-four 2s 1 linear forwards;
+  -webkit-animation: roll-four 2s 1 linear forwards;
+}
+
+.boc_die.roll-5 {
+  animation: roll-five 2s 1 linear forwards;
+  -webkit-animation: roll-five 2s 1 linear forwards;
+}
+
+.boc_die.roll-6 {
+  animation: roll-six 2s 1 linear forwards;
+  -webkit-animation: roll-six 2s 1 linear forwards;
+}
+
+@keyframes roll-one {
+  0% {
+    transform: translateZ(-30px) rotateX(-10deg) rotateY(-10deg);
+  }
+  100% {
+    transform: translateZ(-30px) rotateX(-180deg) rotateY(-540deg);
+  }
+}
+
+@keyframes roll-two {
+  0% {
+    transform: translateZ(-30px) rotateX(-10deg) rotateY(-10deg);
+  }
+  100% {
+    transform: translateZ(-30px) rotateX(-360deg) rotateY(-540deg);
+  }
+}
+
+@keyframes roll-three {
+  0% {
+    transform: translateZ(-30px) rotateX(-10deg) rotateY(-10deg);
+  }
+  100% {
+    transform: translateZ(-30px) rotateX(-360deg) rotateY(-450deg);
+  }
+}
+
+@keyframes roll-four {
+  0% {
+    transform: translateZ(-30px) rotateX(-10deg) rotateY(-10deg);
+  }
+  100% {
+    transform: translateZ(-30px) rotateX(-360deg) rotateY(-630deg);
+  }
+}
+
+@keyframes roll-five {
+  0% {
+    transform: translateZ(-30px) rotateX(-10deg) rotateY(-10deg) rotateZ(0deg);
+  }
+  100% {
+    transform: translateZ(-30px) rotateX(-450deg) rotateY(-360deg) rotateZ(0deg);
+  }
+}
+
+@keyframes roll-six {
+  0% {
+    transform: translateZ(-30px) rotateX(-10deg) rotateY(-10deg) rotateZ(0deg);
+  }
+  100% {
+    transform: translateZ(-30px) rotateX(-450deg) rotateY(0deg) rotateZ(-180deg);
   }
 }
 

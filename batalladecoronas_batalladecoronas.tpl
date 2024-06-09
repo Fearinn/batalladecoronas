@@ -13,8 +13,76 @@
 <div id="boc_gameArea" class="boc_gameArea">
   <div id="boc_supply-dice" class="boc_rowContainer boc_supply-dice">
     <div id="boc_dice" class="boc_rowContainer boc_dice">
-      <div id="boc_die:1" class="boc_die boc_die_1"></div>
-      <div id="boc_die:2" class="boc_die boc_die_2"></div>
+      <div id="boc_die:1" class="boc_die boc_die_1">
+        <div class="boc_one">
+          <span class="boc_dot"></span>
+        </div>
+        <div class="boc_two">
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+        </div>
+        <div class="boc_three">
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+        </div>
+        <div class="boc_four">
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+        </div>
+        <div class="boc_five">
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+        </div>
+        <div class="boc_six">
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+        </div>
+      </div>
+      <div id="boc_die:2" class="boc_die boc_die_2">
+        <div class="boc_one">
+          <span class="boc_dot"></span>
+        </div>
+        <div class="boc_two">
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+        </div>
+        <div class="boc_three">
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+        </div>
+        <div class="boc_four">
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+        </div>
+        <div class="boc_five">
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+        </div>
+        <div class="boc_six">
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+          <span class="boc_dot"></span>
+        </div>
+      </div>
     </div>
     <div id="boc_supply" class="boc_supply"></div>
   </div>
