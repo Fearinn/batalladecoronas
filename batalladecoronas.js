@@ -119,7 +119,6 @@ define([
         let description = "";
         for (let token_id in this.tokensInfo) {
           const token = this.tokensInfo[token_id];
-          console.log(token, type);
 
           if (token.label === type) {
             description = token.description;
@@ -178,6 +177,18 @@ define([
       this[inactiveCouncilStock].onItemCreate = (element, type, id) => {
         const description = this.counselorsInfo[type].description;
         this.addTooltip(element.id, _(description), "");
+
+        const colorblindCounselor = dojo.create(
+          "span",
+          {
+            class: "boc_colorblindCounselor",
+          },
+          element
+        );
+
+        const counselorName = this.counselorsInfo[type].name;
+
+        colorblindCounselor.innerText = _(counselorName);
       };
 
       const inactiveCouncil = this.inactiveCouncil[currentPlayerId];
@@ -318,6 +329,18 @@ define([
           this[chairStock].onItemCreate = (element, type, id) => {
             const description = this.counselorsInfo[type].description;
             this.addTooltip(element.id, _(description), "");
+
+            const colorblindCounselor = dojo.create(
+              "span",
+              {
+                class: "boc_colorblindCounselor",
+              },
+              element
+            );
+
+            const counselorName = this.counselorsInfo[type].name;
+
+            colorblindCounselor.innerText = _(counselorName);
           };
 
           for (const counselorId in this.counselorsInfo) {

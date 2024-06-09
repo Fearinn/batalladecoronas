@@ -24,7 +24,7 @@ $this->counselors_info = array(
     "name" => clienttranslate("Militia Commander"),
     "color" => "blue",
     "spritePos" => 0,
-    "description" => clienttranslate("Militia Commander: gets 1 shield/sword"),
+    "description" => clienttranslate("Militia Commander: obtains 1 shield/sword"),
   ),
   2 => array(
     "name" => clienttranslate("Master of Coin"),
@@ -72,7 +72,7 @@ $this->tokens_info = array(
   3 => array(
     "label" => "smith",
     "label_tr" => clienttranslate("Smith"),
-    "description" => clienttranslate("Smith: gets an extra shield/sword for free")
+    "description" => clienttranslate("Smith: obtains an extra shield/sword for free")
   ),
 );
 

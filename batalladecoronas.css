@@ -25,6 +25,22 @@
   background-size: contain;
 }
 
+.boc_colorblindCounselor {
+  display: none;
+}
+
+.boc_colorblind .boc_colorblindCounselor {
+  display: block;
+  position: absolute;
+  left: 32px;
+  bottom: 8px;
+  background-color: white;
+  border: 1px solid black;
+  font-size: 12px;
+  padding: 0 2px;
+  width: max-content;
+} 
+
 .boc_columnContainer {
   display: flex;
   flex-direction: column;

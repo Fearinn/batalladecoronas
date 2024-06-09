@@ -1,1 +1,15 @@
-{}
+{
+    "100": {
+        "name": "Colorblind support",
+        "needReload": true,
+        "values": {
+            "0": {
+                "name": "Off"
+            },
+            "1": {
+                "name": "On",
+                "cssPref": "boc_colorblind"
+            }
+        }
+    }
+}
