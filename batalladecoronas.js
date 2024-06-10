@@ -1325,13 +1325,15 @@ define([
       const dieAnimationElement = $(`boc_dieAnimation:${die}`);
       const dieContainerElement = $(`boc_die:${die}`);
 
-      dojo.removeClass(dieAnimationElement, `roll-${result}`);
-      dojo.addClass(dieAnimationElement, "roll-1");
+      for (let face = 1; face <= 6; face++) {
+        dojo.removeClass(dieAnimationElement, `roll-${face}`);
+        dojo.addClass(dieAnimationElement, "roll-1");
+      }
 
       setTimeout(() => {
         dojo.addClass(dieAnimationElement, `roll-${result}`);
         dojo.addClass(dieContainerElement, "roll");
-      }, 1);
+      }, 100);
 
       setTimeout(() => {
         dojo.removeClass(dieAnimationElement, "roll-1");
