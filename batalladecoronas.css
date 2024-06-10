@@ -21,12 +21,16 @@
   box-sizing: border-box;
 }
 
-.boc_bgContain {
-  background-size: contain;
+.boc_logHighlight {
+  font-weight: bold;
 }
 
 .boc_colorblindCounselor {
   display: none;
+}
+
+.boc_bgContain {
+  background-size: contain;
 }
 
 .boc_colorblind .boc_colorblindCounselor {

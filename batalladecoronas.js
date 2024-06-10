@@ -1616,5 +1616,36 @@ define([
 
       this.scoreCtrl[player_id].toValue(score);
     },
+
+    //Style logs
+    // @Override
+
+    format_string_recursive: function (log, args) {
+      try {
+        if (log && args && !args.processed) {
+          args.processed = true;
+
+          if (args.result_log) {
+            args.result_log =`<span class="boc_logHighlight">${args.result_log}</span>`;
+          }
+
+          if (args.chair_log) {
+            args.chair_log =`<span class="boc_logHighlight">${args.chair_log}</span>`;
+          }
+
+          if (args.counselor_name) {
+            args.counselor_name = `<span class="boc_logHighlight">${args.counselor_name}</span>`;
+          }
+
+          if (args.token_label) {
+            args.token_label =`<span class="boc_logHighlight">${args.token_label}</span>`;
+          }
+        }
+      } catch (e) {
+        console.error(log, args, "Exception thrown", e.stack);
+      }
+
+      return this.inherited(arguments);
+    },
   });
 });

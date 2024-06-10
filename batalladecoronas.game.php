@@ -531,7 +531,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "generateGold",
-            $message ? clienttranslate('${player_name} spends ${spentGold} of gold') : "",
+            $message ? clienttranslate('${player_name} pays ${spentGold} of gold') : "",
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
@@ -1291,9 +1291,10 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "dieRoll",
-            clienttranslate('${player_name} rolls the first die. The result is ${result}'),
+            clienttranslate('${player_name} rolls a ${result_log} with the first die'),
             array(
                 "player_name" => $player_name,
+                "result_log" => $die_1,
                 "die" => 1,
                 "result" => $die_1
             )
@@ -1301,9 +1302,10 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "dieRoll",
-            clienttranslate('${player_name} rolls the second die. The result is ${result}'),
+            clienttranslate('${player_name} rolls a ${result_log} with the second die'),
             array(
                 "player_name" => $player_name,
+                "result_log" => $die_2,
                 "die" => 2,
                 "result" => $die_2,
             )
@@ -1344,11 +1346,11 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "decideDice",
-            clienttranslate('${player_name} activates the chair ${chair_die}'),
+            clienttranslate('${player_name} activates the chair ${chair_log}'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getActivePlayerName(),
-                "chair_die" => $chair_die,
+                "chair_log" => $chair_die,
             )
         );
 
@@ -1404,20 +1406,21 @@ class BatallaDeCoronas extends Table
             "",
             array(
                 "player_id" => $this->getActivePlayerId(),
+                "chair" => $active_chair,
                 "counselorId" => $counselor_id,
                 "cardId" => $card_id,
-                "chair" => $active_chair
             )
         );
 
         $this->notifyAllPlayers(
             "vestCounselor",
-            clienttranslate('${player_name} picks the ${counselorName} to occupy the chair ${chair}'),
+            clienttranslate('${player_name} picks the ${counselor_name} to occupy the chair ${chair_log}'),
             array(
-                "i18n" => array("counselorName"),
+                "i18n" => array("counselor_name"),
                 "player_id" => $this->getActivePlayerId(),
                 "player_name" => $this->getActivePlayerName(),
-                "counselorName" => $counselor["name"],
+                "counselor_name" => $counselor["name"],
+                "chair_log" => $active_chair,
                 "counselorId" => $counselor_id,
                 "cardId" => $card_id,
                 "chair" => $active_chair
@@ -1892,10 +1895,11 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "dieRoll",
-            clienttranslate('${player_name} rolls the first die. The result is ${result}'),
+            clienttranslate('${player_name} rolls a ${result_log} with the first die'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
+                "result_log" => $die_1,
                 "die" => 1,
                 "result" => $die_1
             )
@@ -1903,10 +1907,11 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "dieRoll",
-            clienttranslate('${player_name} rolls the second die. The result is ${result}'),
+            clienttranslate('${player_name} rolls a ${result_log} with the second die'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($other_player_id),
+                "result_log" => $die_2,
                 "die" => 2,
                 "result" => $die_2
             )
@@ -1953,12 +1958,13 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "dieRoll",
-            clienttranslate('${player_name} rerolls his die. The result is ${result}'),
+            clienttranslate('${player_name} rerolls his die. The result is ${result_log}'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
+                "result_log" => $die,
                 "die" => $is_attacker ? 1 : 2,
-                "result" => $die
+                "result" => $die,
             )
         );
 
