@@ -171,8 +171,9 @@ define([
       this[inactiveCouncilStock].autowidth = true;
       this[inactiveCouncilStock].centerItems = true;
       this[inactiveCouncilStock].item_margin = 8;
-      this[inactiveCouncilStock].extraClasses = "boc_unvestedCounselor";
       this[inactiveCouncilStock].setSelectionMode(0);
+      this[inactiveCouncilStock].setSelectionAppearance("class");
+      this[inactiveCouncilStock].selectionClass = "boc_selectedCounselor";
 
       this[inactiveCouncilStock].onItemCreate = (element, type, id) => {
         const description = this.counselorsInfo[type].description;
@@ -325,6 +326,8 @@ define([
           this[chairStock].image_items_per_row = 6;
           this[chairStock].extraClasses = "boc_counselor";
           this[chairStock].setSelectionMode(0);
+          this[chairStock].setSelectionAppearance("class");
+          this[chairStock].selectionClass = "boc_selectedCounselor";
 
           this[chairStock].onItemCreate = (element, type, id) => {
             const description = this.counselorsInfo[type].description;

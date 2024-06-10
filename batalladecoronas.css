@@ -163,6 +163,10 @@
   left: 390px;
 }
 
+.boc_selectedCounselor {
+  transform: scale(1.2);
+}
+
 .boc_power {
   position: absolute;
   top: 310px;
