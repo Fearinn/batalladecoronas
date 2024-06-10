@@ -313,6 +313,11 @@
   width: 100%;
 }
 
+.boc_rage > .stockitem {
+  transform: scale(1.75);
+  z-index: 99;
+}
+
 .boc_dragon {
   position: absolute;
   top: 720px;
@@ -321,25 +326,30 @@
   height: 100px;
 }
 
-.boc_dragon > * {
+.boc_dragon > div {
   position: absolute !important;
   width: 80px;
 }
 
 .boc_dragon_1 {
   left: 85px;
+  transform: scale(1.15);
 }
 .boc_dragon_2 {
   left: 170px;
+  transform: scale(1.3);
 }
 .boc_dragon_3 {
   left: 252px;
+  transform: scale(1.45);
 }
 .boc_dragon_4 {
   left: 335px;
+  transform: scale(1.6);
 }
 .boc_dragon_5 {
   left: 430px;
+  transform: scale(1.75);
 }
 
 /* 
