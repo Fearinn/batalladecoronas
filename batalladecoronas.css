@@ -39,7 +39,7 @@
   font-size: 12px;
   padding: 0 2px;
   width: max-content;
-} 
+}
 
 .boc_columnContainer {
   display: flex;
@@ -80,11 +80,6 @@
 
 .boc_dieStock > .stockitem {
   background: none !important;
-}
-
-.boc_dieAnimation {
-  height: 60px !important;
-  width: 60px;
 }
 
 .boc_dieStock {
@@ -368,7 +363,6 @@
   animation: roll 0.6s 1 linear forwards;
 }
 
-
 @keyframes roll {
   0% {
     transform: translateY(0px);
@@ -390,6 +384,8 @@
 /* Copyright (c) 2024 by Reets (https://codepen.io/reets/pen/RaJJZj) */
 
 .boc_dieAnimation {
+  height: 60px;
+  width: 60px;
   position: relative;
   transform-style: preserve-3d;
   transform: translateZ(-30px) rotateX(0deg) rotateY(0deg);

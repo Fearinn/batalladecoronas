@@ -139,7 +139,7 @@ $machinestates = array(
         "description" => clienttranslate('${actplayer} may obtain an extra equipment for free with the Smith token'),
         "descriptionmyturn" => clienttranslate('Do ${you} wish to obtain an extra equipment for free with the Smith token?'),
         "type" => "activeplayer",
-        "possibleactions" => array("activateSmithToken", "skipToken"),
+        "possibleactions" => array("activateSmithToken", "skipSmithToken"),
         "transitions" => array("buyAgain" => 4, "preBattle" => 5, "battlePhase" => 6, "skip" => 5)
     ),
 

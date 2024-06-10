@@ -801,7 +801,7 @@ define([
           this.addActionButton(
             "boc_skip_btn",
             _("No"),
-            "onSkipToken",
+            "onSkipSmithToken",
             null,
             null,
             "red"
@@ -1237,6 +1237,12 @@ define([
 
     onSkipToken: function () {
       const action = "skipToken";
+
+      this.sendAjaxCall(action);
+    },
+
+    onSkipSmithToken: function () {
+      const action = "skipSmithToken";
 
       this.sendAjaxCall(action);
     },

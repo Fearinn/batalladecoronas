@@ -993,7 +993,7 @@ class BatallaDeCoronas extends Table
     //////////// Checkers and possible picks
     ////////////
 
-    function canActivate(int $counselor_id, $player_id): bool
+    function canActivateCounselor(int $counselor_id, $player_id): bool
     {
         $can_activate = true;
 
@@ -1016,6 +1016,21 @@ class BatallaDeCoronas extends Table
         return $can_activate;
     }
 
+    function canSmithToken($player_id): bool {
+        $equipment = $this->getGameStateValue("equipment");
+
+        $reached_limit = false;
+
+        if ($equipment == 1) {
+            $reached_limit = $this->getPlayerAttack($player_id) == 5;
+        }
+
+        if ($equipment == 2) {
+            $reached_limit = $this->getPlayerDefense($player_id) == 5;
+        }
+        return $this->getPlayerSmith($player_id) && !$reached_limit;
+    }
+
     function getNoblePicks($player_id): array
     {
         $noble_picks = array();
@@ -1026,7 +1041,7 @@ class BatallaDeCoronas extends Table
             $counselor_id = $card["type_arg"];
 
             if ($counselor_id != 4) {
-                if ($this->canActivate($counselor_id, $player_id)) {
+                if ($this->canActivateCounselor($counselor_id, $player_id)) {
                     $noble_picks[$card_id] = $counselor_id;
                 }
             }
@@ -1085,7 +1100,7 @@ class BatallaDeCoronas extends Table
     {
         $token_picks = array();
 
-        if ($this->getPlayerCrown($player_id) && $this->canActivate(2, $player_id)) {
+        if ($this->getPlayerCrown($player_id) && $this->canActivateCounselor(2, $player_id)) {
             $token_picks["CROWN"] = "CROWN";
         }
 
@@ -1352,7 +1367,7 @@ class BatallaDeCoronas extends Table
 
         $this->setGameStateValue("active_counselor", $counselor_id);
 
-        if (!$this->canActivate($counselor_id, $player_id)) {
+        if (!$this->canActivateCounselor($counselor_id, $player_id)) {
             if (!$this->getBuyableAreas($player_id)) {
                 $this->gamestate->nextState("preBattle");
                 return;
@@ -1411,7 +1426,7 @@ class BatallaDeCoronas extends Table
 
         $this->setGameStateValue("active_counselor", $counselor_id);
 
-        if (!$this->canActivate($counselor_id, $player_id)) {
+        if (!$this->canActivateCounselor($counselor_id, $player_id)) {
             if (!$this->getBuyableAreas($player_id)) {
                 $this->gamestate->nextState("preBattle");
                 return;
@@ -1628,9 +1643,9 @@ class BatallaDeCoronas extends Table
         if ($area === "ATTACK") {
             $this->spendGold(3, $player_id, true);
             $this->increaseAttack(1, $player_id);
+            $this->setGameStateValue("equipment", 1);
 
-            if ($this->getPlayerSmith($player_id)) {
-                $this->setGameStateValue("equipment", 1);
+            if ($this->canSmithToken($player_id)) {
                 $this->gamestate->nextState("smithTokenActivation");
                 return;
             }
@@ -1639,9 +1654,9 @@ class BatallaDeCoronas extends Table
         if ($area === "DEFENSE") {
             $this->spendGold(3, $player_id, true);
             $this->increaseDefense(1, $player_id);
+            $this->setGameStateValue("equipment", 2);
 
-            if ($this->getPlayerSmith($player_id)) {
-                $this->setGameStateValue("equipment", 2);
+            if ($this->canSmithToken($player_id)) {
                 $this->gamestate->nextState("smithTokenActivation");
                 return;
             }
@@ -1829,6 +1844,23 @@ class BatallaDeCoronas extends Table
                 "player_name" => $this->getPlayerNameById($player_id)
             )
         );
+
+
+        $this->gamestate->nextState("skip");
+    }
+
+    function skipSmithToken() {
+        $this->checkAction("skipSmithToken");
+
+        $player_id = $this->getActivePlayerId();
+        $state_id = $this->getStateId();
+
+        $this->setGameStateValue("token_state", $state_id);
+
+        if ($this->getBuyableAreas($player_id)) {
+            $this->gamestate->nextState("buyAgain");
+            return;
+        }
 
         $this->gamestate->nextState("skip");
     }

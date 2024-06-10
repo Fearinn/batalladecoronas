@@ -157,6 +157,13 @@ class action_batalladecoronas extends APP_GameAction
     $this->ajaxResponse();
   }
 
+  public function skipSmithToken()
+  {
+    $this->setAjaxMode();
+    $this->game->skipSmithToken();
+    $this->ajaxResponse();
+  }
+
   public function startBattle()
   {
     $this->setAjaxMode();
