@@ -9,7 +9,18 @@
 -- See http://en.boardgamearena.com/#!doc/Studio for more information.
 -------
 -->
-
+<audio
+  id="audiosrc_batalladecoronas_dice"
+  src="{GAMETHEMEURL}img/batalladecoronas_dice.mp3"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_o_batalladecoronas_dice"
+  src="{GAMETHEMEURL}img/batalladecoronas_dice.ogg"
+  preload="none"
+  autobuffer
+></audio>
 <div id="boc_gameArea" class="boc_gameArea">
   <div id="boc_supply-dice" class="boc_rowContainer boc_supply-dice">
     <div id="boc_dice" class="boc_rowContainer boc_dice">

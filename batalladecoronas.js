@@ -1325,6 +1325,8 @@ define([
     },
 
     notif_dieRoll: function (notif) {
+      playSound("batalladecoronas_dice");
+
       const die = notif.args.die;
       const result = notif.args.result;
 
@@ -1619,7 +1621,6 @@ define([
 
     //Style logs
     // @Override
-
     format_string_recursive: function (log, args) {
       try {
         if (log && args && !args.processed) {
