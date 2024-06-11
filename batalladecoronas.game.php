@@ -513,7 +513,7 @@ class BatallaDeCoronas extends Table
         );
     }
 
-    function spendGold(int $value, $player_id, bool $message = false): int
+    function spendGold(int $value, $player_id, bool $message = false, $force = false): int
     {
         if ($value <= 0) {
             throw new BgaVisibleSystemException("The gold value must be positive");
@@ -521,11 +521,15 @@ class BatallaDeCoronas extends Table
 
         $prev_gold = $this->getPlayerGold($player_id);
 
-        if ($value > $prev_gold) {
-            throw new BgaUserException($this->_("You don't have the gold required by this action"));
-        }
-
         $total_gold = $prev_gold - $value;
+
+        if ($value > $prev_gold) {
+            if (!$force) {
+                throw new BgaVisibleSystemException("You don't have the gold required by this action");
+            }
+
+            $total_gold = 0;
+        }
 
         $this->setPlayerGold($total_gold, $player_id);
 
@@ -1016,7 +1020,8 @@ class BatallaDeCoronas extends Table
         return $can_activate;
     }
 
-    function canSmithToken($player_id): bool {
+    function canSmithToken($player_id): bool
+    {
         $equipment = $this->getGameStateValue("equipment");
 
         $reached_limit = false;
@@ -1280,6 +1285,11 @@ class BatallaDeCoronas extends Table
         }
 
         $player_id = $this->getActivePlayerId();
+
+        if ($this->loadPlayersBasicInfos()[$player_id]["player_zombie"] == 1) {
+           $this->gamestate->nextState("decisionPhase");
+           return;
+        }
 
         $die_1 = $this->roll($player_id);
         $die_2 = $this->roll($player_id);
@@ -1852,7 +1862,8 @@ class BatallaDeCoronas extends Table
         $this->gamestate->nextState("skip");
     }
 
-    function skipSmithToken() {
+    function skipSmithToken()
+    {
         $this->checkAction("skipSmithToken");
 
         $player_id = $this->getActivePlayerId();
@@ -2271,12 +2282,43 @@ class BatallaDeCoronas extends Table
         $statename = $state['name'];
 
         if ($state['type'] === "activeplayer") {
-            switch ($statename) {
-                default:
-                    $this->gamestate->nextState("zombiePass");
-                    break;
+            $this->spendGold(8, $active_player, false, true);
+
+            if ($this->getPlayerCrown($active_player)) {
+                $this->notifyAllPlayers(
+                    "activateCrownToken",
+                    "",
+                    array("player_id" => $active_player)
+                );
             }
 
+            if ($this->getPlayerCross($active_player)) {
+                $this->notifyAllPlayers(
+                    "activateCrossToken",
+                    "",
+                    array("player_id" => $active_player)
+                );
+            }
+
+            if ($this->getPlayerSmith($active_player)) {
+                $this->notifyAllPlayers(
+                    "activateSmithToken",
+                    "",
+                    array("player_id" => $active_player)
+                );
+            }
+
+            $this->setPlayerCrown(0, $active_player);
+            $this->setPlayerCross(0, $active_player);
+            $this->setPlayerSmith(0, $active_player);
+
+            $this->notifyAllPlayers(
+                "zombieTurn",
+                clienttranslate(''),
+                array()
+            );
+
+            $this->gamestate->nextState("zombiePass");
             return;
         }
 

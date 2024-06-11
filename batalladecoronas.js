@@ -1627,11 +1627,11 @@ define([
           args.processed = true;
 
           if (args.result_log) {
-            args.result_log =`<span class="boc_logHighlight">${args.result_log}</span>`;
+            args.result_log = `<span class="boc_logHighlight">${args.result_log}</span>`;
           }
 
           if (args.chair_log) {
-            args.chair_log =`<span class="boc_logHighlight">${args.chair_log}</span>`;
+            args.chair_log = `<span class="boc_logHighlight">${args.chair_log}</span>`;
           }
 
           if (args.counselor_name) {
@@ -1639,7 +1639,7 @@ define([
           }
 
           if (args.token_label) {
-            args.token_label =`<span class="boc_logHighlight">${args.token_label}</span>`;
+            args.token_label = `<span class="boc_logHighlight">${args.token_label}</span>`;
           }
         }
       } catch (e) {

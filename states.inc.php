@@ -38,6 +38,7 @@ $machinestates = array(
             "couselorActivaction" => 32,
             "buyingPhase" => 4,
             "preBattle" => 5,
+            "zombiePass" => 7,
         ),
     ),
 
@@ -67,6 +68,7 @@ $machinestates = array(
             "counselorActivation" => 32,
             "buyingPhase" => 4,
             "preBattle" => 5,
+            "zombiePass" => 7,
         ),
     ),
 
@@ -77,7 +79,12 @@ $machinestates = array(
         "type" => "activeplayer",
         "args" => "argCounselorVesting",
         "possibleactions" => array("vestCounselor"),
-        "transitions" => array("counselorActivation" => 32, "buyingPhase" => 4, "preBattle" => 5),
+        "transitions" => array(
+            "counselorActivation" => 32,
+            "buyingPhase" => 4,
+            "preBattle" => 5,
+            "zombiePass" => 7
+        ),
     ),
 
     32 => array(
@@ -94,6 +101,7 @@ $machinestates = array(
             "buyingPhase" => 4,
             "preBattle" => 5,
             "skip" => 4,
+            "zombiePass" => 7,
         ),
     ),
 
@@ -103,7 +111,13 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} activated the Noble and must now pick other counselor to activate'),
         "type" => "activeplayer",
         "possibleactions" => array("activateNoble", "cancelActivation"),
-        "transitions" => array("commanderActivation" => 34, "buyingPhase" => 4, "preBattle" => 5, "cancel" => 32),
+        "transitions" => array(
+            "commanderActivation" => 34,
+            "buyingPhase" => 4,
+            "preBattle" => 5,
+            "cancel" => 32,
+            "zombiePass" => 7
+        ),
     ),
 
     34 => array(
@@ -112,7 +126,12 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} activated the Commander and must now pick a militia to improve'),
         "type" => "activeplayer",
         "possibleactions" => array("activateCommander", "cancelActivation"),
-        "transitions" => array("buyingPhase" => 4, "preBattle" => 5, "cancel" => 32),
+        "transitions" => array(
+            "buyingPhase" => 4,
+            "preBattle" => 5,
+            "cancel" => 32,
+            "zombiePass" => 7
+        ),
     ),
 
     35 => array(
@@ -121,7 +140,12 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} activated the Priest and must now pick a square to move the Clergy to'),
         "type" => "activeplayer",
         "possibleactions" => array("activatePriest", "cancelActivation"),
-        "transitions" => array("buyingPhase" => 4, "preBattle" => 5, "cancel" => 32),
+        "transitions" => array(
+            "buyingPhase" => 4,
+            "preBattle" => 5,
+            "cancel" => 32,
+            "zombiePass" => 7
+        ),
     ),
 
     4 => array(
@@ -131,7 +155,13 @@ $machinestates = array(
         "type" => "activeplayer",
         "args" => "argBuyingPhase",
         "possibleactions" => array("buyArea", "skipBuying", "activateToken", "activateSmithToken"),
-        "transitions" => array("buyAgain" => 4, "smithTokenActivation" => 42, "preBattle" => 5, "skip" => 5)
+        "transitions" => array(
+            "buyAgain" => 4,
+            "smithTokenActivation" => 42,
+            "preBattle" => 5,
+            "skip" => 5,
+            "zombiePass" => 7
+        )
     ),
 
     42 => array(
@@ -140,7 +170,13 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('Do ${you} wish to obtain an extra equipment for free with the Smith token?'),
         "type" => "activeplayer",
         "possibleactions" => array("activateSmithToken", "skipSmithToken"),
-        "transitions" => array("buyAgain" => 4, "preBattle" => 5, "battlePhase" => 6, "skip" => 5)
+        "transitions" => array(
+            "buyAgain" => 4,
+            "preBattle" => 5,
+            "battlePhase" => 6,
+            "skip" => 5,
+            "zombiePass" => 7
+        )
     ),
 
     5 => array(
@@ -149,7 +185,10 @@ $machinestates = array(
         "descriptionmyturn" => "",
         "type" => "game",
         "action" => "stPreBattle",
-        "transitions" => array("battlePhase" => 6, "betweenTurns" => 7)
+        "transitions" => array(
+            "battlePhase" => 6,
+            "betweenTurns" => 7
+        )
     ),
 
     6 => array(
@@ -158,7 +197,11 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may start a battle'),
         "type" => "activeplayer",
         "possibleactions" => array("startBattle", "skipBattle", "activateToken"),
-        "transitions" => array("battle" => 61, "skip" => 7),
+        "transitions" => array(
+            "battle" => 61,
+            "skip" => 7,
+            "zombiePass" => 7,
+        ),
     ),
 
     61 => array(
@@ -171,17 +214,21 @@ $machinestates = array(
             "resultDispute" => 62,
             "shieldDestruction" => 64,
             "disputeToken" => 65,
-            "betweenTurns" => 7
+            "betweenTurns" => 7,
         ),
     ),
 
     62 => array(
         "name" => "resultDispute",
         "description" => clienttranslate('${actplayer} may spend gold to reroll the dice'),
-        "descriptionmyturn" => clienttranslate('${you} may spend gold reroll the dice'),
+        "descriptionmyturn" => clienttranslate('${you} may spend gold to reroll the dice'),
         "type" => "activeplayer",
         "possibleactions" => array("disputeResult", "skipDispute", "activateToken"),
-        "transitions" => array("betweenDisputes" => 63, "skip" => 63),
+        "transitions" => array(
+            "betweenDisputes" => 63,
+            "skip" => 63,
+            "zombiePass" => 63
+        ),
     ),
 
     63 => array(
@@ -207,7 +254,12 @@ $machinestates = array(
         "type" => "activeplayer",
         "args" => "argShieldDestruction",
         "possibleactions" => array("destroyShields", "skipDestruction"),
-        "transitions" => array("betweenTurns" => 7, "skip" => 7, "gameEnd" => 99),
+        "transitions" => array(
+            "betweenTurns" => 7,
+            "skip" => 7,
+            "zombiePass" => 7,
+            "gameEnd" => 99
+        ),
     ),
 
     65 => array(
@@ -216,7 +268,11 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may activate a token before your opponent has the chance to reroll the die'),
         "type" => "activeplayer",
         "possibleactions" => array("activateToken", "skipToken"),
-        "transitions" => array("crossTokenActivation" => 67, "skip" => 63)
+        "transitions" => array(
+            "crossTokenActivation" => 67,
+            "skip" => 63,
+            "zombiePass" => 63
+        )
     ),
 
     66 => array(
@@ -225,7 +281,11 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may activate the Cross in response to the Crown used by your opponent'),
         "type" => "activeplayer",
         "possibleactions" => array("activateToken", "skipToken"),
-        "transitions" => array("crossTokenActivation" => 67, "skip" => 63)
+        "transitions" => array(
+            "crossTokenActivation" => 67,
+            "skip" => 63,
+            "zombiePass" => 63
+        )
     ),
 
     67 => array(
@@ -235,7 +295,8 @@ $machinestates = array(
         "type" => "activeplayer",
         "possibleactions" => array("activateCrossToken", "cancelToken"),
         "transitions" => array(
-            "betweenDisputes" => 63
+            "betweenDisputes" => 63,
+            "zombiePass" => 63,
         )
     ),
 
