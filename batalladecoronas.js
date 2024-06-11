@@ -223,6 +223,8 @@ define([
           this.supplyItemSize
         );
         this[crownTowerStock].image_items_per_row = 3;
+        this[crownTowerStock].setSelectionAppearance("class");
+        this[crownTowerStock].selectionClass = "boc_selectedToken";
 
         if (player_id == currentPlayerId) {
           this[crownTowerStock].setSelectionMode(1);
@@ -258,6 +260,8 @@ define([
           this.supplyItemSize
         );
         this[crossTowerStock].image_items_per_row = 3;
+        this[crossTowerStock].setSelectionAppearance("class");
+        this[crossTowerStock].selectionClass = "boc_selectedToken";
 
         if (player_id == currentPlayerId) {
           this[crossTowerStock].setSelectionMode(1);

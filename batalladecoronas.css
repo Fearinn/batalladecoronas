@@ -166,6 +166,10 @@
   transform: scale(1.2);
 }
 
+.boc_selectedToken {
+  transform: scale(1.2);
+}
+
 .boc_power {
   position: absolute;
   top: 310px;
