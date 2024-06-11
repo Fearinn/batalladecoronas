@@ -1287,8 +1287,8 @@ class BatallaDeCoronas extends Table
         $player_id = $this->getActivePlayerId();
 
         if ($this->loadPlayersBasicInfos()[$player_id]["player_zombie"] == 1) {
-           $this->gamestate->nextState("decisionPhase");
-           return;
+            $this->gamestate->nextState("decisionPhase");
+            return;
         }
 
         $die_1 = $this->roll($player_id);
@@ -2281,6 +2281,8 @@ class BatallaDeCoronas extends Table
     {
         $statename = $state['name'];
 
+        $prev_state = $this->getGameStateValue("token_state");
+
         if ($state['type'] === "activeplayer") {
             $this->spendGold(8, $active_player, false, true);
 
@@ -2312,11 +2314,9 @@ class BatallaDeCoronas extends Table
             $this->setPlayerCross(0, $active_player);
             $this->setPlayerSmith(0, $active_player);
 
-            $this->notifyAllPlayers(
-                "zombieTurn",
-                clienttranslate(''),
-                array()
-            );
+            if ($statename == "crossTokenActivation" && $prev_state > 60) {
+                $this->gamestate->nextState("crossZombieInDispute");
+            }
 
             $this->gamestate->nextState("zombiePass");
             return;
