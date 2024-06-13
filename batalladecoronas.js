@@ -1301,6 +1301,7 @@ define([
 
       dojo.subscribe("dieRoll", this, "notif_dieRoll");
       dojo.subscribe("generateGold", this, "notif_generateGold");
+      this.notifqueue.setSynchronous("generateGold", 1000);
       dojo.subscribe("vestCounselor", this, "notif_vestCounselor");
       dojo.subscribe(
         "vestCounselorPrivately",
@@ -1330,6 +1331,7 @@ define([
 
     notif_dieRoll: function (notif) {
       playSound("batalladecoronas_dice");
+      this.disableNextMoveSound();
 
       const die = notif.args.die;
       const result = notif.args.result;
@@ -1414,6 +1416,9 @@ define([
     },
 
     notif_increaseAttack: function (notif) {
+      playSound("batalladecoronas_sword");
+      this.disableNextMoveSound();
+
       const player_id = notif.args.player_id;
 
       const totalSwords = notif.args.totalSwords;
@@ -1430,6 +1435,9 @@ define([
     },
 
     notif_increaseDefense: function (notif) {
+      playSound("batalladecoronas_shield");
+      this.disableNextMoveSound();
+
       const player_id = notif.args.player_id;
 
       const totalShields = notif.args.totalShields;
@@ -1446,6 +1454,9 @@ define([
     },
 
     notif_levelUpDragon: function (notif) {
+      playSound("batalladecoronas_dragon");
+      this.disableNextMoveSound();
+      
       const player_id = notif.args.player_id;
 
       const totalLevel = notif.args.totalLevel;
@@ -1614,7 +1625,7 @@ define([
 
       setTimeout(() => {
         stopSound("batalladecoronas_fire");
-        
+
         this[rageStock].removeFromStock("dragon");
 
         const minLevelStock = `dragonStock$${player_id}:0`;

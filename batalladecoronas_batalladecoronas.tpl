@@ -45,6 +45,42 @@
   preload="none"
   autobuffer
 ></audio>
+<audio
+  id="audiosrc_batalladecoronas_shield"
+  src="{GAMETHEMEURL}img/batalladecoronas_shield.mp3"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_o_batalladecoronas_shield"
+  src="{GAMETHEMEURL}img/batalladecoronas_shield.ogg"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_batalladecoronas_sword"
+  src="{GAMETHEMEURL}img/batalladecoronas_sword.mp3"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_o_batalladecoronas_sword"
+  src="{GAMETHEMEURL}img/batalladecoronas_sword.ogg"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_batalladecoronas_dragon"
+  src="{GAMETHEMEURL}img/batalladecoronas_dragon.mp3"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_o_batalladecoronas_dragon"
+  src="{GAMETHEMEURL}img/batalladecoronas_dragon.ogg"
+  preload="none"
+  autobuffer
+></audio>
 <div id="boc_gameArea" class="boc_gameArea">
   <div id="boc_supply-dice" class="boc_rowContainer boc_supply-dice">
     <div id="boc_dice" class="boc_rowContainer boc_dice">
