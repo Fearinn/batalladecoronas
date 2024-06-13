@@ -1913,7 +1913,7 @@ class BatallaDeCoronas extends Table
                 "player_name" => $this->getPlayerNameById($player_id),
                 "result_log" => $die_1,
                 "die" => 1,
-                "result" => $die_1
+                "result" => $die_1,
             )
         );
 
@@ -2088,10 +2088,23 @@ class BatallaDeCoronas extends Table
         $player_id = $this->getActivePlayerId();
 
         $other_player_id = $this->getPlayerAfter($player_id);
+
         return array(
             "player_id" => $player_id,
             "player_name" => $this->getPlayerNameById($other_player_id),
             "damagedShields" => $this->getGameStateValue("damaged_shields")
+        );
+    }
+
+    function argResultDispute()
+    {
+        $attacker_id = $this->getGameStateValue("attacker");
+
+        $defender_id = $this->getPlayerAfter($attacker_id);
+
+        return array(
+            "player_color" => $this->getPlayerColorById($attacker_id),
+            "player_color2" => $this->getPlayerColorById($defender_id),
         );
     }
 

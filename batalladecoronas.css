@@ -72,6 +72,10 @@
   border: 3px solid green;
 }
 
+.boc_supply-dice {
+  gap: 32px;
+}
+
 .boc_dice {
   position: relative;
   padding: 0 !important;
@@ -82,18 +86,23 @@
   width: 144px;
 }
 
-.boc_dieStock > .stockitem {
-  background: none !important;
-}
-
 .boc_dieStock {
   position: absolute;
   width: 60px;
   z-index: 9999;
 }
 
-.boc_supply-dice {
-  gap: 32px;
+.boc_dieStock > .stockitem {
+  background: none !important;
+}
+
+.boc_battleDie {
+  border: 2px solid white;
+  height: 60px !important;
+}
+
+.roll .boc_battleDie {
+  border: none;
 }
 
 .boc_castles {

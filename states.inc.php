@@ -224,6 +224,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('${you} may spend gold to reroll the dice'),
         "type" => "activeplayer",
         "possibleactions" => array("disputeResult", "skipDispute", "activateToken"),
+        "args" => "argResultDispute",
         "transitions" => array(
             "betweenDisputes" => 63,
             "skip" => 63,

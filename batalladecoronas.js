@@ -829,6 +829,19 @@ define([
       }
 
       if (stateName === "resultDispute") {
+        const attacker_color = args.args.player_color;
+        const defender_color = args.args.player_color2;
+
+        const attackerDie = $(`boc_dieStock:1`);
+        const defenderDie = $(`boc_dieStock:2`);
+
+        setTimeout(() => {
+          dojo.addClass(attackerDie, "boc_battleDie");
+          dojo.addClass(defenderDie, "boc_battleDie");
+          dojo.style(attackerDie, "border-color", `#${attacker_color}`);
+          dojo.style(defenderDie, "border-color", `#${defender_color}`);
+        }, 750);
+
         if (this.isCurrentPlayerActive()) {
           this.addActionButton(
             "boc_dispute_btn",
@@ -889,6 +902,11 @@ define([
             "red"
           );
         }
+      }
+
+      if (stateName === "betweenTurns") {
+        dojo.removeClass($("boc_dieStock:1"), "boc_battleDie");
+        dojo.removeClass($("boc_dieStock:2"), "boc_battleDie");
       }
     },
 
@@ -1456,7 +1474,7 @@ define([
     notif_levelUpDragon: function (notif) {
       playSound("batalladecoronas_dragon");
       this.disableNextMoveSound();
-      
+
       const player_id = notif.args.player_id;
 
       const totalLevel = notif.args.totalLevel;
