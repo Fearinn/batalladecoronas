@@ -836,8 +836,6 @@ class BatallaDeCoronas extends Table
         $target_id = $this->getPlayerAfter($player_id);
 
         if ($this->getPlayerDefense($target_id) > 0) {
-            $this->decreaseDefense(4, $target_id, true);
-
             $this->notifyAllPlayers(
                 "dragonRage",
                 clienttranslate('${player_name2} is attacked by the dragon of ${player_name}'),
@@ -850,6 +848,9 @@ class BatallaDeCoronas extends Table
             );
 
             $this->incStat(1, "dragonRage", $player_id);
+
+            $this->decreaseDefense(4, $target_id, true);
+
 
             $this->setPlayerDragon(0, $player_id);
         } else {

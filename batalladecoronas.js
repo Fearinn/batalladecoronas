@@ -1358,11 +1358,18 @@ define([
       const prevGold = notif.args.prevGold;
       const totalGold = notif.args.totalGold;
 
+      for (let coin = 0; coin < Math.abs(totalGold - prevGold); coin++) {
+        setTimeout(() => {
+          playSound("batalladecoronas_coin");
+        }, coin * 200);
+      }
+
       const originStock = `treasureStock$${player_id}:${prevGold}`;
       const originElement = `boc_treasure$${player_id}:${prevGold}`;
       const destinationStock = `treasureStock$${player_id}:${totalGold}`;
 
       this[destinationStock].addToStock("gold", originElement);
+
       this[originStock].removeFromStock("gold");
     },
 
@@ -1588,6 +1595,9 @@ define([
     },
 
     notif_dragonRage: function (notif) {
+      playSound("batalladecoronas_fire");
+      this.disableNextMoveSound();
+
       const player_id = notif.args.player_id;
       const target_id = notif.args.player_id2;
 
@@ -1603,6 +1613,8 @@ define([
       dojo.addClass(rageElement, "boc_flame");
 
       setTimeout(() => {
+        stopSound("batalladecoronas_fire");
+        
         this[rageStock].removeFromStock("dragon");
 
         const minLevelStock = `dragonStock$${player_id}:0`;

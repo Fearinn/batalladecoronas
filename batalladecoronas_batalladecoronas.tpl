@@ -21,6 +21,30 @@
   preload="none"
   autobuffer
 ></audio>
+<audio
+  id="audiosrc_batalladecoronas_coin"
+  src="{GAMETHEMEURL}img/batalladecoronas_coin.mp3"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_o_batalladecoronas_coin"
+  src="{GAMETHEMEURL}img/batalladecoronas_coin.ogg"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_batalladecoronas_fire"
+  src="{GAMETHEMEURL}img/batalladecoronas_fire.mp3"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_o_batalladecoronas_fire"
+  src="{GAMETHEMEURL}img/batalladecoronas_fire.ogg"
+  preload="none"
+  autobuffer
+></audio>
 <div id="boc_gameArea" class="boc_gameArea">
   <div id="boc_supply-dice" class="boc_rowContainer boc_supply-dice">
     <div id="boc_dice" class="boc_rowContainer boc_dice">
