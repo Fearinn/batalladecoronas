@@ -697,7 +697,14 @@ define([
           this.addActionButton(
             "boc_skip",
             _("Skip"),
-            "onSkipActivation",
+            () => {
+              this.confirmationDialog(
+                _("Do you really want to skip activating that counselor?"),
+                () => {
+                  this.onSkipActivation();
+                }
+              );
+            },
             null,
             null,
             "red"
@@ -849,7 +856,14 @@ define([
             "onDisputeResult"
           );
 
-          this.addActionButton("boc_accept_btn", _("Accept"), "onSkipDispute");
+          this.addActionButton("boc_accept_btn", _("Accept"), () => {
+            this.confirmationDialog(
+              _("Do you really want to accept the result of the battle?"),
+              () => {
+                this.onSkipDispute();
+              }
+            );
+          });
         }
       }
 
@@ -870,7 +884,14 @@ define([
           this.addActionButton(
             "boc_skipDestruction",
             _("Skip"),
-            "onSkipDestruction",
+            () => {
+              this.confirmationDialog(
+                _("Do you really want to skip destroying shields?"),
+                () => {
+                  this.onSkipDestruction();
+                }
+              );
+            },
             null,
             null,
             "red"
