@@ -13,6 +13,10 @@
  *
  */
 
+.head_warning {
+  background-color: yellow;
+}
+
 .boc_gameArea {
   --tokenSize: 80px;
 }

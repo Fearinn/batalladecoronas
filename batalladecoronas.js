@@ -780,7 +780,14 @@ define([
           this.addActionButton(
             "boc_skip_btn",
             _("Skip"),
-            "onSkipBuying",
+            () => {
+              this.confirmationDialog(
+                _("Do you really want to finish your buying phase?"),
+                () => {
+                  this.onSkipBuying();
+                }
+              );
+            },
             null,
             null,
             "red"
@@ -829,7 +836,14 @@ define([
           this.addActionButton(
             "boc_skipBattle_btn",
             _("Skip and pass"),
-            "onSkipBattle",
+            () => {
+              this.confirmationDialog(
+                _("Do you really want to skip a battle?"),
+                () => {
+                  this.onSkipBattle();
+                }
+              );
+            },
             null,
             null,
             "red"
@@ -1366,6 +1380,8 @@ define([
       dojo.subscribe("activateSmithToken", this, "notif_activateSmithToken");
       dojo.subscribe("dragonRage", this, "notif_dragonRage");
       this.notifqueue.setSynchronous("dragonRage", 3000);
+      dojo.subscribe("startBattle", this, "notif_startBattle");
+      this.notifqueue.setSynchronous("startBattle", 1000);
       dojo.subscribe("battleResult", this, "notif_battleResult");
       this.notifqueue.setSynchronous("battleResult", 1000);
       dojo.subscribe("nextTurn", this, "notif_nextTurn");
@@ -1677,6 +1693,10 @@ define([
 
         dojo.removeClass(rageElement, "boc_flame");
       }, 3000);
+    },
+
+    notif_startBattle: function (notif) {
+      this.showMessage(_("Get ready for the battle!"), "warning");
     },
 
     notif_battleResult: function (notif) {},
