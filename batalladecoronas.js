@@ -1360,6 +1360,7 @@ define([
       dojo.subscribe("claimCross", this, "notif_claimCross");
       dojo.subscribe("claimSmith", this, "notif_claimSmith");
       dojo.subscribe("claimGem", this, "notif_claimGem");
+      this.notifqueue.setSynchronous("claimGem", 1000);
       dojo.subscribe("activateCrownToken", this, "notif_activateCrownToken");
       dojo.subscribe("activateCrossToken", this, "notif_activateCrossToken");
       dojo.subscribe("activateSmithToken", this, "notif_activateSmithToken");

@@ -783,7 +783,7 @@ class BatallaDeCoronas extends Table
         $prev_level = $this->getPlayerDragon($player_id);
 
         if ($prev_level == 5) {
-            throw new BgaUserException($this->_("The level of the dragon can't be further increased"));
+            throw new BgaUserException($this->_("The level of the Dragon can't be further increased"));
         }
 
         $total_level = $prev_level + $value;
@@ -796,7 +796,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "levelUpDragon",
-            clienttranslate('${player_name} levels up the dragon'),
+            clienttranslate('${player_name} levels up the Dragon'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
@@ -844,29 +844,28 @@ class BatallaDeCoronas extends Table
     {
         $target_id = $this->getPlayerAfter($player_id);
 
-        if ($this->getPlayerDefense($target_id) > 0) {
-            $this->notifyAllPlayers(
-                "dragonRage",
-                clienttranslate('${player_name2} is attacked by the dragon of ${player_name}'),
-                array(
-                    "player_id" => $player_id,
-                    "player_id2" => $target_id,
-                    "player_name" => $this->getPlayerNameById($player_id),
-                    "player_name2" => $this->getPlayerNameById($target_id),
-                )
-            );
+        $this->notifyAllPlayers(
+            "dragonRage",
+            clienttranslate('${player_name2} is attacked by the Dragon of ${player_name}'),
+            array(
+                "player_id" => $player_id,
+                "player_id2" => $target_id,
+                "player_name" => $this->getPlayerNameById($player_id),
+                "player_name2" => $this->getPlayerNameById($target_id),
+            )
+        );
 
-            $this->incStat(1, "dragonRage", $player_id);
+        $this->incStat(1, "dragonRage", $player_id);
 
-            $this->decreaseDefense(4, $target_id, true);
+        $final_shields = $this->decreaseDefense(4, $target_id, true);
 
-
-            $this->setPlayerDragon(0, $player_id);
-        } else {
-            $this->levelDownDragon(5, $player_id);
+        if ($final_shields == 0) {
+            $this->claimGem($player_id);
         }
 
-        return $this->getPlayerDefense($target_id);
+        $this->setPlayerDragon(0, $player_id);
+
+        return $final_shields;
     }
 
     function claimCrown($player_id): void
