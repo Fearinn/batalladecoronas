@@ -139,6 +139,8 @@ class BatallaDeCoronas extends Table
 
         $sql = "SELECT player_id id, player_score score FROM player ";
 
+        $result["gameVersion"] = intval($this->gamestate->table_globals[300]);
+
         $result["counselorsInfo"] = $this->counselors_info;
         $result["churchSquares"] = $this->church_squares;
         $result["tokensInfo"] = $this->tokens_info;
@@ -168,6 +170,13 @@ class BatallaDeCoronas extends Table
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
     //////////// 
+
+    public function checkVersion(int $clientVersion): void
+    {
+        if ($clientVersion != intval($this->gamestate->table_globals[300])) {
+            throw new BgaVisibleSystemException($this->_("A new version of this game is now available. Please reload the page (F5)."));
+        }
+    }
 
     function getStateName(): string
     {

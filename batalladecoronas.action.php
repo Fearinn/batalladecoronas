@@ -37,9 +37,16 @@ class action_batalladecoronas extends APP_GameAction
     }
   }
 
+  private function checkVersion()
+  {
+    $clientVersion = (int) $this->getArg('gameVersion', AT_int, false);
+    $this->game->checkVersion($clientVersion);
+  }
+
   public function rollDice()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $this->game->rollDice();
     $this->ajaxResponse();
   }
@@ -47,6 +54,7 @@ class action_batalladecoronas extends APP_GameAction
   public function decideDice()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $die = $this->getArg("die", AT_enum, true, null, array(1, 2));
     $this->game->decideDice($die);
     $this->ajaxResponse();
@@ -55,6 +63,7 @@ class action_batalladecoronas extends APP_GameAction
   public function vestCounselor()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $card_id = $this->getArg("cardId", AT_enum, true, null, range(1, 12));
     $this->game->vestCounselor($card_id);
     $this->ajaxResponse();
@@ -63,6 +72,7 @@ class action_batalladecoronas extends APP_GameAction
   public function activateCounselor()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $this->game->activateCounselor();
     $this->ajaxResponse();
   }
@@ -70,6 +80,7 @@ class action_batalladecoronas extends APP_GameAction
   public function activateNoble()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $card_id = $this->getArg("cardId", AT_enum, true, null, range(1, 12));
     $this->game->activateNoble($card_id);
     $this->ajaxResponse();
@@ -78,6 +89,7 @@ class action_batalladecoronas extends APP_GameAction
   public function activateCommander()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $militia = $this->getArg("militia", AT_enum, true, null, array("ATTACK", "DEFENSE"));
     $this->game->activateCommander($militia);
     $this->ajaxResponse();
@@ -86,6 +98,7 @@ class action_batalladecoronas extends APP_GameAction
   public function activatePriest()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $square = $this->getArg("square", AT_enum, true, null, range(1, 3));
     $this->game->activatePriest($square);
     $this->ajaxResponse();
@@ -94,6 +107,7 @@ class action_batalladecoronas extends APP_GameAction
   public function cancelActivation()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $this->game->cancelActivation();
     $this->ajaxResponse();
   }
@@ -101,6 +115,7 @@ class action_batalladecoronas extends APP_GameAction
   public function skipActivation()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $this->game->skipActivation();
     $this->ajaxResponse();
   }
@@ -108,6 +123,7 @@ class action_batalladecoronas extends APP_GameAction
   public function buyArea()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $area = $this->getArg("area", AT_enum, true, null, array("ATTACK", "DEFENSE", "DRAGON"));
     $this->game->buyArea($area);
     $this->ajaxResponse();
@@ -116,6 +132,7 @@ class action_batalladecoronas extends APP_GameAction
   public function skipBuying()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $this->game->skipBuying();
     $this->ajaxResponse();
   }
@@ -123,6 +140,7 @@ class action_batalladecoronas extends APP_GameAction
   public function activateToken()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $token = $this->getArg("token", AT_enum, true, null, array("CROWN", "CROSS"));
     $this->game->activateToken($token);
     $this->ajaxResponse();
@@ -131,6 +149,7 @@ class action_batalladecoronas extends APP_GameAction
   public function activateCrossToken()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $square = $this->getArg("square", AT_enum, true, null, range(1, 3));
     $this->game->activateCrossToken($square);
     $this->ajaxResponse();
@@ -139,6 +158,7 @@ class action_batalladecoronas extends APP_GameAction
   public function activateSmithToken()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $this->game->activateSmithToken();
     $this->ajaxResponse();
   }
@@ -146,6 +166,7 @@ class action_batalladecoronas extends APP_GameAction
   public function cancelToken()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $this->game->cancelToken();
     $this->ajaxResponse();
   }
@@ -153,6 +174,7 @@ class action_batalladecoronas extends APP_GameAction
   public function skipToken()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $this->game->skipToken();
     $this->ajaxResponse();
   }
@@ -160,6 +182,7 @@ class action_batalladecoronas extends APP_GameAction
   public function skipSmithToken()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $this->game->skipSmithToken();
     $this->ajaxResponse();
   }
@@ -167,6 +190,7 @@ class action_batalladecoronas extends APP_GameAction
   public function startBattle()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $this->game->startBattle();
     $this->ajaxResponse();
   }
@@ -174,6 +198,7 @@ class action_batalladecoronas extends APP_GameAction
   public function skipBattle()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $this->game->skipBattle();
     $this->ajaxResponse();
   }
@@ -181,6 +206,7 @@ class action_batalladecoronas extends APP_GameAction
   public function disputeResult()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $this->game->disputeResult();
     $this->ajaxResponse();
   }
@@ -188,6 +214,7 @@ class action_batalladecoronas extends APP_GameAction
   public function skipDispute()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $this->game->skipDispute();
     $this->ajaxResponse();
   }
@@ -195,6 +222,7 @@ class action_batalladecoronas extends APP_GameAction
   public function destroyShields()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $shield_nbr = $this->getArg("shield_nbr", AT_enum, true, null, range(1, 5));
     $this->game->destroyShields($shield_nbr);
     $this->ajaxResponse();
@@ -203,6 +231,7 @@ class action_batalladecoronas extends APP_GameAction
   public function skipDestruction()
   {
     $this->setAjaxMode();
+    $this->checkVersion();
     $this->game->skipDestruction();
     $this->ajaxResponse();
   }

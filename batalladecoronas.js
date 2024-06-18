@@ -52,6 +52,8 @@ define([
     setup: function (gamedatas) {
       console.log("Starting game setup");
 
+      this.gameVersion = gamedatas.gameVersion;
+
       this.counselorsInfo = gamedatas.counselorsInfo;
       this.churchSquares = gamedatas.churchSquares;
       this.tokensInfo = gamedatas.tokensInfo;
@@ -980,6 +982,7 @@ define([
     //// Utility methods
 
     sendAjaxCall: function (action, args = {}) {
+      args.gameVersion = this.gameVersion;
       args.lock = true;
 
       if (this.checkAction(action, true)) {
