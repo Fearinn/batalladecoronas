@@ -28,8 +28,8 @@ $machinestates = array(
 
     2 => array(
         "name" => "diceRoll",
-        "description" => clienttranslate('${actplayer} must roll the dice to start the match'),
-        "descriptionmyturn" => clienttranslate('${you} must roll the dice to start the match'),
+        "description" => clienttranslate('${actplayer} must roll the dice to start his turn'),
+        "descriptionmyturn" => clienttranslate('${you} must roll the dice to start your turn'),
         "type" => "activeplayer",
         "possibleactions" => array("rollDice"),
         "transitions" => array(
@@ -42,20 +42,20 @@ $machinestates = array(
         ),
     ),
 
-    21 => array(
-        "name" => "autoDiceRoll",
-        "description" => "",
-        "descriptionmyturn" => "",
-        "type" => "game",
-        "action" => "stAutoDiceRoll",
-        "transitions" => array(
-            "decisionPhase" => 3,
-            "counselorVesting" => 31,
-            "counselorActivation" => 32,
-            "buyingPhase" => 4,
-            "preBattle" => 5,
-        ),
-    ),
+    // 21 => array(
+    //     "name" => "autoDiceRoll",
+    //     "description" => "",
+    //     "descriptionmyturn" => "",
+    //     "type" => "game",
+    //     "action" => "stAutoDiceRoll",
+    //     "transitions" => array(
+    //         "decisionPhase" => 3,
+    //         "counselorVesting" => 31,
+    //         "counselorActivation" => 32,
+    //         "buyingPhase" => 4,
+    //         "preBattle" => 5,
+    //     ),
+    // ),
 
     3 =>  array(
         "name" => "decisionPhase",
@@ -308,7 +308,7 @@ $machinestates = array(
         "descriptionmyturn" => "",
         "type" => "game",
         "action" => "stBetweenTurns",
-        "transitions" => array("nextTurn" => 21),
+        "transitions" => array("nextTurn" => 2),
     ),
 
     // Final state.

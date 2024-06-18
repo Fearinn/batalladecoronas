@@ -1342,6 +1342,7 @@ define([
       console.log("notifications subscriptions setup");
 
       dojo.subscribe("dieRoll", this, "notif_dieRoll");
+      this.notifqueue.setSynchronous("dieRoll", 100);
       dojo.subscribe("generateGold", this, "notif_generateGold");
       this.notifqueue.setSynchronous("generateGold", 1000);
       dojo.subscribe("vestCounselor", this, "notif_vestCounselor");

@@ -1288,12 +1288,8 @@ class BatallaDeCoronas extends Table
     //////////// Player actions
     ////////////
 
-    function rollDice($auto = false)
+    function rollDice()
     {
-        if (!$auto) {
-            $this->checkAction("rollDice");
-        }
-
         $player_id = $this->getActivePlayerId();
 
         if ($this->loadPlayersBasicInfos()[$player_id]["player_zombie"] == 1) {
@@ -2201,6 +2197,13 @@ class BatallaDeCoronas extends Table
             if ($attack_wins) {
                 $this->incStat(1, "successfulAttacks", $attacker_id);
 
+                if ($this->getPlayerDefense($defender_id) == 0) {
+                    $this->claimGem($attacker_id);
+
+                    $this->gamestate->nextState("betweenTurns");
+                    return;
+                }
+
                 $swords = $this->getPlayerAttack($attacker_id);
 
                 if ($margin > $this->getPlayerAttack($attacker_id)) {
@@ -2225,8 +2228,6 @@ class BatallaDeCoronas extends Table
                 array()
             );
         }
-
-        $this->gamestate->changeActivePlayer($attacker_id);
 
         $this->gamestate->nextState("betweenTurns");
     }
@@ -2262,7 +2263,9 @@ class BatallaDeCoronas extends Table
 
     function stBetweenTurns()
     {
-        $player_id = $this->getActivePlayerId();
+        $attacker_id = $this->getGameStateValue("attacker");
+
+        $player_id = $attacker_id ? $attacker_id : $this->getActivePlayerId();
 
         $other_player_id = $this->getPlayerAfter($player_id);
 
@@ -2289,11 +2292,6 @@ class BatallaDeCoronas extends Table
         }
 
         $this->gamestate->nextState("nextTurn");
-    }
-
-    function stAutoDiceRoll()
-    {
-        $this->rollDice(true);
     }
 
     //////////////////////////////////////////////////////////////////////////////
