@@ -534,7 +534,7 @@ class BatallaDeCoronas extends Table
 
         if ($value > $prev_gold) {
             if (!$force) {
-                throw new BgaVisibleSystemException("You don't have the gold required by this action");
+                throw new BgaUserException("You don't have the gold required by this action");
             }
 
             $total_gold = 0;

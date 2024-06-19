@@ -76,6 +76,11 @@
   border: 3px solid green;
 }
 
+.boc_selectableContainer .stockitem {
+  cursor: pointer;
+  pointer-events: all;
+}
+
 .boc_supply-dice {
   gap: 32px;
 }
