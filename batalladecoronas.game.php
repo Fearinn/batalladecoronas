@@ -262,7 +262,7 @@ class BatallaDeCoronas extends Table
     function setPlayerClergy(int $value, $player_id): void
     {
         if ($value < 1 || $value > 3) {
-            throw new BgaVisibleSystemException("Invalid value for clergy");
+            throw new BgaVisibleSystemException("Invalid value for Clergy");
         }
 
         $this->DbQuery("UPDATE player SET clergy=$value WHERE player_id='$player_id'");
@@ -722,21 +722,21 @@ class BatallaDeCoronas extends Table
 
     function activateGoldenSquare($player_id): void
     {
-        $other_player_id = $this->getPlayerAfter($player_id);
+        $opponent_id = $this->getPlayerAfter($player_id);
 
-        $this->negativateGold($other_player_id);
+        $this->negativateGold($opponent_id);
     }
 
     function activateBlueSquare($player_id): void
     {
-        $other_player_id = $this->getPlayerAfter($player_id);
-        $this->decreaseAttack(1, $other_player_id);
+        $opponent_id = $this->getPlayerAfter($player_id);
+        $this->decreaseAttack(1, $opponent_id);
     }
 
     function activateRedSquare($player_id): void
     {
-        $other_player_id = $this->getPlayerAfter($player_id);
-        $this->levelDownDragon(1, $other_player_id);
+        $opponent_id = $this->getPlayerAfter($player_id);
+        $this->levelDownDragon(1, $opponent_id);
     }
 
     function moveClergy(int $square_id, $player_id): void
@@ -744,7 +744,7 @@ class BatallaDeCoronas extends Table
         $prev_square = $this->getPlayerClergy($player_id);
 
         if ($prev_square == $square_id) {
-            throw new BgaUserException($this->_("You must move the clergy to other square"));
+            throw new BgaUserException($this->_("You must move the Clergy to other square"));
         }
 
         $this->setPlayerClergy($square_id, $player_id);
@@ -753,7 +753,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "moveClergy",
-            clienttranslate('${player_name} moves the clergy to the ${square_label} square and activates its effect'),
+            clienttranslate('${player_name} moves the Clergy to the ${square_label} square and activates its effect'),
             array(
                 "i18n" => array("square_label"),
                 "player_id" => $player_id,
@@ -870,18 +870,18 @@ class BatallaDeCoronas extends Table
 
     function claimCrown($player_id): void
     {
-        $other_player_id = $this->getPlayerAfter($player_id);
+        $opponent_id = $this->getPlayerAfter($player_id);
 
         if ($this->getPlayerCrown($player_id)) {
             return;
         }
 
-        $owned = $this->getPlayerCrown($other_player_id);
+        $owned = $this->getPlayerCrown($opponent_id);
 
         $this->setPlayerCrown(1, $player_id);
 
         if ($owned) {
-            $this->setPlayerCrown(0, $other_player_id);
+            $this->setPlayerCrown(0, $opponent_id);
         }
 
         $this->notifyAllPlayers(
@@ -892,7 +892,7 @@ class BatallaDeCoronas extends Table
                 "token_label" => $this->tokens_info[1]["label_tr"],
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
-                "other_player_id" => $other_player_id,
+                "other_player_id" => $opponent_id,
                 "isOwned" => $owned,
                 "supply" => $this->getSupply()
             )
@@ -901,16 +901,16 @@ class BatallaDeCoronas extends Table
 
     function claimCross($player_id): void
     {
-        $other_player_id = $this->getPlayerAfter($player_id);
+        $opponent_id = $this->getPlayerAfter($player_id);
 
         if ($this->getPlayerCross($player_id)) {
             return;
         }
 
-        $owned = $this->getPlayerCross($other_player_id);
+        $owned = $this->getPlayerCross($opponent_id);
 
         $this->setPlayerCross(1, $player_id);
-        $this->setPlayerCross(0, $other_player_id);
+        $this->setPlayerCross(0, $opponent_id);
 
         $this->notifyAllPlayers(
             "claimCross",
@@ -920,7 +920,7 @@ class BatallaDeCoronas extends Table
                 "token_label" => $this->tokens_info[2]["label_tr"],
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
-                "other_player_id" => $other_player_id,
+                "other_player_id" => $opponent_id,
                 "isOwned" => $owned,
                 "supply" => $this->getSupply()
             )
@@ -929,16 +929,16 @@ class BatallaDeCoronas extends Table
 
     function claimSmith($player_id): void
     {
-        $other_player_id = $this->getPlayerAfter($player_id);
+        $opponent_id = $this->getPlayerAfter($player_id);
 
         if ($this->getPlayerSmith($player_id)) {
             return;
         }
 
-        $owned = $this->getPlayerSmith($other_player_id);
+        $owned = $this->getPlayerSmith($opponent_id);
 
         $this->setPlayerSmith(1, $player_id);
-        $this->setPlayerSmith(0, $other_player_id);
+        $this->setPlayerSmith(0, $opponent_id);
 
         $this->notifyAllPlayers(
             "claimSmith",
@@ -948,7 +948,7 @@ class BatallaDeCoronas extends Table
                 "token_label" => $this->tokens_info[3]["label_tr"],
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
-                "other_player_id" => $other_player_id,
+                "other_player_id" => $opponent_id,
                 "isOwned" => $owned,
                 "supply" => $this->getSupply()
             )
@@ -957,15 +957,15 @@ class BatallaDeCoronas extends Table
 
     function claimGem($player_id): int
     {
-        $other_player_id = $this->getPlayerAfter($player_id);
+        $opponent_id = $this->getPlayerAfter($player_id);
 
         $total_gems = $this->getPlayerScore($player_id) + 1;
 
         $this->setPlayerMaxGold(7 - $total_gems, $player_id);
         $this->setPlayerScore($total_gems, $player_id);
 
-        $prev_power = $this->getPlayerPower($other_player_id);
-        $this->setPlayerPower($prev_power - 1, $other_player_id);
+        $prev_power = $this->getPlayerPower($opponent_id);
+        $this->setPlayerPower($prev_power - 1, $opponent_id);
 
         $prev_highest_gems = $this->getGameStateValue("highest_gems");
 
@@ -975,14 +975,14 @@ class BatallaDeCoronas extends Table
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id),
-                "other_player_id" => $other_player_id,
+                "other_player_id" => $opponent_id,
                 "totalGems" => $total_gems,
                 "gemsByLocations" => $this->getGemsByLocation(),
             )
         );
 
         $this->claimCrown($player_id);
-        $this->claimCross($other_player_id);
+        $this->claimCross($opponent_id);
 
         $gold = $this->getPlayerGold($player_id);
         $max_gold = $this->getPlayerMaxGold($player_id);
@@ -1753,6 +1753,16 @@ class BatallaDeCoronas extends Table
                 return;
             }
 
+            $opponent_id = $this->getPlayerAfter($player_id);
+
+            if ($state_name === "disputeToken") {
+                // $this->gamestate->changeActivePlayer($opponent_id);
+
+                $this->gamestate->nextState("betweenDisputes");
+                $this->setGameStateValue("after_token", 1);
+                return;
+            }
+
             $this->gamestate->jumpToState($state_id);
             return;
         }
@@ -1892,7 +1902,7 @@ class BatallaDeCoronas extends Table
 
         $this->setGameStateValue("attacker", $player_id);
 
-        $other_player_id = $this->getPlayerAfter($player_id);
+        $opponent_id = $this->getPlayerAfter($player_id);
 
         $die_1 = $this->roll($player_id);
         $die_2 = $this->roll($player_id);
@@ -1926,7 +1936,7 @@ class BatallaDeCoronas extends Table
             clienttranslate('${player_name} rolls a ${result_log} with the second die'),
             array(
                 "player_id" => $player_id,
-                "player_name" => $this->getPlayerNameById($other_player_id),
+                "player_name" => $this->getPlayerNameById($opponent_id),
                 "result_log" => $die_2,
                 "die" => 2,
                 "result" => $die_2
@@ -2031,9 +2041,9 @@ class BatallaDeCoronas extends Table
 
         $player_id = $this->getActivePlayerId();
 
-        $other_player_id = $this->getPlayerAfter($player_id);
+        $opponent_id = $this->getPlayerAfter($player_id);
 
-        $final_shields = $this->decreaseDefense($value, $other_player_id, true);
+        $final_shields = $this->decreaseDefense($value, $opponent_id, true);
 
         if ($final_shields == 0) {
             $this->claimGem($player_id);
@@ -2091,11 +2101,11 @@ class BatallaDeCoronas extends Table
     {
         $player_id = $this->getActivePlayerId();
 
-        $other_player_id = $this->getPlayerAfter($player_id);
+        $opponent_id = $this->getPlayerAfter($player_id);
 
         return array(
             "player_id" => $player_id,
-            "player_name" => $this->getPlayerNameById($other_player_id),
+            "player_name" => $this->getPlayerNameById($opponent_id),
             "damagedShields" => $this->getGameStateValue("damaged_shields")
         );
     }
@@ -2237,20 +2247,20 @@ class BatallaDeCoronas extends Table
         $this->setGameStateValue("token_state", 0);
 
         $player_id = $this->getActivePlayerId();
-        $other_player_id = $this->getPlayerAfter($player_id);
+        $opponent_id = $this->getPlayerAfter($player_id);
 
         if (
             $prev_state == 62 &&
-            in_array("CROSS", $this->getTokenPicks($other_player_id))
+            in_array("CROSS", $this->getTokenPicks($opponent_id))
         ) {
-            $this->gamestate->changeActivePlayer($other_player_id);
+            $this->gamestate->changeActivePlayer($opponent_id);
 
             $this->gamestate->nextState("responseToCrown");
             return;
         }
 
         if ($prev_state == 65 || $prev_state == 66) {
-            $this->gamestate->changeActivePlayer($other_player_id);
+            $this->gamestate->changeActivePlayer($opponent_id);
 
             $this->setGameStateValue("after_token", 1);
             $this->gamestate->nextState("betweenDisputes");
@@ -2266,10 +2276,10 @@ class BatallaDeCoronas extends Table
 
         $player_id = $attacker_id ? $attacker_id : $this->getActivePlayerId();
 
-        $other_player_id = $this->getPlayerAfter($player_id);
+        $opponent_id = $this->getPlayerAfter($player_id);
 
         $this->setPlayerReroll(1, $player_id);
-        $this->setPlayerReroll(1, $other_player_id);
+        $this->setPlayerReroll(1, $opponent_id);
 
         $this->setGameStateValue("attacker", 0);
         $this->setGameStateValue("equipment", 0);
@@ -2283,7 +2293,7 @@ class BatallaDeCoronas extends Table
             )
         );
 
-        $this->giveExtraTime($other_player_id);
+        $this->giveExtraTime($opponent_id);
         $this->activeNextPlayer();
 
         if ($this->getGameStateValue("first_turn")) {

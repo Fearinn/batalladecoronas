@@ -271,6 +271,7 @@ $machinestates = array(
         "possibleactions" => array("activateToken", "skipToken"),
         "transitions" => array(
             "crossTokenActivation" => 67,
+            "betweenDisputes" => 63,
             "skip" => 63,
             "zombiePass" => 63
         )
