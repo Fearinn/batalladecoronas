@@ -1361,7 +1361,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "decideDice",
-            clienttranslate('${player_name} activates the chair ${chair_log}'),
+            clienttranslate('${player_name} calls the chair ${chair_log}'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getActivePlayerName(),

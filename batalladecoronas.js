@@ -1731,11 +1731,15 @@ define([
           }
 
           if (args.counselor_name) {
-            args.counselor_name = `<span class="boc_logHighlight">${args.counselor_name}</span>`;
+            args.counselor_name = `<span class="boc_logHighlight">${_(
+              args.counselor_name
+            )}</span>`;
           }
 
           if (args.token_label) {
-            args.token_label = `<span class="boc_logHighlight">${args.token_label}</span>`;
+            args.token_label = `<span class="boc_logHighlight">${_(
+              args.token_label
+            )}</span>`;
           }
         }
       } catch (e) {
