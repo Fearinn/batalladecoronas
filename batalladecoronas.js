@@ -1407,7 +1407,10 @@ define([
 
       for (let face = 1; face <= 6; face++) {
         dojo.removeClass(dieAnimationElement, `roll-${face}`);
-        dojo.addClass(dieAnimationElement, "roll-1");
+
+        if (result != 1) {
+          dojo.addClass(dieAnimationElement, "roll-1");
+        }
       }
 
       setTimeout(() => {

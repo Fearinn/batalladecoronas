@@ -1028,6 +1028,10 @@ class BatallaDeCoronas extends Table
             $can_activate = !!$this->getNoblePicks($player_id);
         }
 
+        if ($counselor_id == 5) {
+            $can_activate = !$this->getPlayerSmith($player_id);
+        }
+
         return $can_activate;
     }
 
@@ -1399,11 +1403,22 @@ class BatallaDeCoronas extends Table
 
         $this->generateGold($gold_die, $player_id);
 
-        $location_counselors = $this->council->getCardsInLocation("vested:" . $player_id, $chair_die);
-        $counselor = array_shift($location_counselors);
+        $chair_counselor = $this->council->getCardsInLocation("vested:" . $player_id, $chair_die);
+        $counselor = array_shift($chair_counselor);
 
         if ($counselor === null) {
             $this->setGameStateValue("active_chair", $chair_die);
+
+            $inactive_council = $this->getInactiveCouncil()[$player_id];
+
+            if (count($inactive_council) == 1) {
+                $last_counselor = array_shift($inactive_council);
+                $card_id = $last_counselor["id"];
+
+                $this->vestCounselor($card_id, true);
+                return;
+            };
+
             $this->gamestate->nextState("counselorVesting");
             return;
         }
@@ -1425,9 +1440,11 @@ class BatallaDeCoronas extends Table
         $this->gamestate->nextState("counselorActivation");
     }
 
-    function vestCounselor($card_id)
+    function vestCounselor($card_id, $auto = false)
     {
-        $this->checkAction("vestCounselor");
+        if (!$auto) {
+            $this->checkAction("vestCounselor");
+        }
 
         $player_id = $this->getActivePlayerId();
 
@@ -1492,6 +1509,11 @@ class BatallaDeCoronas extends Table
         $player_id = $this->getActivePlayerId();
 
         $active_counselor = $this->getGameStateValue("active_counselor");
+
+        if (!$this->canActivateCounselor($active_counselor, $player_id)) {
+            throw new BgaUserException($this->_("You can't activate this counselor now"));
+        }
+
 
         if ($active_counselor == 2) {
             $this->masterOfCoin($player_id);
