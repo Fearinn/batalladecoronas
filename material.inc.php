@@ -42,7 +42,7 @@ $this->counselors_info = array(
     "name" => clienttranslate("Noble"),
     "color" => "purple",
     "spritePos" => 3,
-    "description" => clienttranslate("Noble: activates other counselor")
+    "description" => clienttranslate("Noble: activates other counselor (the copied counselor must be in a seat)")
   ),
   5 => array(
     "name" => clienttranslate("Smith"),
@@ -62,17 +62,17 @@ $this->tokens_info = array(
   1 => array(
     "label" => "crown",
     "label_tr" => clienttranslate("Crown"),
-    "description" => clienttranslate("Crown: generates 3 of gold"),
+    "description" => clienttranslate("Crown token: generates 3 of gold"),
   ),
   2 => array(
     "label" => "cross",
     "label_tr" => clienttranslate("Cross"),
-    "description" => clienttranslate("Cross: moves the clergy")
+    "description" => clienttranslate("Cross token: moves the clergy")
   ),
   3 => array(
     "label" => "smith",
     "label_tr" => clienttranslate("Smith"),
-    "description" => clienttranslate("Smith: obtains an extra shield/sword for free")
+    "description" => clienttranslate("Smith token: obtains an extra shield/sword for free")
   ),
 );
 
