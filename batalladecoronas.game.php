@@ -2183,7 +2183,9 @@ class BatallaDeCoronas extends Table
 
     function stPreBattle()
     {
-        if ($this->getGameStateValue("first_turn")) {
+        $player_id = $this->getActivePlayerId();
+
+        if ($this->getGameStateValue("first_turn") || $this->getPlayerAttack($player_id) == 0) {
             $this->gamestate->nextState("betweenTurns");
             return;
         }
