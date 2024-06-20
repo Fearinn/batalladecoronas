@@ -1315,6 +1315,8 @@ class BatallaDeCoronas extends Table
 
     function rollDice()
     {
+        $this->checkAction("rollDice");
+
         $player_id = $this->getActivePlayerId();
 
         if ($this->loadPlayersBasicInfos()[$player_id]["player_zombie"] == 1) {
@@ -1809,11 +1811,7 @@ class BatallaDeCoronas extends Table
                 return;
             }
 
-            $opponent_id = $this->getPlayerAfter($player_id);
-
             if ($state_name === "disputeToken") {
-                // $this->gamestate->changeActivePlayer($opponent_id);
-
                 $this->gamestate->nextState("betweenDisputes");
                 $this->setGameStateValue("after_token", 1);
                 return;
