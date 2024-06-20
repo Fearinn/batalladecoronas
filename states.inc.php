@@ -88,6 +88,7 @@ $machinestates = array(
             "preBattle" => 5,
             "skip" => 4,
             "zombiePass" => 7,
+            "gameEnd" => 99
         ),
     ),
 
@@ -102,7 +103,8 @@ $machinestates = array(
             "buyingPhase" => 4,
             "preBattle" => 5,
             "cancel" => 32,
-            "zombiePass" => 7
+            "zombiePass" => 7,
+            "gameEnd" => 99
         ),
     ),
 
@@ -148,7 +150,8 @@ $machinestates = array(
             "smithTokenActivation" => 42,
             "preBattle" => 5,
             "skip" => 5,
-            "zombiePass" => 7
+            "zombiePass" => 7,
+            "gameEnd" => 99
         )
     ),
 
@@ -232,7 +235,8 @@ $machinestates = array(
             "shieldDestruction" => 64,
             "disputeToken" => 65,
             "responseToCrown" => 66,
-            "betweenTurns" => 7
+            "betweenTurns" => 7,
+            "gameEnd" => 99
         ),
     ),
 
