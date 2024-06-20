@@ -946,7 +946,7 @@ define([
       }
 
       if (stateName === "betweenTurns") {
-        dojo.removeClass($("boc_dieStock:1"), "boc_attackingDie");
+        dojo.removeClass($("boc_die:1"), "boc_attackingDie");
         dojo.removeClass($("boc_dieStock:1"), "boc_battleDie");
         dojo.removeClass($("boc_dieStock:2"), "boc_battleDie");
       }
@@ -1371,7 +1371,9 @@ define([
         "notif_vestCounselorPrivately"
       );
       dojo.subscribe("increaseAttack", this, "notif_increaseAttack");
+      this.notifqueue.setSynchronous("increaseAttack", 1000);
       dojo.subscribe("increaseDefense", this, "notif_increaseDefense");
+      this.notifqueue.setSynchronous("increaseDefense", 1000);
       dojo.subscribe("moveClergy", this, "notif_moveClergy");
       dojo.subscribe("levelUpDragon", this, "notif_levelUpDragon");
       this.notifqueue.setSynchronous("levelUpDragon", 1000);
@@ -1390,7 +1392,6 @@ define([
       dojo.subscribe("battleResult", this, "notif_battleResult");
       this.notifqueue.setSynchronous("battleResult", 1000);
       dojo.subscribe("nextTurn", this, "notif_nextTurn");
-      this.notifqueue.setSynchronous("nextTurn", 1000);
       dojo.subscribe("newScore", this, "notif_newScore");
     },
 

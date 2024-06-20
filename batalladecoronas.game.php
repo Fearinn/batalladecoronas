@@ -1543,11 +1543,16 @@ class BatallaDeCoronas extends Table
         $active_counselor = $counselor["type_arg"];
 
         if ($counselor["location"] !== ("vested:" . $player_id)) {
-            throw new BgaVisibleSystemException("The Noble can only activate counselor on chairs");
+            throw new BgaVisibleSystemException("The Noble can only activate counselor assigned to chairs");
         }
 
         if ($active_counselor == 4) {
             throw new BgaUserException($this->_("You can't activate the Noble with its own effect"));
+        }
+
+
+        if (!in_array($active_counselor, $this->getNoblePicks($player_id))) {
+            throw new BgaUserException($this->_("You can't activate this counselor now"));
         }
 
         $this->notifyAllPlayers(
@@ -1558,10 +1563,6 @@ class BatallaDeCoronas extends Table
                 "player_name" => $this->getPlayerNameById($player_id)
             )
         );
-
-        if (!in_array($active_counselor, $this->getNoblePicks($player_id))) {
-            throw new BgaUserException($this->_("You can't activate this counselor now"));
-        }
 
         if ($active_counselor == 2) {
             $this->masterOfCoin($player_id);
@@ -2072,8 +2073,6 @@ class BatallaDeCoronas extends Table
 
         $this->setPlayerReroll(0, $player_id);
 
-        $player_id = $this->getActivePlayerId();
-
         $this->notifyAllPlayers(
             "skipDispute",
             clienttranslate('${player_name} accepts the result of his die'),
@@ -2351,7 +2350,7 @@ class BatallaDeCoronas extends Table
         );
 
         $this->giveExtraTime($opponent_id);
-        $this->activeNextPlayer();
+        $this->gamestate->changeActivePlayer($opponent_id);
 
         if ($this->getGameStateValue("first_turn")) {
             $this->setGameStateValue("first_turn", 0);

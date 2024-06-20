@@ -211,8 +211,8 @@ $machinestates = array(
 
     62 => array(
         "name" => "resultDispute",
-        "description" => clienttranslate('${actplayer} may spend gold to reroll the dice'),
-        "descriptionmyturn" => clienttranslate('${you} may spend gold to reroll the dice'),
+        "description" => clienttranslate('${actplayer} may spend gold to reroll his die'),
+        "descriptionmyturn" => clienttranslate('${you} may spend gold to reroll his die'),
         "type" => "activeplayer",
         "possibleactions" => array("disputeResult", "skipDispute", "activateToken"),
         "args" => "argResultDispute",
