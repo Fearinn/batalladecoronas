@@ -36,7 +36,7 @@ class BatallaDeCoronas extends Table
             "token_state" => 14,
             "equipment" => 15,
             "attacker" => 16,
-            "initial_loser" => 17,
+            // "initial_loser" => 17,
             "damaged_shields" => 18,
             "after_token" => 19,
             "free_noble" => 20,
@@ -83,7 +83,7 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue("token_state", 0);
         $this->setGameStateInitialValue("equipment", 0);
         $this->setGameStateInitialValue("attacker", 0);
-        $this->setGameStateInitialValue("initial_loser", 0);
+        // $this->setGameStateInitialValue("initial_loser", 0);
         $this->setGameStateInitialValue("damaged_shields", 0);
         $this->setGameStateInitialValue("after_token", 0);
         $this->setGameStateInitialValue("free_noble", 0);
@@ -2203,42 +2203,33 @@ class BatallaDeCoronas extends Table
         $loser_id = $attack_wins ? $defender_id : $attacker_id;
         $winner_id = $this->getPlayerAfter($loser_id);
 
-        $initial_loser = $this->getGameStateValue("initial_loser");
-
-        if (!$initial_loser) {
-            $initial_loser = $loser_id;
-            $this->setGameStateValue("initial_loser", $loser_id);
-        }
-
-        $initial_winner = $this->getPlayerAfter($initial_loser);
-
         $after_token = $this->getGameStateValue("after_token");
         $this->setGameStateValue("after_token", 0);
 
         if (
-            $this->canReroll($initial_loser)
+            $this->canReroll($attacker_id)
         ) {
-            if (!$after_token && $this->getTokenPicks($initial_winner)) {
-                $this->gamestate->changeActivePlayer($initial_winner);
+            if (!$after_token && $this->getTokenPicks($defender_id)) {
+                $this->gamestate->changeActivePlayer($defender_id);
                 $this->gamestate->nextState("disputeToken");
                 return;
             }
 
-            $this->gamestate->changeActivePlayer($initial_loser);
+            $this->gamestate->changeActivePlayer($attacker_id);
             $this->gamestate->nextState("resultDispute");
             return;
         }
 
         if (
-            $this->canReroll($initial_winner)
+            $this->canReroll($defender_id)
         ) {
-            if (!$after_token && $this->getTokenPicks($initial_loser)) {
-                $this->gamestate->changeActivePlayer($initial_loser);
+            if (!$after_token && $this->getTokenPicks($attacker_id)) {
+                $this->gamestate->changeActivePlayer($attacker_id);
                 $this->gamestate->nextState("disputeToken");
                 return;
             }
 
-            $this->gamestate->changeActivePlayer($initial_winner);
+            $this->gamestate->changeActivePlayer($defender_id);
             $this->gamestate->nextState("resultDispute");
             return;
         }
