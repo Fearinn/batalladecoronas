@@ -77,8 +77,7 @@
 }
 
 .boc_selectableContainer .stockitem {
-  cursor: pointer;
-  pointer-events: all;
+  cursor: pointer !important;
 }
 
 .boc_supply-dice {

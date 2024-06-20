@@ -35,27 +35,12 @@ $machinestates = array(
         "transitions" => array(
             "decisionPhase" => 3,
             "counselorVesting" => 31,
-            "couselorActivaction" => 32,
+            "couselorActivation" => 32,
             "buyingPhase" => 4,
             "preBattle" => 5,
             "zombiePass" => 7,
         ),
     ),
-
-    // 21 => array(
-    //     "name" => "autoDiceRoll",
-    //     "description" => "",
-    //     "descriptionmyturn" => "",
-    //     "type" => "game",
-    //     "action" => "stAutoDiceRoll",
-    //     "transitions" => array(
-    //         "decisionPhase" => 3,
-    //         "counselorVesting" => 31,
-    //         "counselorActivation" => 32,
-    //         "buyingPhase" => 4,
-    //         "preBattle" => 5,
-    //     ),
-    // ),
 
     3 =>  array(
         "name" => "decisionPhase",
@@ -95,6 +80,7 @@ $machinestates = array(
         "args" => "argCounselorActivation",
         "possibleactions" => array("activateCounselor", "skipActivation", "activateToken"),
         "transitions" => array(
+            "counselorActivation" => 32,
             "nobleActivation" => 33,
             "commanderActivation" => 34,
             "priestActivation"  => 35,
@@ -129,6 +115,7 @@ $machinestates = array(
         "transitions" => array(
             "buyingPhase" => 4,
             "preBattle" => 5,
+            "counselorActivation" => 32,
             "cancel" => 32,
             "zombiePass" => 7
         ),
@@ -143,6 +130,7 @@ $machinestates = array(
         "transitions" => array(
             "buyingPhase" => 4,
             "preBattle" => 5,
+            "counselorActivation" => 32,
             "cancel" => 32,
             "zombiePass" => 7
         ),

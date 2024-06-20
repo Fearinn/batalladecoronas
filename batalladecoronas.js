@@ -1457,6 +1457,10 @@ define([
       );
 
       this[originStock].removeFromStockById(cardId);
+
+      if (this[originStock].count() == 0) {
+        dojo.destroy(originElement);
+      }
     },
 
     notif_vestCounselor: function (notif) {

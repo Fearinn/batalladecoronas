@@ -39,6 +39,7 @@ class BatallaDeCoronas extends Table
             "initial_loser" => 17,
             "damaged_shields" => 18,
             "after_token" => 19,
+            "free_noble" => 20,
 
             "highest_gems" => 80,
             "first_turn" => 81
@@ -85,6 +86,7 @@ class BatallaDeCoronas extends Table
         $this->setGameStateInitialValue("initial_loser", 0);
         $this->setGameStateInitialValue("damaged_shields", 0);
         $this->setGameStateInitialValue("after_token", 0);
+        $this->setGameStateInitialValue("free_noble", 0);
 
 
         $this->setGameStateInitialValue("highest_gems", 0);
@@ -193,7 +195,8 @@ class BatallaDeCoronas extends Table
 
     function roll($player_id): int
     {
-        $value = bga_rand(1, 6);
+        //tests
+        $value = 6;
 
         $this->incStat(1, "rolled" . $value, $player_id);
 
@@ -1029,6 +1032,30 @@ class BatallaDeCoronas extends Table
         return $can_activate;
     }
 
+    function freeNoble($player_id): bool
+    {
+        if ($this->getGameStateValue("free_noble")) {
+            return false;
+        }
+
+        $free_noble = $this->council->countCardsInLocation("vested:" . $player_id) == 6;
+
+        if ($free_noble) {
+            $this->setGameStateValue("free_noble", 1);
+
+            $this->notifyAllPlayers(
+                "freeNoble",
+                clienttranslate('${player_name} is the first player to complete the council and gets a bonus Noble activation'),
+                array(
+                    "player_id" => $player_id,
+                    "player_name" => $this->getPlayerNameById($player_id)
+                )
+            );
+        }
+
+        return $free_noble;
+    }
+
     function canSmithToken($player_id): bool
     {
         $equipment = $this->getGameStateValue("equipment");
@@ -1429,7 +1456,7 @@ class BatallaDeCoronas extends Table
 
         $this->notifyAllPlayers(
             "vestCounselor",
-            clienttranslate('${player_name} picks the ${counselor_name} to occupy the chair ${chair_log}'),
+            clienttranslate('${player_name} assigns the ${counselor_name} to the chair ${chair_log}'),
             array(
                 "i18n" => array("counselor_name"),
                 "player_id" => $this->getActivePlayerId(),
@@ -1492,11 +1519,16 @@ class BatallaDeCoronas extends Table
             return;
         }
 
+        if ($this->freeNoble($player_id)) {
+            $this->setGameStateValue("active_counselor", 4);
+            $this->gamestate->nextState("counselorActivation");
+            return;
+        };
+
         if (!$this->getBuyableAreas($player_id)) {
             $this->gamestate->nextState("preBattle");
             return;
         }
-
 
         $this->gamestate->nextState("buyingPhase");
     }
@@ -1554,6 +1586,12 @@ class BatallaDeCoronas extends Table
             return;
         }
 
+        if ($this->freeNoble($player_id)) {
+            $this->setGameStateValue("active_counselor", 4);
+            $this->gamestate->nextState("counselorActivation");
+            return;
+        };
+
         if (!$this->getBuyableAreas($player_id)) {
             $this->gamestate->nextState("preBattle");
             return;
@@ -1575,6 +1613,12 @@ class BatallaDeCoronas extends Table
         if ($militia === "DEFENSE") {
             $this->commanderDefense($player_id);
         }
+
+        if ($this->freeNoble($player_id)) {
+            $this->setGameStateValue("active_counselor", 4);
+            $this->gamestate->nextState("counselorActivation");
+            return;
+        };
 
         if (!$this->getBuyableAreas($player_id)) {
             $this->gamestate->nextState("preBattle");
@@ -1601,6 +1645,12 @@ class BatallaDeCoronas extends Table
         if ($square == 3) {
             $this->priestRed($player_id);
         }
+
+        if ($this->freeNoble($player_id)) {
+            $this->setGameStateValue("active_counselor", 4);
+            $this->gamestate->nextState("counselorActivation");
+            return;
+        };
 
         if (!$this->getBuyableAreas($player_id)) {
             $this->gamestate->nextState("preBattle");
@@ -1641,6 +1691,12 @@ class BatallaDeCoronas extends Table
                 "counselor_name" => $this->counselors_info[$counselor_id]["name"]
             )
         );
+
+        if ($this->freeNoble($player_id)) {
+            $this->setGameStateValue("active_counselor", 4);
+            $this->gamestate->nextState("counselorActivation");
+            return;
+        }
 
         $this->setGameStateValue("active_counselor", 0);
         $this->setGameStateValue("active_chair", 0);
