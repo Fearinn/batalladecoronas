@@ -2119,6 +2119,8 @@ class BatallaDeCoronas extends Table
 
         $final_shields = $this->decreaseDefense($value, $opponent_id, true);
 
+        $this->decreaseAttack($value, $player_id);
+
         if ($final_shields == 0) {
             $this->claimGem($player_id);
         }
