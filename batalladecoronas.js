@@ -771,6 +771,16 @@ define([
           if (args) {
             const buyableAreas = args.args.buyableAreas;
 
+            if (buyableAreas.length == 0) {
+              this.gamedatas.gamestate.description =
+                "${actplayer} may use the Crown to continue buying";
+
+              this.gamedatas.gamestate.descriptionmyturn =
+                "${you} may use the Crown to continue buying";
+
+              this.updatePageTitle();
+            }
+
             dojo.query("[data-area]").forEach((element) => {
               const area = element.dataset.area;
               if (buyableAreas[area]) {

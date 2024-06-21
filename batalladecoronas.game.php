@@ -1140,6 +1140,22 @@ class BatallaDeCoronas extends Table
         return $buyable_areas;
     }
 
+    function canBuyArea($player_id): bool
+    {
+        $has_crown = !!$this->getPlayerCrown($player_id);
+        $gold_with_crown = $this->getPlayerGold($player_id) + 3;
+
+        $next_dragon_level = $this->getPlayerDragon($player_id) + 1;
+        $dragon_price = $this->dragon_prices[$next_dragon_level];
+
+        $dragon_with_crown = $next_dragon_level <= 5 && $gold_with_crown >= $dragon_price;
+        $militia_with_crown = !!$this->getCommanderPicks($player_id) && $gold_with_crown >= 3;
+
+        $buy_with_crown = $has_crown && ($dragon_with_crown || $militia_with_crown);
+
+        return !!$this->getBuyableAreas($player_id) || $buy_with_crown;
+    }
+
     function getTokenPicks($player_id): array
     {
         $token_picks = array();
@@ -1768,7 +1784,7 @@ class BatallaDeCoronas extends Table
             $this->levelUpDragon(1, $player_id);
         }
 
-        if ($this->getBuyableAreas($player_id)) {
+        if ($this->canBuyArea($player_id)) {
             $this->gamestate->nextState("buyAgain");
             return;
         }
@@ -1913,7 +1929,7 @@ class BatallaDeCoronas extends Table
 
         $this->setPlayerSmith(0, $player_id);
 
-        if ($this->getBuyableAreas($player_id)) {
+        if ($this->canBuyArea($player_id)) {
             $this->gamestate->nextState("buyAgain");
             return;
         }
@@ -1962,7 +1978,7 @@ class BatallaDeCoronas extends Table
 
         $this->setGameStateValue("token_state", $state_id);
 
-        if ($this->getBuyableAreas($player_id)) {
+        if ($this->canBuyArea($player_id)) {
             $this->gamestate->nextState("buyAgain");
             return;
         }
