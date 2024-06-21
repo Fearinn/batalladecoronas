@@ -768,14 +768,16 @@ define([
 
       if (stateName === "buyingPhase") {
         if (this.isCurrentPlayerActive()) {
-          const buyableAreas = args.args.buyableAreas;
+          if (args) {
+            const buyableAreas = args.args.buyableAreas;
 
-          dojo.query("[data-area]").forEach((element) => {
-            const area = element.dataset.area;
-            if (buyableAreas[area]) {
-              dojo.addClass(element, "boc_selectableContainer");
-            }
-          });
+            dojo.query("[data-area]").forEach((element) => {
+              const area = element.dataset.area;
+              if (buyableAreas[area]) {
+                dojo.addClass(element, "boc_selectableContainer");
+              }
+            });
+          }
 
           this.addActionButton(
             "boc_skip_btn",

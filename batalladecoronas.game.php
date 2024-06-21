@@ -1800,15 +1800,15 @@ class BatallaDeCoronas extends Table
 
         $player_id = $this->getActivePlayerId();
 
+        if (!in_array($token, $this->getTokenPicks($player_id))) {
+            throw new BgaUserException($this->_("You can't use this token now"));
+        }
+
         $state_name = $this->getStateName();
 
         $state_id = $this->getStateId();
 
         $this->setGameStateValue("token_state",  $state_id);
-
-        if (!in_array($token, $this->getTokenPicks($player_id))) {
-            throw new BgaUserException($this->_("You can't use this token now"));
-        }
 
         if ($token === "CROWN") {
             $this->notifyAllPlayers(
