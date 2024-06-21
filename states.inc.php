@@ -100,6 +100,7 @@ $machinestates = array(
         "possibleactions" => array("activateNoble", "cancelActivation"),
         "transitions" => array(
             "commanderActivation" => 34,
+            "priestActivation" => 35,
             "buyingPhase" => 4,
             "preBattle" => 5,
             "cancel" => 32,
