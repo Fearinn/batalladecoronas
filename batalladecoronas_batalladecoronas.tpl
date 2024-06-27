@@ -84,7 +84,7 @@
 <div id="boc_gameArea" class="boc_gameArea">
   <div id="boc_supply-dice" class="boc_rowContainer boc_supply-dice">
     <div id="boc_dice" class="boc_rowContainer boc_dice">
-      <div id="boc_die:1" class="boc_dieContainer">
+      <div id="boc_die:1" class="boc_dieContainer-1 boc_dieContainer">
         <div id="boc_dieStock:1" class="boc_dieStock"></div>
         <div id="boc_dieAnimation:1" class="boc_dieAnimation">
           <div class="boc_one boc_face">
@@ -122,7 +122,7 @@
           </div>
         </div>
       </div>
-      <div id="boc_die:2" class="boc_dieContainer">
+      <div id="boc_die:2" class="boc_dieContainer-2 boc_dieContainer">
         <div id="boc_dieStock:2" class="boc_dieStock"></div>
         <div id="boc_dieAnimation:2" class="boc_dieAnimation">
           <div class="boc_one boc_face">

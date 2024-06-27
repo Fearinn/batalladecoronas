@@ -864,8 +864,6 @@ define([
       }
 
       if (stateName === "resultDispute") {
-        dojo.addClass($("boc_die:1"), "boc_attackingDie");
-
         if (args) {
           const attacker_color = args.args.player_color;
           const defender_color = args.args.player_color2;
@@ -958,7 +956,6 @@ define([
       }
 
       if (stateName === "betweenTurns") {
-        dojo.removeClass($("boc_die:1"), "boc_attackingDie");
         dojo.removeClass($("boc_dieStock:1"), "boc_battleDie");
         dojo.removeClass($("boc_dieStock:2"), "boc_battleDie");
       }
