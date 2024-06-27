@@ -2235,6 +2235,23 @@ class BatallaDeCoronas extends Table
         $attacker_id = $this->getGameStateValue("attacker");
         $defender_id = $this->getPlayerAfter($attacker_id);
 
+        $swords = $this->getPlayerAttack($attacker_id);
+
+        if ($swords == 0) {
+            $this->notifyAllPlayers(
+                "battleTie",
+                clienttranslate('${player_name} has no swords. The battle is automatically finished as a tie'),
+                array(
+                    "player_id" => $attacker_id,
+                    "player_name" => $this->getPlayerNameById($attacker_id)
+                )
+            );
+
+
+            $this->gamestate->nextState("betweenTurns");
+            return;
+        }
+
         $attacking_die = $this->getGameStateValue("die_1");
         $defending_die = $this->getGameStateValue("die_2");
 
@@ -2292,15 +2309,15 @@ class BatallaDeCoronas extends Table
                 $this->incStat(1, "successfulAttacks", $attacker_id);
 
                 if ($this->getPlayerDefense($defender_id) == 0) {
-                    $this->claimGem($attacker_id);
+                    if ($swords > 0) {
+                        $this->claimGem($attacker_id);
+                    }
 
                     $this->gamestate->nextState("betweenTurns");
                     return;
                 }
 
-                $swords = $this->getPlayerAttack($attacker_id);
-
-                if ($margin > $this->getPlayerAttack($attacker_id)) {
+                if ($margin > $swords) {
                     $margin = $swords;
                 }
 
