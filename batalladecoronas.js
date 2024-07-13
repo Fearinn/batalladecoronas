@@ -746,14 +746,16 @@ define([
 
       if (stateName === "priestActivation") {
         if (this.isCurrentPlayerActive()) {
-          for (const squareId in this.churchSquares) {
+          const squareElements = dojo.query("[data-clergy]");
+
+          squareElements.forEach((element) => {
             const currentSquareId = this.church[player_id];
-            const squareElement = $(`boc_clergy$${player_id}:${squareId}`);
+            const squareId = element.dataset.clergy;
 
             if (squareId != currentSquareId) {
-              dojo.addClass(squareElement, "boc_selectableContainer");
+              dojo.addClass(element, "boc_selectableContainer");
             }
-          }
+          });
 
           this.addActionButton(
             "boc_cancel_btn",

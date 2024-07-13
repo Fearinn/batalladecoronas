@@ -19,6 +19,9 @@
 
 .boc_gameArea {
   --tokenSize: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .boc_gameArea *:not(.stockitem) {
@@ -81,6 +84,7 @@
 }
 
 .boc_supply-dice {
+  align-items: flex-end;
   gap: 32px;
 }
 
@@ -90,11 +94,10 @@
   perspective: 1000px;
   -webkit-perspective: 1000px;
   gap: 24px;
-  height: 60px;
   width: 144px;
 }
 
-.boc_dieContainer:not(.roll)::before {
+.boc_dieContainer::before {
   font-size: 32px;
   position: relative;
   left: 16px;
@@ -108,6 +111,10 @@
 
 .boc_dieContainer-2::before {
   content: "\26E8";
+}
+
+.boc_dieContainer.roll::before {
+  display: none;
 }
 
 .boc_dieStock {
