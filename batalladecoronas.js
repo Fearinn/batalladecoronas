@@ -1720,7 +1720,8 @@ define([
     },
 
     notif_startBattle: function (notif) {
-      this.showMessage(_("Get ready for the battle!"), "warning");
+      playSound("batalladecoronas_army");
+      this.disableNextMoveSound();
     },
 
     notif_battleResult: function (notif) {},

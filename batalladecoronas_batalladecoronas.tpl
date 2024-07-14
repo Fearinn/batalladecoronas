@@ -81,6 +81,18 @@
   preload="none"
   autobuffer
 ></audio>
+<audio
+  id="audiosrc_batalladecoronas_army"
+  src="{GAMETHEMEURL}img/batalladecoronas_army.mp3"
+  preload="none"
+  autobuffer
+></audio>
+<audio
+  id="audiosrc_o_batalladecoronas_army"
+  src="{GAMETHEMEURL}img/batalladecoronas_army.ogg"
+  preload="none"
+  autobuffer
+></audio>
 <div id="boc_gameArea" class="boc_gameArea">
   <div id="boc_supply-dice" class="boc_rowContainer boc_supply-dice">
     <div id="boc_dice" class="boc_rowContainer boc_dice">
