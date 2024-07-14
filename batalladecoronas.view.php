@@ -44,6 +44,8 @@ class view_batalladecoronas_batalladecoronas extends game_view
         global $g_user;
         $current_player_id = $g_user->get_id();
 
+        $this->tpl["YOUR CASTLE"] = self::_("Your castle");
+
         $this->page->begin_block($template, "mycastleblock");
         if (in_array($current_player_id, array_keys($players))) {
             $this->page->insert_block("mycastleblock", array(
@@ -62,8 +64,6 @@ class view_batalladecoronas_batalladecoronas extends game_view
                 ));
             }
         }
-
-        $this->tpl["YOUR CASTLE"] = $this->_("Your castle");
 
         /*********** Do not change anything below this line  ************/
     }

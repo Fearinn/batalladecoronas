@@ -187,7 +187,7 @@
         class="boc_castle_title"
         style="color: #{MY_COLOR}"
       >
-        {YOUR CASTLE}
+        {YOUR ZOO}
       </h3>
       <div id="boc_castle" class="boc_castle">
         <div id="boc_crownTower:{MY_ID}" class="boc_crownTower"></div>

@@ -70,18 +70,20 @@ define([
       this.treasure = gamedatas.treasure;
       this.dragon = gamedatas.dragon;
 
-      const currentPlayerId = this.player_id;
-
       //Setting up player boards
       for (const player_id in gamedatas.players) {
         const player = gamedatas.players[player_id];
         const castleTitle = $(`boc_castle_title:${player_id}`);
 
-        if (player_id != currentPlayerId) {
+        if (player_id != this.player_id) {
           castleTitle.textContent = this.format_string_recursive(
             _("${player_name}'s castle"),
             { player_name: player.name }
           );
+        }
+
+        if (player_id == this.player_id) {
+          castleTitle.textContent = _("Your castle");
         }
       }
 
@@ -194,7 +196,7 @@ define([
         colorblindCounselor.innerText = _(counselorName);
       };
 
-      const inactiveCouncil = this.inactiveCouncil[currentPlayerId];
+      const inactiveCouncil = this.inactiveCouncil[this.player_id];
       for (const cardId in inactiveCouncil) {
         const counselorId = inactiveCouncil[cardId].type_arg;
         const counselor = this.counselorsInfo[counselorId];
@@ -228,7 +230,7 @@ define([
         this[crownTowerStock].setSelectionAppearance("class");
         this[crownTowerStock].selectionClass = "boc_selectedToken";
 
-        if (player_id == currentPlayerId) {
+        if (player_id == this.player_id) {
           this[crownTowerStock].setSelectionMode(1);
         } else {
           this[crownTowerStock].setSelectionMode(0);
@@ -265,7 +267,7 @@ define([
         this[crossTowerStock].setSelectionAppearance("class");
         this[crossTowerStock].selectionClass = "boc_selectedToken";
 
-        if (player_id == currentPlayerId) {
+        if (player_id == this.player_id) {
           this[crossTowerStock].setSelectionMode(1);
         } else {
           this[crownTowerStock].setSelectionMode(0);
@@ -617,18 +619,18 @@ define([
         });
       }
 
-      const crownTowerStock = `crownTowerStock:${currentPlayerId}`;
+      const crownTowerStock = `crownTowerStock:${this.player_id}`;
       dojo.connect(this[crownTowerStock], "onChangeSelection", this, () => {
         this.onSelectCrownToken(this[crownTowerStock]);
       });
 
-      const crossTowerStock = `crossTowerStock:${currentPlayerId}`;
+      const crossTowerStock = `crossTowerStock:${this.player_id}`;
       dojo.connect(this[crossTowerStock], "onChangeSelection", this, () => {
         this.onSelectCrossToken(this[crossTowerStock]);
       });
 
       for (let chair = 1; chair <= 6; chair++) {
-        const chairStock = `chairStock$${currentPlayerId}:${chair}`;
+        const chairStock = `chairStock$${this.player_id}:${chair}`;
         dojo.connect(this[chairStock], "onChangeSelection", this, () => {
           this.onSelectCounselor(this[chairStock]);
         });
