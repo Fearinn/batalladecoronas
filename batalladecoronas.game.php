@@ -195,7 +195,8 @@ class BatallaDeCoronas extends Table
 
     function roll($player_id): int
     {
-        $value = bga_rand(1, 6);
+        //tests
+        $value = 6;
 
         $this->incStat(1, "rolled" . $value, $player_id);
 
@@ -2247,13 +2248,25 @@ class BatallaDeCoronas extends Table
                 )
             );
 
-
             $this->gamestate->nextState("betweenTurns");
             return;
         }
 
         $attacking_die = $this->getGameStateValue("die_1");
         $defending_die = $this->getGameStateValue("die_2");
+
+        $margin = abs($attacking_die - $defending_die);
+
+        if ($margin == 0) {
+            $this->notifyAllPlayers(
+                "battleTie",
+                clienttranslate("It's a tie. No shields or swords are destroyed"),
+                array()
+            );
+
+            $this->gamestate->nextState("betweenTurns");
+            return;
+        }
 
         $attack_wins = $attacking_die > $defending_die;
 
@@ -2291,54 +2304,44 @@ class BatallaDeCoronas extends Table
             return;
         }
 
-        $margin = abs($attacking_die - $defending_die);
 
-        if ($margin > 0) {
-            $this->notifyAllPlayers(
-                "battleResult",
-                clienttranslate('${player_name} wins the battle'),
-                array(
-                    "player_id" => $winner_id,
-                    "player_name" => $this->getPlayerNameById($winner_id)
-                )
-            );
+        $this->notifyAllPlayers(
+            "battleResult",
+            clienttranslate('${player_name} wins the battle'),
+            array(
+                "player_id" => $winner_id,
+                "player_name" => $this->getPlayerNameById($winner_id)
+            )
+        );
 
-            $this->incStat(1, "battlesWon", $winner_id);
+        $this->incStat(1, "battlesWon", $winner_id);
 
-            if ($attack_wins) {
-                $this->incStat(1, "successfulAttacks", $attacker_id);
+        if ($attack_wins) {
+            $this->incStat(1, "successfulAttacks", $attacker_id);
 
-                if ($this->getPlayerDefense($defender_id) == 0) {
-                    if ($swords > 0) {
-                        $this->claimGem($attacker_id);
-                    }
-
-                    $this->gamestate->nextState("betweenTurns");
-                    return;
+            if ($this->getPlayerDefense($defender_id) == 0) {
+                if ($swords > 0) {
+                    $this->claimGem($attacker_id);
                 }
 
-                if ($margin > $swords) {
-                    $margin = $swords;
-                }
-
-                $this->setGameStateValue("damaged_shields", $margin);
-
-                $this->gamestate->changeActivePlayer($attacker_id);
-
-                $this->gamestate->nextState("shieldDestruction");
+                $this->gamestate->nextState("betweenTurns");
                 return;
             }
 
-            $this->decreaseAttack($margin, $attacker_id, true);
+            if ($margin > $swords) {
+                $margin = $swords;
+            }
+
+            $this->setGameStateValue("damaged_shields", $margin);
+
+            $this->gamestate->changeActivePlayer($attacker_id);
+
+            $this->gamestate->nextState("shieldDestruction");
+            return;
         }
 
-        if ($margin == 0) {
-            $this->notifyAllPlayers(
-                "battleTie",
-                clienttranslate("It's a tie. No shields or swords are destroyed"),
-                array()
-            );
-        }
+        $this->decreaseAttack($margin, $attacker_id, true);
+
 
         $this->gamestate->nextState("betweenTurns");
     }
