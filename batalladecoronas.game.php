@@ -195,8 +195,7 @@ class BatallaDeCoronas extends Table
 
     function roll($player_id): int
     {
-        //tests
-        $value = 6;
+        $value = bga_rand(1, 6);
 
         $this->incStat(1, "rolled" . $value, $player_id);
 
