@@ -1013,19 +1013,10 @@ define([
     ///////////////////////////////////////////////////
     //// Utility methods
 
-    sendAjaxCall: function (action, args = {}) {
+    performAction: function (action, args = {}) {
       args.gameVersion = this.gameVersion;
-      args.lock = true;
 
-      if (this.checkAction(action, true)) {
-        this.ajaxcall(
-          "/" + this.game_name + "/" + this.game_name + "/" + action + ".html",
-          args,
-          this,
-          (result) => {},
-          (isError) => {}
-        );
-      }
+      this.bgaPerformAction(action, args);
     },
 
     addStateButtons: function () {
@@ -1206,31 +1197,31 @@ define([
     //actions
     onRollDice: function () {
       const action = "rollDice";
-      this.sendAjaxCall(action);
+      this.performAction(action);
     },
 
     onDecideDice: function (die) {
       const action = "decideDice";
 
-      this.sendAjaxCall(action, { die });
+      this.performAction(action, { die });
     },
 
     onVestCounselor: function (cardId) {
       const action = "vestCounselor";
 
-      this.sendAjaxCall(action, { cardId });
+      this.performAction(action, { cardId });
     },
 
     onActivateCounselor: function () {
       const action = "activateCounselor";
 
-      this.sendAjaxCall(action);
+      this.performAction(action);
     },
 
     onActivateNoble: function (cardId) {
       const action = "activateNoble";
 
-      this.sendAjaxCall(action, { cardId });
+      this.performAction(action, { cardId });
     },
 
     onPickMilitia: function (event) {
@@ -1246,7 +1237,7 @@ define([
           return;
         }
 
-        this.sendAjaxCall(action, { militia });
+        this.performAction(action, { militia });
       }
     },
 
@@ -1257,7 +1248,7 @@ define([
 
         const square = parseInt(event.currentTarget.dataset.clergy);
 
-        this.sendAjaxCall(action, { square });
+        this.performAction(action, { square });
       }
 
       if (stateName === "crossTokenActivation") {
@@ -1265,20 +1256,20 @@ define([
 
         const square = parseInt(event.currentTarget.dataset.clergy);
 
-        this.sendAjaxCall(action, { square });
+        this.performAction(action, { square });
       }
     },
 
     onSkipActivation: function () {
       const action = "skipActivation";
 
-      this.sendAjaxCall(action);
+      this.performAction(action);
     },
 
     onCancelActivation: function () {
       const action = "cancelActivation";
 
-      this.sendAjaxCall(action);
+      this.performAction(action);
     },
 
     onPickArea: function (event) {
@@ -1286,85 +1277,85 @@ define([
 
       const area = event.currentTarget.dataset.area;
 
-      this.sendAjaxCall(action, { area });
+      this.performAction(action, { area });
     },
 
     onSkipBuying: function () {
       const action = "skipBuying";
 
-      this.sendAjaxCall(action);
+      this.performAction(action);
     },
 
     onActivateCrownToken() {
       const action = "activateToken";
 
-      this.sendAjaxCall(action, { token: "CROWN" });
+      this.performAction(action, { token: "CROWN" });
     },
 
     onActivateCrossToken() {
       const action = "activateToken";
 
-      this.sendAjaxCall(action, { token: "CROSS" });
+      this.performAction(action, { token: "CROSS" });
     },
 
     onActivateSmithToken() {
       const action = "activateSmithToken";
 
-      this.sendAjaxCall(action);
+      this.performAction(action);
     },
 
     onSkipToken: function () {
       const action = "skipToken";
 
-      this.sendAjaxCall(action);
+      this.performAction(action);
     },
 
     onSkipSmithToken: function () {
       const action = "skipSmithToken";
 
-      this.sendAjaxCall(action);
+      this.performAction(action);
     },
 
     onCancelToken: function () {
       const action = "cancelToken";
 
-      this.sendAjaxCall(action);
+      this.performAction(action);
     },
 
     onStartBattle: function () {
       const action = "startBattle";
 
-      this.sendAjaxCall(action);
+      this.performAction(action);
     },
 
     onSkipBattle: function () {
       const action = "skipBattle";
 
-      this.sendAjaxCall(action);
+      this.performAction(action);
     },
 
     onDisputeResult: function () {
       const action = "disputeResult";
 
-      this.sendAjaxCall(action);
+      this.performAction(action);
     },
 
     onSkipDispute: function () {
       const action = "skipDispute";
 
-      this.sendAjaxCall(action);
+      this.performAction(action);
     },
 
     onDestroyShields: function (shield_nbr) {
       const action = "destroyShields";
 
-      this.sendAjaxCall(action, { shield_nbr });
+      this.performAction(action, { shield_nbr });
     },
 
     onSkipDestruction: function () {
       const action = "skipDestruction";
 
-      this.sendAjaxCall(action);
+      this.performAction(action);
     },
 
     ///////////////////////////////////////////////////
