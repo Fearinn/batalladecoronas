@@ -1203,6 +1203,9 @@ class BatallaDeCoronas extends Table
 
         $this->incStat(1, "commander", $player_id);
 
+        $noble_stat = $this->getStat("noble", $player_id);
+        $this->setStat(ceil($noble_stat), "noble", $player_id);
+
         return $this->increaseAttack(1, $player_id);
     }
     function commanderDefense($player_id): int
@@ -1219,6 +1222,9 @@ class BatallaDeCoronas extends Table
         );
 
         $this->incStat(1, "commander", $player_id);
+
+        $noble_stat = $this->getStat("noble", $player_id);
+        $this->setStat(ceil($noble_stat), "noble", $player_id);
 
         return $this->increaseDefense(1, $player_id);
     }
@@ -1291,6 +1297,9 @@ class BatallaDeCoronas extends Table
         );
 
         $this->incStat(1, "priest", $player_id);
+
+        $noble_stat = $this->getStat("noble", $player_id);
+        $this->setStat(ceil($noble_stat), "noble", $player_id);
 
         $this->moveClergy(1, $player_id);
     }
@@ -1530,7 +1539,6 @@ class BatallaDeCoronas extends Table
             throw new BgaUserException($this->_("You can't activate this counselor now"));
         }
 
-
         if ($active_counselor == 2) {
             $this->masterOfCoin($player_id);
         }
@@ -1590,14 +1598,13 @@ class BatallaDeCoronas extends Table
             throw new BgaUserException($this->_("You can't activate the Noble with its own effect"));
         }
 
-
         if (!in_array($active_counselor, $this->getNoblePicks($player_id))) {
             throw new BgaUserException($this->_("You can't activate this counselor now"));
         }
 
         $this->notifyAllPlayers(
             "activateNoble",
-            clienttranslate('${player_name} activates the Noble. The effect of other counselor is activated'),
+            clienttranslate('${player_name} activates the Noble. The effect of other counselor may be activated'),
             array(
                 "player_id" => $player_id,
                 "player_name" => $this->getPlayerNameById($player_id)
@@ -1618,11 +1625,13 @@ class BatallaDeCoronas extends Table
 
         if ($active_counselor == 1) {
             $this->gamestate->nextState("commanderActivation");
+            $this->incStat(0.5, "noble", $player_id);
             return;
         }
 
         if ($active_counselor == 6) {
             $this->gamestate->nextState("priestActivation");
+            $this->incStat(0.5, "noble", $player_id);
             return;
         }
 
@@ -1631,6 +1640,8 @@ class BatallaDeCoronas extends Table
             $this->gamestate->nextState("counselorActivation");
             return;
         };
+
+        $this->incStat(1, "noble", $player_id);
 
         if (!$this->getBuyableAreas($player_id)) {
             $this->gamestate->nextState("preBattle");

@@ -53,7 +53,7 @@
     },
     "noble": {
       "id": 20,
-      "type": "int",
+      "type": "float",
       "name": "Noble activated"
     },
     "smith": {
