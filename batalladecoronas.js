@@ -47,6 +47,8 @@ define([
       this.church = {};
       this.treasure = {};
       this.dragon = {};
+
+      this.customArgs = {};
     },
 
     setup: function (gamedatas) {
@@ -650,7 +652,7 @@ define([
       });
 
       dojo.query("[data-clergy]").connect("onclick", (event) => {
-        this.onPickSquare(event);
+        this.onSelectSquare(event);
       });
 
       dojo.query("[data-area]").connect("onclick", (event) => {
@@ -968,6 +970,10 @@ define([
     onLeavingState: function (stateName) {
       console.log("Leaving state: " + stateName);
 
+      dojo.query("[data-selected]").forEach((prevSelected) => {
+        prevSelected.removeAttribute("data-selected");
+      });
+
       const player_id = this.getActivePlayerId();
 
       if (stateName === "decisionPhase") {
@@ -1241,20 +1247,56 @@ define([
       }
     },
 
-    onPickSquare: function (event) {
+    onSelectSquare: function (event) {
+      const element = event.currentTarget;
+
       const stateName = this.gamedatas.gamestate.name;
+
+      if (
+        stateName !== "priestActivation" &&
+        stateName !== "crossTokenActivation"
+      ) {
+        return;
+      }
+
+      dojo.query(".boc_selectedElement").removeClass("boc_selectedElement");
+      dojo.destroy("boc_confirmSelectionBtn");
+
+      if (element.dataset.selected) {
+        this.customArgs.selectedSquare = null;
+        element.removeAttribute("data-selected");
+        return;
+      }
+
+      dojo.query("[data-selected]").forEach((prevSelected) => {
+        prevSelected.removeAttribute("data-selected");
+      });
+
+      this.customArgs.selectedSquare = element.dataset.clergy;
+      element.dataset.selected = "1";
+      dojo.addClass(element, "boc_selectedElement");
+
+      this.addActionButton(
+        "boc_confirmSelectionBtn",
+        _("Confirm selection"),
+        () => {
+          this.onPickSquare();
+        }
+      );
+    },
+
+    onPickSquare: function () {
+      const stateName = this.gamedatas.gamestate.name;
+      const square = this.customArgs.selectedSquare;
+
       if (stateName === "priestActivation") {
         const action = "activatePriest";
-
-        const square = parseInt(event.currentTarget.dataset.clergy);
 
         this.performAction(action, { square });
       }
 
       if (stateName === "crossTokenActivation") {
         const action = "activateCrossToken";
-
-        const square = parseInt(event.currentTarget.dataset.clergy);
 
         this.performAction(action, { square });
       }

@@ -210,6 +210,11 @@
   transform: scale(1.2);
 }
 
+[data-selected] {
+  border-color: red;
+  border-style: dashed;
+}
+
 .boc_power {
   position: absolute;
   top: 310px;
@@ -296,17 +301,17 @@
 
 .boc_church > * {
   position: absolute;
-  width: var(--tokenSize);
+  width: 70px;
 }
 
 .boc_clergy_GOLDEN {
-  left: 78px;
+  left: 80px;
 }
 .boc_clergy_BLUE {
-  left: 150px;
+  left: 154px;
 }
 .boc_clergy_RED {
-  left: 225px;
+  left: 228px;
 }
 
 .boc_treasure {
