@@ -2247,6 +2247,7 @@ class BatallaDeCoronas extends Table
         $defender_id = $this->getPlayerAfter($attacker_id);
 
         $swords = $this->getPlayerAttack($attacker_id);
+        $shields = $this->getPlayerDefense($defender_id);
 
         if ($swords == 0) {
             $this->notifyAllPlayers(
@@ -2329,7 +2330,7 @@ class BatallaDeCoronas extends Table
         if ($attack_wins) {
             $this->incStat(1, "successfulAttacks", $attacker_id);
 
-            if ($this->getPlayerDefense($defender_id) == 0) {
+            if ($shields == 0) {
                 if ($swords > 0) {
                     $this->claimGem($attacker_id);
                 }
@@ -2340,6 +2341,10 @@ class BatallaDeCoronas extends Table
 
             if ($margin > $swords) {
                 $margin = $swords;
+            }
+
+            if ($margin > $shields) {
+                $margin = $shields;
             }
 
             $this->setGameStateValue("damaged_shields", $margin);
