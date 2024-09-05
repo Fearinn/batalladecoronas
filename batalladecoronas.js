@@ -1324,11 +1324,14 @@ define([
     },
 
     onPickArea: function (event) {
-      const action = "buyArea";
+      const stateName = this.gamedatas.gamestate.name;
+      if (stateName === "buyingPhase") {
+        const action = "buyArea";
 
-      const area = event.currentTarget.dataset.area;
+        const area = event.currentTarget.dataset.area;
 
-      this.performAction(action, { area });
+        this.performAction(action, { area });
+      }
     },
 
     onSkipBuying: function () {
