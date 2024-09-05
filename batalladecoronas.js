@@ -21,6 +21,7 @@ define([
   "ebg/core/gamegui",
   "ebg/counter",
   "ebg/stock",
+  g_gamethemeurl + "modules/bga-zoom.js",
 ], function (dojo, declare) {
   return declare("bgagame.batalladecoronas", ebg.core.gamegui, {
     constructor: function () {
@@ -71,6 +72,15 @@ define([
       this.church = gamedatas.church;
       this.treasure = gamedatas.treasure;
       this.dragon = gamedatas.dragon;
+
+      this.zoomManager = new ZoomManager({
+        element: document.getElementById("boc_gameArea"),
+        localStorageZoomKey: "batalladecoronas-zoom",
+        zoomControls: {
+          color: "black",
+        },
+        zoomLevels: [0.5, 0.75, 1],
+      });
 
       //Setting up player boards
       for (const player_id in gamedatas.players) {
@@ -174,9 +184,8 @@ define([
         this.counselorSize
       );
       this[inactiveCouncilStock].image_items_per_row = 6;
+      // this[inactiveCouncilStock].centerItems = true;
       this[inactiveCouncilStock].autowidth = true;
-      this[inactiveCouncilStock].centerItems = true;
-      this[inactiveCouncilStock].item_margin = 8;
       this[inactiveCouncilStock].setSelectionMode(0);
       this[inactiveCouncilStock].setSelectionAppearance("class");
       this[inactiveCouncilStock].selectionClass = "boc_selectedCounselor";
