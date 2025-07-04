@@ -69,7 +69,13 @@
   background-color: yellow;
 }
 
+#bga-zoom-wrapper {
+  direction: ltr;
+}
+
 .boc_gameArea {
+  direction: ltr;
+
   --tokenSize: 80px;
   display: flex;
   flex-direction: column;
