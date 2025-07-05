@@ -1,7 +1,6 @@
 {
     "100": {
         "name": "Colorblind support",
-        "needReload": true,
         "values": {
             "0": {
                 "name": "Off"
